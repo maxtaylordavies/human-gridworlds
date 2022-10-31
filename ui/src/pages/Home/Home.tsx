@@ -1,7 +1,7 @@
 import React from "react";
 import { motion } from "framer-motion";
 
-import "./home.css";
+import "./Home.css";
 
 export const Home = () => {
   return (
