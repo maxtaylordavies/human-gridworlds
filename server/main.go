@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	distPath    = "ui/dist"
+	distPath    = "../ui/dist"
 	indexPath   = distPath + "/index.html"
 	faviconPath = distPath + "/favicon.ico"
 )
