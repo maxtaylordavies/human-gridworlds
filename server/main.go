@@ -23,14 +23,10 @@ func fileHandler(filePath string) http.HandlerFunc {
 
 func main() {
 	r := mux.NewRouter()
-
-	r.PathPrefix("/logos").Handler(http.FileServer(http.Dir(distPath)))
-	r.PathPrefix("/static").Handler(http.FileServer(http.Dir(distPath)))
-	r.HandleFunc("/favicon.ico", fileHandler(faviconPath))
-	r.PathPrefix("/").HandlerFunc(fileHandler(indexPath))
+	r.PathPrefix("/").Handler(http.FileServer(http.Dir(distPath)))
 
 	server := http.Server{
-		Addr:         ":8000",
+		Addr:         ":8005",
 		Handler:      r,
 		ReadTimeout:  5 * time.Second,
 		WriteTimeout: 5 * time.Second,

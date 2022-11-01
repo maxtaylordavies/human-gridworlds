@@ -1,46 +1,58 @@
-# Getting Started with Create React App
+# Griddly JS
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+GriddlyJS is built using React and Web Assembly
 
-## Available Scripts
+## Building From Source (including web-assembly)
 
-In the project directory, you can run:
+### Install Emscripten SDK
 
-### `yarn start`
+To compile the web-assembly module for Griddly, you first need to [install emscripten](https://emscripten.org/docs/getting_started/downloads.html).
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+Emscripten is a compiler toolchain for building web-assembly modules.
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
 
-### `yarn test`
+### Configure and Build 
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Choose Release/Debug for the build type and run the following command:
 
-### `yarn build`
+```shell
+./configure.sh && ./build.sh [Release/Debug]
+```
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+Once this is done, you can follow the instructions to Install Dependencies and Run Locally
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## Building Webapp Only
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+GriddlyJS includes a pre-built web-assembly module for the current version of Griddly. 
 
-### `yarn eject`
+If you just want to run the web-app locally then run the following commands which sync the resource directories
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+```
+configure.sh
+```
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+## Installing Dependencies
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+### Node Package Manager
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+As GriddlyJS is a web project, you must have NPM installed. The easiest way to do this is to [install NVM](https://github.com/nvm-sh/nvm#installing-and-updating) and choose a stable version.
 
-## Learn More
+```
+nvm install lts/gallium && nvm use lts/gallium
+```
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+### Install node packages
+
+```shell
+npm install
+```
+
+## Running Locally
+
+to run locally you can just run the following command in the `griddlyjs-app` folder:
+
+```shell
+npm start
+```
+
