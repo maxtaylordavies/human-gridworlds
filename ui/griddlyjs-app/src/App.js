@@ -1,22 +1,18 @@
-// import logo from './logo.svg';
-import yaml, { YAMLException } from "js-yaml";
 import React, { Component } from "react";
-
-import GriddlyJSCore from "./GriddlyJSCore";
-import Player from "./renderer/level_player/Player";
-import "./App.scss";
-
 import {
   Col,
   Container,
   Row,
-  Tabs,
-  Tab,
 } from "react-bootstrap";
-
-import { hashString } from "./Utils";
-
+import yaml, { YAMLException } from "js-yaml";
 import * as tf from "@tensorflow/tfjs";
+
+import GriddlyJSCore from "./GriddlyJSCore";
+import Player from "./renderer/level_player/Player";
+import { findCompatibleRenderers } from "./utils";
+import { hashString } from "./hash";
+import "./App.scss";
+
 
 class App extends Component {
   constructor() {
@@ -55,13 +51,6 @@ class App extends Component {
 `;
   }
 
-  loadGDYURL = async (url) => {
-    console.log(`LOADING URL ${url}`)
-    return fetch(url).then((response) => {
-      return response.text().then((text) => yaml.load(text));
-    });
-  };
-
   setEditorLevelString = (levelString) => {
     this.setState((state) => {
       return {
@@ -92,83 +81,15 @@ class App extends Component {
   //   });
   // };
 
-  findCompatibleRenderers = (observers, objects) => {
-    const compatibleRenderers = new Map([
-      [
-        "Sprite2D",
-        {
-          Type: "SPRITE_2D",
-          TileSize: 24,
-          RotateAvatarImage: true,
-        },
-      ],
-      [
-        "Block2D",
-        {
-          Type: "BLOCK_2D",
-          TileSize: 24,
-          RotateAvatarImage: true,
-        },
-      ],
-    ]);
+  loadConfig = async () => {
+    return fetch("config/config.json").then((response) => response.json());
+  };
 
-    for (const [rendererName, config] of compatibleRenderers) {
-      if (rendererName in observers) {
-        compatibleRenderers.set(rendererName, {
-          ...config,
-          ...observers[rendererName],
-        });
-      }
-    }
-
-    // Search through observers for custom observer types
-    for (const observerName in observers) {
-      const observer = observers[observerName];
-
-      // Ignore the default observers
-      if (
-        observerName !== "Sprite2D" &&
-        observerName !== "Block2D" &&
-        observerName !== "Entity" &&
-        observerName !== "ASCII" &&
-        observerName !== "Vector"
-      ) {
-        const observerType = observer.Type;
-
-        // Only consider fully observable sprite and block observers
-        if (observerType === "SPRITE_2D" || observerType === "BLOCK_2D") {
-          if (
-            !observer.Width &&
-            !observer.Height &&
-            !observer.OffsetX &&
-            !observer.OffsetY &&
-            !observer.Shader
-          ) {
-            compatibleRenderers.set(observerName, observer);
-          }
-        }
-      }
-    }
-
-    const observersInObjects = new Set();
-
-    // Search through objects for observer names
-    for (const o in objects) {
-      const object = objects[o];
-
-      // Remove any observers that are missing definitions in objects and warn about them
-      for (const observerName in object.Observers) {
-        observersInObjects.add(observerName);
-      }
-    }
-
-    for (const [rendererName, config] of compatibleRenderers) {
-      if (!observersInObjects.has(rendererName)) {
-        compatibleRenderers.delete(rendererName);
-      }
-    }
-
-    return compatibleRenderers;
+  loadGDYURL = async (url) => {
+    console.log(`LOADING URL ${url}`)
+    return fetch(url).then((response) => {
+      return response.text().then((text) => yaml.load(text));
+    });
   };
 
   tryLoadModel = async (environmentName) => {
@@ -233,9 +154,7 @@ class App extends Component {
       const lastLevelId = gdy.Environment.Levels.length - 1;
 
       this.tryLoadModel(projectName);
-
       this.tryLoadTrajectories(projectName, editorState.trajectories);
-
 
       this.setState((state) => {
         return {
@@ -275,7 +194,7 @@ class App extends Component {
   };
 
   loadRenderers = (gdy) => {
-    const renderers = this.findCompatibleRenderers(
+    const renderers = findCompatibleRenderers(
       gdy.Environment.Observers || {},
       gdy.Objects
     );
@@ -300,28 +219,11 @@ class App extends Component {
     });
   };
 
-  checkGriddlyJSCompatibility = (gdy) => {
-    // Check for avatar object
-    if (
-      !("Player" in gdy.Environment) ||
-      !("AvatarObject" in gdy.Environment.Player)
-    ) {
-      throw new Error(
-        "Currently only Single-Player environments where an avatar is controlled by the agent are compatible with GriddlyJS. \n\n Perhaps you forgot to set the AvatarObject?"
-      );
-    }
-
-    if (!("Levels" in gdy.Environment)) {
-      throw new Error("Please define at least one level.");
-    }
-  };
-
   updateGDY = (gdyString, projectName) => {
     this.closeAllMessages();
 
     try {
       const gdy = yaml.load(gdyString);
-      this.checkGriddlyJSCompatibility(gdy);
 
       try {
         this.griddlyjs.unloadGDY();
@@ -376,13 +278,6 @@ class App extends Component {
 
   updatePhaserCanvasSize = () => {
     this.setState((state) => {
-      // const width = Math.max(
-      //   this.tabPlayerContentElement.offsetWidth,
-      //   this.tabEditorContentElement.offsetWidth,
-      //   this.tabDebuggerContentElement
-      //     ? this.tabDebuggerContentElement.offsetWidth
-      //     : 0
-      // );
       const width = this.tabPlayerContentElement.offsetWidth
       return {
         ...state,
@@ -390,33 +285,18 @@ class App extends Component {
           phaserWidth: width,
           phaserHeight: (6 * window.innerHeight) / 9,
         },
-        levelEditor: {
-          phaserWidth: width,
-          phaserHeight: (6 * window.innerHeight) / 9,
-        },
-        policyDebugger: {
-          phaserWidth: width,
-          phaserHeight: (6 * window.innerHeight) / 9,
-        },
-        levelSelector: {
-          phaserWidth: (2 * window.innerWidth) / 3,
-          phaserHeight: 150,
-        },
-      };
-    });
-  };
-
-  loadConfig = async () => {
-    return fetch("config/config.json").then((response) => response.json());
-  };
-
-
-  setTemplates = (templates, blankTemplate) => {
-    this.setState((state) => {
-      const newProjects = { ...this.state.projects, templates, blankTemplate };
-      return {
-        ...state,
-        projects: newProjects,
+        // levelEditor: {
+        //   phaserWidth: width,
+        //   phaserHeight: (6 * window.innerHeight) / 9,
+        // },
+        // policyDebugger: {
+        //   phaserWidth: width,
+        //   phaserHeight: (6 * window.innerHeight) / 9,
+        // },
+        // levelSelector: {
+        //   phaserWidth: (2 * window.innerWidth) / 3,
+        //   phaserHeight: 150,
+        // },
       };
     });
   };
@@ -427,24 +307,12 @@ class App extends Component {
 
     return await this.griddlyjs.init().then(() => {
       this.loadConfig().then((defaults) => {
-        this.setTemplates(defaults.templates, defaults.blankTemplate);
         this.loadGDYURL(defaults.defaultProject.gdy).then((gdy) => {
           this.loadProject({ gdy }, defaults.defaultProject.name);
         });
       });
     });
   }
-
-  setKey = (k) => {
-    this.setState((state) => {
-      return {
-        ...state,
-        key: k,
-      };
-    });
-
-    this.updatePhaserCanvasSize();
-  };
 
   displayMessage = (content, type, error) => {
     if (error) {
@@ -483,44 +351,31 @@ class App extends Component {
       <Container fluid className="griddlyjs-ide-container">
         <Row>
           <Col md={6}>
-            <Tabs
-              id="controlled-tab-example"
-              activeKey={this.state.key}
-              onSelect={(k, e) => {
-                e.preventDefault();
-                this.setKey(k);
-              }}
-              className="mb-3"
-              transition={false}
-            >
-              <Tab eventKey="play" title="Play">
-                <Row>
-                  <Col md={12}>
-                    <div
-                      ref={(tabPlayerContentElement) => {
-                        this.tabPlayerContentElement = tabPlayerContentElement;
-                      }}
-                    >
-                      <Player
-                        gdyHash={this.state.gdyHash}
-                        gdy={this.state.gdy}
-                        trajectory={
-                          this.state.trajectories[this.state.selectedLevelId]
-                        }
-                        griddlyjs={this.state.griddlyjs}
-                        rendererName={this.state.rendererName}
-                        rendererConfig={this.state.rendererConfig}
-                        height={this.state.levelPlayer.phaserHeight}
-                        width={this.state.levelPlayer.phaserWidth}
-                        selectedLevelId={this.state.selectedLevelId}
-                        onTrajectoryComplete={this.onTrajectoryComplete}
-                        onDisplayMessage={this.displayMessage}
-                      ></Player>
-                    </div>
-                  </Col>
-                </Row>
-              </Tab>
-            </Tabs>
+            <Row>
+              <Col md={12}>
+                <div
+                  ref={(tabPlayerContentElement) => {
+                    this.tabPlayerContentElement = tabPlayerContentElement;
+                  }}
+                >
+                  <Player
+                    gdyHash={this.state.gdyHash}
+                    gdy={this.state.gdy}
+                    trajectory={
+                      this.state.trajectories[this.state.selectedLevelId]
+                    }
+                    griddlyjs={this.state.griddlyjs}
+                    rendererName={this.state.rendererName}
+                    rendererConfig={this.state.rendererConfig}
+                    height={this.state.levelPlayer.phaserHeight}
+                    width={this.state.levelPlayer.phaserWidth}
+                    selectedLevelId={this.state.selectedLevelId}
+                    onTrajectoryComplete={this.onTrajectoryComplete}
+                    onDisplayMessage={this.displayMessage}
+                  ></Player>
+                </div>
+              </Col>
+            </Row>
           </Col>
         </Row>
       </Container>

@@ -1,20 +1,78 @@
+export const findCompatibleRenderers = (observers, objects) => {
+    const compatibleRenderers = new Map([
+      [
+        "Sprite2D",
+        {
+          Type: "SPRITE_2D",
+          TileSize: 24,
+          RotateAvatarImage: true,
+        },
+      ],
+      [
+        "Block2D",
+        {
+          Type: "BLOCK_2D",
+          TileSize: 24,
+          RotateAvatarImage: true,
+        },
+      ],
+    ]);
 
-
-module.exports = Object.freeze({
-  hashString: (string) => {
-    let hash = 0,
-      i,
-      chr;
-    if (string.length === 0) return hash;
-    for (i = 0; i < string.length; i++) {
-      chr = string.charCodeAt(i);
-      hash = (hash << 5) - hash + chr;
-      hash |= 0; // Convert to 32bit integer
+    for (const [rendererName, config] of compatibleRenderers) {
+      if (rendererName in observers) {
+        compatibleRenderers.set(rendererName, {
+          ...config,
+          ...observers[rendererName],
+        });
+      }
     }
-    return hash;
-  },
 
-  getRandomHash: () => {
-    return window.crypto.getRandomValues(new Uint32Array(1))[0];
-  },
-});
+    // Search through observers for custom observer types
+    for (const observerName in observers) {
+      const observer = observers[observerName];
+
+      // Ignore the default observers
+      if (
+        observerName !== "Sprite2D" &&
+        observerName !== "Block2D" &&
+        observerName !== "Entity" &&
+        observerName !== "ASCII" &&
+        observerName !== "Vector"
+      ) {
+        const observerType = observer.Type;
+
+        // Only consider fully observable sprite and block observers
+        if (observerType === "SPRITE_2D" || observerType === "BLOCK_2D") {
+          if (
+            !observer.Width &&
+            !observer.Height &&
+            !observer.OffsetX &&
+            !observer.OffsetY &&
+            !observer.Shader
+          ) {
+            compatibleRenderers.set(observerName, observer);
+          }
+        }
+      }
+    }
+
+    const observersInObjects = new Set();
+
+    // Search through objects for observer names
+    for (const o in objects) {
+      const object = objects[o];
+
+      // Remove any observers that are missing definitions in objects and warn about them
+      for (const observerName in object.Observers) {
+        observersInObjects.add(observerName);
+      }
+    }
+
+    for (const [rendererName, config] of compatibleRenderers) {
+      if (!observersInObjects.has(rendererName)) {
+        compatibleRenderers.delete(rendererName);
+      }
+    }
+
+    return compatibleRenderers;
+  };
