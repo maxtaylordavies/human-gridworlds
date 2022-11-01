@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	distPath    = "../ui/dist"
+	distPath    = "ui/dist"
 	indexPath   = distPath + "/index.html"
 	faviconPath = distPath + "/favicon.ico"
 )
@@ -26,7 +26,7 @@ func main() {
 	r.PathPrefix("/").Handler(http.FileServer(http.Dir(distPath)))
 
 	server := http.Server{
-		Addr:         ":8005",
+		Addr:         ":8100",
 		Handler:      r,
 		ReadTimeout:  5 * time.Second,
 		WriteTimeout: 5 * time.Second,
