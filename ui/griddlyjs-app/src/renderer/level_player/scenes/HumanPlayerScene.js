@@ -235,6 +235,7 @@ class HumanPlayerScene extends Phaser.Scene {
 
       // Data about the environment
       this.gdy = data.gdy;
+
       this.onDisplayMessage = data.onDisplayMessage;
       this.onTrajectoryComplete = data.onTrajectoryComplete;
       this.getTrajectory = data.getTrajectory;
