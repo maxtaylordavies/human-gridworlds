@@ -1,3 +1,5 @@
+import yaml from "js-yaml";
+
 export const findCompatibleRenderers = (observers, objects) => {
   const compatibleRenderers = new Map([
     [
@@ -75,4 +77,14 @@ export const findCompatibleRenderers = (observers, objects) => {
   }
 
   return compatibleRenderers;
+};
+
+export const loadJsonFromURL = async (url) => {
+  return fetch("config/config.json").then((response) => response.json());
+};
+
+export const loadYamlFromURL = async (url) => {
+  return fetch(url).then((response) => {
+    return response.text().then((text) => yaml.load(text));
+  });
 };

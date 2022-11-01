@@ -1,32 +1,28 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Col, Container, Row } from "react-bootstrap";
-import yaml, { YAMLException } from "js-yaml";
+import yaml from "js-yaml";
 import * as tf from "@tensorflow/tfjs";
 
 import GriddlyJSCore from "./GriddlyJSCore";
 import Player from "./renderer/level_player/Player";
-import { findCompatibleRenderers } from "./utils";
+import {
+  findCompatibleRenderers,
+  loadJsonFromURL,
+  loadYamlFromURL,
+} from "./utils";
 import { hashString } from "./hash";
 import "./App.scss";
 
-const newLevelString = `. . .
-. . .
-. . . 
-`;
-
 const App = () => {
+  // create and initialise an instance of the GriddlyJS core
+  const [griddlyjs, setGriddlyjs] = useState(new GriddlyJSCore());
+
+  // initialise a bunch of state
   const [playerState, setPlayerState] = useState({
-    phaserWidth: 500,
-    phaserHeight: 250,
+    phaserWidth: 800,
+    phaserHeight: 500,
   });
   const [gameState, setGameState] = useState({
-    gdy: null,
-    gdyHash: 0,
-    gdyString: "",
-    levelId: 0,
-    selectedLevelId: 0,
-  });
-  const [projectState, setProjectState] = useState({
     projects: {
       names: [],
       templates: {},
@@ -38,20 +34,24 @@ const App = () => {
       template: "",
     },
     projectName: "",
+    gdy: null,
+    gdyHash: 0,
+    gdyString: "",
+    levelId: 0,
+    selectedLevelId: 0,
+    trajectories: [],
+    trajectoryString: "",
   });
   const [rendererState, setRendererState] = useState({
     renderers: [],
     rendererName: "",
     rendererConfig: {},
   });
-  const [trajectoryState, setTrajectoryState] = useState({
-    trajectories: [],
-    trajectoryString: "",
-  });
   const [model, setModel] = useState();
   const [messages, setMessages] = useState({});
   const [loading, setLoading] = useState(true);
-  const [griddlyjs, setGriddlyjs] = useState(new GriddlyJSCore());
+
+  const playerElement = useRef(null);
 
   useEffect(() => {
     async function performSetUp() {
@@ -59,9 +59,9 @@ const App = () => {
       updatePhaserCanvasSize();
 
       await griddlyjs.init().then(() => {
-        loadConfig().then((defaults) => {
-          loadGDYURL(defaults.defaultProject.gdy).then((gdy) => {
-            _loadProject(gdy, defaults.defaultProject.name);
+        loadJsonFromURL("config/config.json").then((defaults) => {
+          loadYamlFromURL(defaults.defaultProject.gdy).then((gdy) => {
+            loadProject(gdy, defaults.defaultProject.name);
           });
         });
       });
@@ -69,84 +69,7 @@ const App = () => {
     performSetUp();
   }, []);
 
-  // const setEditorLevelString = (levelString) => {
-  //   setState({
-  //     ...state,
-  //     levelString: levelString,
-  //   });
-  // };
-
-  // const playLevel = (levelString) => {
-  //   griddlyjs.reset(levelString);
-  // };
-
-  const onTrajectoryComplete = (trajectoryBuffer) => {
-    const trajectories = { ...trajectoryState.trajectories };
-    trajectories[gameState.selectedLevelId] = trajectoryBuffer;
-
-    setTrajectoryState({
-      trajectoryString: yaml.dump(trajectoryBuffer, { noRefs: true }),
-      trajectories,
-    });
-  };
-
-  const loadConfig = async () => {
-    return fetch("config/config.json").then((response) => response.json());
-  };
-
-  const loadGDYURL = async (url) => {
-    return fetch(url).then((response) => {
-      return response.text().then((text) => yaml.load(text));
-    });
-  };
-
-  const tryLoadModel = async (environmentName) => {
-    return tf
-      .loadGraphModel("./model/" + environmentName + "/model.json")
-      .catch((error) => {
-        console.log("Cannot load model for environment", environmentName);
-      })
-      .then((model) => {
-        setModel(model);
-      });
-  };
-
-  const tryLoadTrajectories = async (environmentName, trajectories) => {
-    return fetch("./trajectories/" + environmentName + ".yaml")
-      .then((response) => {
-        return response.text().then((text) => {
-          if (text.startsWith("<!") || response.status !== 200) {
-            return [];
-          } else {
-            return yaml.load(text);
-          }
-        });
-      })
-      .then((preloadedTrajectories) => {
-        for (const levelId in trajectories) {
-          if (trajectories[levelId]) {
-            preloadedTrajectories[levelId] = trajectories[levelId];
-          }
-        }
-
-        setTrajectoryState({
-          ...trajectoryState,
-          trajectories: preloadedTrajectories,
-        });
-      })
-      .catch((error) => {
-        console.log(
-          "Cannot load trajectories for environment",
-          environmentName
-        );
-        setTrajectoryState({
-          ...trajectoryState,
-          trajectories,
-        });
-      });
-  };
-
-  const _loadProject = async (gdy, projectName) => {
+  const loadProject = async (gdy, projectName) => {
     setLoading(true);
 
     await tryLoadModel(projectName);
@@ -158,14 +81,11 @@ const App = () => {
 
     setGameState({
       ...gameState,
+      projectName,
       gdy,
       gdyString,
       gdyHash: hashString(gdyString),
       selectedLevelId: gdy.Environment.Levels.length - 1,
-    });
-    setProjectState({
-      ...projectState,
-      projectName,
     });
 
     setLoading(false);
@@ -194,26 +114,77 @@ const App = () => {
     });
   };
 
+  // const setEditorLevelString = (levelString) => {
+  //   setState({
+  //     ...state,
+  //     levelString: levelString,
+  //   });
+  // };
+
+  // const playLevel = (levelString) => {
+  //   griddlyjs.reset(levelString);
+  // };
+
+  const onTrajectoryComplete = (trajectoryBuffer) => {
+    const trajectories = { ...gameState.trajectories };
+    trajectories[gameState.selectedLevelId] = trajectoryBuffer;
+
+    setGameState({
+      ...gameState,
+      trajectoryString: yaml.dump(trajectoryBuffer, { noRefs: true }),
+      trajectories,
+    });
+  };
+
+  const tryLoadModel = async (environmentName) => {
+    return tf
+      .loadGraphModel("./model/" + environmentName + "/model.json")
+      .then((model) => {
+        setModel(model);
+      })
+      .catch((error) => {
+        console.log("Cannot load model for environment", environmentName);
+      });
+  };
+
+  const tryLoadTrajectories = async (environmentName, trajectories) => {
+    return fetch("./trajectories/" + environmentName + ".yaml")
+      .then((response) => {
+        return response.text().then((text) => {
+          if (text.startsWith("<!") || response.status !== 200) {
+            return [];
+          } else {
+            return yaml.load(text);
+          }
+        });
+      })
+      .then((preloadedTrajectories) => {
+        for (const levelId in trajectories) {
+          if (trajectories[levelId]) {
+            preloadedTrajectories[levelId] = trajectories[levelId];
+          }
+        }
+        setGameState({
+          ...gameState,
+          trajectories: preloadedTrajectories,
+        });
+      })
+      .catch((error) => {
+        console.log(
+          "Cannot load trajectories for environment",
+          environmentName
+        );
+        setGameState({
+          ...gameState,
+          trajectories,
+        });
+      });
+  };
+
   const updatePhaserCanvasSize = () => {
-    // const width = tabPlayerContentElement.offsetWidth;
-    // setState({
-    //   ...state,
-    //   levelPlayer: {
-    //     phaserWidth: width,
-    //     phaserHeight: (6 * window.innerHeight) / 9,
-    //   },
-    //   // levelEditor: {
-    //   //   phaserWidth: width,
-    //   //   phaserHeight: (6 * window.innerHeight) / 9,
-    //   // },
-    //   // policyDebugger: {
-    //   //   phaserWidth: width,
-    //   //   phaserHeight: (6 * window.innerHeight) / 9,
-    //   // },
-    //   // levelSelector: {
-    //   //   phaserWidth: (2 * window.innerWidth) / 3,
-    //   //   phaserHeight: 150,
-    //   // },
+    // setPlayerState({
+    //   phaserWidth: playerElement.offsetWidth,
+    //   phaserHeight: (6 * window.innerHeight) / 9,
     // });
   };
 
@@ -243,37 +214,21 @@ const App = () => {
   };
 
   return (
-    <Container fluid className="griddlyjs-ide-container">
-      <Row>
-        <Col md={6}>
-          <Row>
-            <Col md={12}>
-              <div
-              // ref={(tabPlayerContentElement) => {
-              //   tabPlayerContentElement = tabPlayerContentElement;
-              // }}
-              >
-                <Player
-                  gdyHash={gameState.gdyHash}
-                  gdy={gameState.gdy}
-                  trajectory={
-                    trajectoryState.trajectories[gameState.selectedLevelId]
-                  }
-                  griddlyjs={griddlyjs}
-                  rendererName={rendererState.rendererName}
-                  rendererConfig={rendererState.rendererConfig}
-                  height={playerState.phaserHeight}
-                  width={playerState.phaserWidth}
-                  selectedLevelId={gameState.selectedLevelId}
-                  onTrajectoryComplete={onTrajectoryComplete}
-                  onDisplayMessage={displayMessage}
-                ></Player>
-              </div>
-            </Col>
-          </Row>
-        </Col>
-      </Row>
-    </Container>
+    <div className="main-container">
+      <Player
+        gdyHash={gameState.gdyHash}
+        gdy={gameState.gdy}
+        trajectory={gameState.trajectories[gameState.selectedLevelId]}
+        griddlyjs={griddlyjs}
+        rendererName={rendererState.rendererName}
+        rendererConfig={rendererState.rendererConfig}
+        height={playerState.phaserHeight}
+        width={playerState.phaserWidth}
+        selectedLevelId={gameState.selectedLevelId}
+        onTrajectoryComplete={onTrajectoryComplete}
+        onDisplayMessage={displayMessage}
+      />
+    </div>
   );
 };
 
