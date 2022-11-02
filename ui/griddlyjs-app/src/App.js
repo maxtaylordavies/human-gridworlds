@@ -5,11 +5,8 @@ import * as tf from "@tensorflow/tfjs";
 
 import GriddlyJSCore from "./GriddlyJSCore";
 import Player from "./renderer/level_player/Player";
-import {
-  findCompatibleRenderers,
-  loadJsonFromURL,
-  loadYamlFromURL,
-} from "./utils";
+import { loadGameSpec } from "./api";
+import { findCompatibleRenderers } from "./utils";
 import { hashString } from "./hash";
 import "./App.scss";
 
@@ -23,17 +20,7 @@ const App = () => {
     phaserHeight: 500,
   });
   const [gameState, setGameState] = useState({
-    projects: {
-      names: [],
-      templates: {},
-      blankTemplate: "",
-    },
-    newProject: {
-      name: "",
-      showModal: false,
-      template: "",
-    },
-    projectName: "",
+    gameId: "sokoban",
     gdy: null,
     gdyHash: 0,
     gdyString: "",
@@ -47,33 +34,31 @@ const App = () => {
     rendererName: "",
     rendererConfig: {},
   });
-  const [model, setModel] = useState();
   const [messages, setMessages] = useState({});
   const [loading, setLoading] = useState(true);
-
-  const playerElement = useRef(null);
 
   useEffect(() => {
     async function performSetUp() {
       window.addEventListener("resize", updatePhaserCanvasSize, false);
       updatePhaserCanvasSize();
 
+      setLoading(true);
+
       await griddlyjs.init().then(() => {
-        loadJsonFromURL("config/config.json").then((defaults) => {
-          loadYamlFromURL(defaults.defaultProject.gdy).then((gdy) => {
-            loadProject(gdy, defaults.defaultProject.name);
-          });
-        });
+        loadGameSpec(
+          gameState.gameId,
+          (gdy) => {
+            console.log(`GDY: ${gdy}`);
+            loadGame(gdy);
+          },
+          console.error
+        );
       });
     }
     performSetUp();
   }, []);
 
-  const loadProject = async (gdy, projectName) => {
-    setLoading(true);
-
-    await tryLoadModel(projectName);
-
+  const loadGame = async (gdy) => {
     const gdyString = yaml.dump(gdy, { noRefs: true });
     griddlyjs.unloadGDY();
     griddlyjs.loadGDY(gdyString);
@@ -81,7 +66,6 @@ const App = () => {
 
     setGameState({
       ...gameState,
-      projectName,
       gdy,
       gdyString,
       gdyHash: hashString(gdyString),
@@ -114,17 +98,6 @@ const App = () => {
     });
   };
 
-  // const setEditorLevelString = (levelString) => {
-  //   setState({
-  //     ...state,
-  //     levelString: levelString,
-  //   });
-  // };
-
-  // const playLevel = (levelString) => {
-  //   griddlyjs.reset(levelString);
-  // };
-
   const onTrajectoryComplete = (trajectoryBuffer) => {
     const trajectories = { ...gameState.trajectories };
     trajectories[gameState.selectedLevelId] = trajectoryBuffer;
@@ -134,51 +107,6 @@ const App = () => {
       trajectoryString: yaml.dump(trajectoryBuffer, { noRefs: true }),
       trajectories,
     });
-  };
-
-  const tryLoadModel = async (environmentName) => {
-    return tf
-      .loadGraphModel("./model/" + environmentName + "/model.json")
-      .then((model) => {
-        setModel(model);
-      })
-      .catch((error) => {
-        console.log("Cannot load model for environment", environmentName);
-      });
-  };
-
-  const tryLoadTrajectories = async (environmentName, trajectories) => {
-    return fetch("./trajectories/" + environmentName + ".yaml")
-      .then((response) => {
-        return response.text().then((text) => {
-          if (text.startsWith("<!") || response.status !== 200) {
-            return [];
-          } else {
-            return yaml.load(text);
-          }
-        });
-      })
-      .then((preloadedTrajectories) => {
-        for (const levelId in trajectories) {
-          if (trajectories[levelId]) {
-            preloadedTrajectories[levelId] = trajectories[levelId];
-          }
-        }
-        setGameState({
-          ...gameState,
-          trajectories: preloadedTrajectories,
-        });
-      })
-      .catch((error) => {
-        console.log(
-          "Cannot load trajectories for environment",
-          environmentName
-        );
-        setGameState({
-          ...gameState,
-          trajectories,
-        });
-      });
   };
 
   const updatePhaserCanvasSize = () => {
