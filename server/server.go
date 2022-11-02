@@ -15,9 +15,12 @@ type Server struct {
 }
 
 const (
-	distPath    = "ui/dist"
-	indexPath   = distPath + "/index.html"
-	faviconPath = distPath + "/favicon.ico"
+	distPath         = "ui/dist"
+	indexPath        = distPath + "/index.html"
+	faviconPath      = distPath + "/favicon.ico"
+	dataPath         = "data"
+	gamesPath        = dataPath + "/games"
+	trajectoriesPath = dataPath + "/trajectories"
 )
 
 func fileHandler(filePath string) http.HandlerFunc {
@@ -51,6 +54,22 @@ func (s *Server) registerRoutes() {
 			Status: "ok",
 		}
 		respond(w, payload)
+	})
+
+	// api routes
+	s.Router.HandleFunc("/api/game", func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodGet {
+			http.Error(w, "method not supported", http.StatusBadRequest)
+			return
+		}
+
+		id := r.URL.Query().Get("id")
+		if id == "" {
+			http.Error(w, "'id' query param is required", http.StatusBadRequest)
+			return
+		}
+
+		http.ServeFile(w, r, gamesPath+"/"+id+".yaml")
 	})
 
 	// for serving ui
