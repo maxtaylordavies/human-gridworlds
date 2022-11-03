@@ -35,14 +35,11 @@ const App = () => {
     rendererConfig: {},
   });
   const [messages, setMessages] = useState({});
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function performSetUp() {
       window.addEventListener("resize", updatePhaserCanvasSize, false);
       updatePhaserCanvasSize();
-
-      setLoading(true);
 
       await griddlyjs.init().then(() => {
         loadGameSpec(
@@ -71,8 +68,6 @@ const App = () => {
       gdyHash: hashString(gdyString),
       selectedLevelId: gdy.Environment.Levels.length - 1,
     });
-
-    setLoading(false);
   };
 
   const loadRenderers = (gdy) => {
