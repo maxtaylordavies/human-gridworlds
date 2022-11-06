@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"strconv"
+	"strings"
 	"time"
 
 	"github.com/gorilla/mux"
@@ -139,6 +141,35 @@ func (s *Server) registerRoutes() {
 				return
 			}
 		}
+	})
+
+	s.Router.HandleFunc("/api/paths", func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodGet {
+			http.Error(w, "method not supported", http.StatusBadRequest)
+			return
+		}
+
+		gameID := r.URL.Query().Get("game_id")
+		agentIDsStr := r.URL.Query().Get("agent_ids")
+		levelsStr := r.URL.Query().Get("levels")
+		if gameID == "" || agentIDsStr == "" || levelsStr == "" {
+			http.Error(w, "'game_id', 'agent_ids' and 'levels' params are required", http.StatusBadRequest)
+			return
+		}
+
+		agentIDs, tmp := strings.Split(agentIDsStr, ","), strings.Split(levelsStr, ",")
+		levels := make([]int, len(tmp))
+		for i, s := range tmp {
+			l, err := strconv.Atoi(s)
+			if err != nil {
+				http.Error(w, "'levels' param formatted incorrectly", http.StatusBadRequest)
+				return
+			}
+			levels[i] = l
+		}
+
+		paths := s.Store.GetLevelPaths(gameID, agentIDs, levels)
+		respond(w, paths)
 	})
 
 	// for serving ui

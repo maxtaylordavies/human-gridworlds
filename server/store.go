@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"io/ioutil"
 	"strings"
 	"time"
@@ -100,8 +101,46 @@ func (s Store) GetAllAgentIDsForGame(gameID string) ([]string, error) {
 	return agentIDs, nil
 }
 
-func (s Store) GetLevelPaths(gameID string, agentIDs []string, levels []int) (SetOfLevelPaths, error) {
-	return SetOfLevelPaths{}, nil
+func (s Store) GetLevelPaths(gameID string, agentIDs []string, levels []int) SetOfLevelPaths {
+	// initialise set of paths object
+	set := SetOfLevelPaths{
+		AgentIDs: []string{},
+		Paths:    make(map[int][]string),
+	}
+	for _, l := range levels {
+		set.Paths[l] = []string{}
+	}
+
+	// iterate through requested agents
+	for _, aid := range agentIDs {
+		// for each agent, attempt to find + parse their trajectory file (for the given gameID)
+		f, err := ioutil.ReadFile(s.GetTrajectoryFilePath(gameID + "_" + aid))
+		if err != nil {
+			continue
+		}
+
+		var t Trajectory
+		err = json.Unmarshal(f, &t)
+		if err != nil {
+			continue
+		}
+
+		// if we successfully loaded the agent's trajectory file, then add the agentID to set.AgentIDs
+		set.AgentIDs = append(set.AgentIDs, aid)
+
+		// now we iterate through the requested levels
+		for _, l := range levels {
+			// for each level, if the agent has trajectory data for level l,
+			// we add it to set.Paths[l] - otherwise, we add an empty string
+			path := ""
+			if p, ok := t.Paths[l]; ok {
+				path = p
+			}
+			set.Paths[l] = append(set.Paths[l], path)
+		}
+	}
+
+	return set
 }
 
 func (s Store) StoreTrajectory(gameID string, agentID string, paths map[int]string, context string) error {
