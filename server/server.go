@@ -11,16 +11,14 @@ import (
 
 type Server struct {
 	Router *mux.Router
+	Store  Store
 	Port   string
 }
 
 const (
-	distPath         = "ui/dist"
-	indexPath        = distPath + "/index.html"
-	faviconPath      = distPath + "/favicon.ico"
-	dataPath         = "data"
-	gamesPath        = dataPath + "/games"
-	trajectoriesPath = dataPath + "/trajectories"
+	distPath    = "ui/dist"
+	indexPath   = distPath + "/index.html"
+	faviconPath = distPath + "/favicon.ico"
 )
 
 func fileHandler(filePath string) http.HandlerFunc {
@@ -30,6 +28,11 @@ func fileHandler(filePath string) http.HandlerFunc {
 	}
 }
 
+func decodePostRequest(r *http.Request, data interface{}) error {
+	decoder := json.NewDecoder(r.Body)
+	return decoder.Decode(&data)
+}
+
 func respond(w http.ResponseWriter, data interface{}) {
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(data)
@@ -37,6 +40,9 @@ func respond(w http.ResponseWriter, data interface{}) {
 
 func CreateServer() Server {
 	s := Server{
+		Store: Store{
+			DataPath: "data/",
+		},
 		Port: ":8100",
 	}
 	s.registerRoutes()
@@ -69,7 +75,39 @@ func (s *Server) registerRoutes() {
 			return
 		}
 
-		http.ServeFile(w, r, gamesPath+"/"+id+".yaml")
+		http.ServeFile(w, r, s.Store.GetGameSpecFilePath(id))
+	})
+
+	s.Router.HandleFunc("/api/session", func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == http.MethodGet {
+			id := r.URL.Query().Get("id")
+			if id == "" {
+				http.Error(w, "'id' query param is required", http.StatusBadRequest)
+				return
+			}
+
+			http.ServeFile(w, r, s.Store.GetSessionFilePath(id))
+		} else if r.Method == http.MethodPost {
+			var data struct {
+				ExperimentID string `json:"experiment_id"`
+				IsTest       bool   `json:"is_test"`
+				Context      string `json:"context"`
+			}
+
+			err := decodePostRequest(r, &data)
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusBadRequest)
+				return
+			}
+
+			sess, err := s.Store.CreateSession(data.ExperimentID, data.IsTest, data.Context)
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+
+			respond(w, sess)
+		}
 	})
 
 	// for serving ui
