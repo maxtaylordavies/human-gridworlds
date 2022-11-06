@@ -19,10 +19,47 @@ const post = (url, data, token) => {
 };
 
 // endpoint functions
-export const loadGameSpec = async (id, callback, onError) => {
-  get(`game?id=${id}`)
+export const createSession = async (experimentId, callback, onError) => {
+  post("session", {
+    experimentId,
+    isTest: true,
+    context: "",
+  })
+    .then((response) => {
+      callback(response.data);
+    })
+    .catch((e) => onError(e));
+};
+
+export const loadGameSpec = async (session, callback, onError) => {
+  get(`game?id=${session.gameId}`)
     .then((response) => {
       callback(yaml.load(response.data));
+    })
+    .catch((e) => onError(e));
+};
+
+export const loadAgentPaths = async (session, callback, onError) => {
+  get(
+    `paths?game_id=${session.gameId}&agent_ids=${session.agentIds.join(
+      ","
+    )}&levels=${session.levels.join(",")}`
+  )
+    .then((response) => {
+      callback(response.data);
+    })
+    .catch((e) => onError(e));
+};
+
+export const storeTrajectory = async (session, paths, callback, onError) => {
+  post("trajectory", {
+    game_id: session.gameId,
+    agent_id: session.humanId,
+    context: "",
+    paths: paths,
+  })
+    .then((response) => {
+      callback(response.data);
     })
     .catch((e) => onError(e));
 };

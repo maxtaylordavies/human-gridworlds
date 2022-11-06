@@ -9,26 +9,26 @@ import (
 
 type Session struct {
 	ID           string   `json:"id"`
-	ExperimentID string   `json:"experiment_id"`
-	CreatedAt    int64    `json:"created_at"` // unix timestamp
-	IsTest       bool     `json:"is_test"`
+	ExperimentID string   `json:"experimentId"`
+	CreatedAt    int64    `json:"createdAt"` // unix timestamp
+	IsTest       bool     `json:"isTest"`
 	Context      string   `json:"context"`
-	GameID       string   `json:"game_id"`
-	HumanID      string   `json:"human_id"`
-	AgentIDs     []string `json:"agent_ids"`
+	GameID       string   `json:"gameId"`
+	HumanID      string   `json:"humanId"`
+	AgentIDs     []string `json:"agentIds"`
 	Levels       []int    `json:"levels"`
 }
 
 type Trajectory struct {
 	ID      string         `json:"id"`
 	Context string         `json:"context"`
-	GameID  string         `json:"game_id"`
-	AgentID string         `json:"agent_id"` // could be prerecorded agent OR human participant
-	Paths   map[int]string `json:"paths"`    // maps level index to recorded path
+	GameID  string         `json:"gameId"`
+	AgentID string         `json:"agentId"` // could be prerecorded agent OR human participant
+	Paths   map[int]string `json:"paths"`   // maps level index to recorded path
 }
 
 type SetOfLevelPaths struct {
-	AgentIDs []string         `json:"agent_ids"`
+	AgentIDs []string         `json:"agentIds"`
 	Paths    map[int][]string `json:"paths"` // maps level index to array of paths (path for each agent in agent_ids)
 }
 
