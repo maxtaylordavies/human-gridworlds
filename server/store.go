@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"strings"
+	"time"
 
 	"github.com/google/uuid"
 )
@@ -12,7 +13,7 @@ import (
 type Session struct {
 	ID           string   `json:"id"`
 	ExperimentID string   `json:"experiment_id"`
-	CreatedAt    int      `json:"created_at"` // unix timestamp
+	CreatedAt    int64    `json:"created_at"` // unix timestamp
 	IsTest       bool     `json:"is_test"`
 	Context      string   `json:"context"`
 	GameID       string   `json:"game_id"`
@@ -68,7 +69,7 @@ func (s Store) CreateSession(experimentID string, isTest bool, context string) (
 	sess = Session{
 		ID:           generateID("s-"),
 		ExperimentID: experimentID,
-		CreatedAt:    0,
+		CreatedAt:    time.Now().Unix(),
 		IsTest:       isTest,
 		Context:      context,
 		GameID:       "sokoban",
