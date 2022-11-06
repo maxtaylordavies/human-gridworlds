@@ -1,13 +1,9 @@
 package main
 
 import (
-	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"strings"
 	"time"
-
-	"github.com/google/uuid"
 )
 
 type Session struct {
@@ -39,16 +35,16 @@ type Store struct {
 	DataPath string
 }
 
-func generateID(prefix string) string {
-	return fmt.Sprintf("%s%s", prefix, uuid.NewString()[:8])
-}
-
 func (s Store) GetGameSpecFilePath(id string) string {
 	return s.DataPath + "games/" + id + ".yaml"
 }
 
 func (s Store) GetSessionFilePath(id string) string {
 	return s.DataPath + "sessions/" + id + ".json"
+}
+
+func (s Store) GetTrajectoryFilePath(id string) string {
+	return s.DataPath + "trajectories/" + id + ".json"
 }
 
 func (s Store) CreateSession(experimentID string, isTest bool, context string) (Session, error) {
@@ -67,24 +63,19 @@ func (s Store) CreateSession(experimentID string, isTest bool, context string) (
 
 	// create session
 	sess = Session{
-		ID:           generateID("s-"),
+		ID:           GenerateID("s-"),
 		ExperimentID: experimentID,
 		CreatedAt:    time.Now().Unix(),
 		IsTest:       isTest,
 		Context:      context,
 		GameID:       "sokoban",
-		HumanID:      generateID("h-"),
+		HumanID:      GenerateID("h-"),
 		AgentIDs:     agents,
 		Levels:       levels,
 	}
 
 	// save session to file and return
-	serialised, err := json.MarshalIndent(sess, "", " ")
-	if err != nil {
-		return sess, err
-	}
-
-	err = ioutil.WriteFile(s.DataPath+"sessions/"+sess.ID+".json", serialised, 0644)
+	err = WriteStructToJSON(sess, s.DataPath+"sessions/"+sess.ID+".json")
 	return sess, err
 }
 
@@ -113,6 +104,16 @@ func (s Store) GetLevelPaths(gameID string, agentIDs []string, levels []int) (Se
 	return SetOfLevelPaths{}, nil
 }
 
-func (s Store) StoreTrajectory(gameID string, agentID string, paths map[int]string) error {
-	return nil
+func (s Store) StoreTrajectory(gameID string, agentID string, paths map[int]string, context string) error {
+	// create trajectory object
+	traj := Trajectory{
+		ID:      gameID + "_" + agentID,
+		Context: context,
+		GameID:  gameID,
+		AgentID: agentID,
+		Paths:   paths,
+	}
+
+	// save session to file and return
+	return WriteStructToJSON(traj, s.DataPath+"trajectories/"+traj.ID+".json")
 }

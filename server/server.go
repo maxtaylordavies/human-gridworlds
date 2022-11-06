@@ -110,6 +110,37 @@ func (s *Server) registerRoutes() {
 		}
 	})
 
+	s.Router.HandleFunc("/api/trajectory", func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == http.MethodGet {
+			id := r.URL.Query().Get("id")
+			if id == "" {
+				http.Error(w, "'id' query param is required", http.StatusBadRequest)
+				return
+			}
+
+			http.ServeFile(w, r, s.Store.GetTrajectoryFilePath(id))
+		} else if r.Method == http.MethodPost {
+			var data struct {
+				GameID  string         `json:"game_id"`
+				AgentID string         `json:"agent_id"`
+				Context string         `json:"context"`
+				Paths   map[int]string `json:"paths"`
+			}
+
+			err := decodePostRequest(r, &data)
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusBadRequest)
+				return
+			}
+
+			err = s.Store.StoreTrajectory(data.GameID, data.AgentID, data.Paths, data.Context)
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+		}
+	})
+
 	// for serving ui
 	s.Router.PathPrefix("/").Handler(http.FileServer(http.Dir(distPath)))
 }

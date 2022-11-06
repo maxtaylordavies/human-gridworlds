@@ -1,9 +1,18 @@
 package main
 
 import (
+	"encoding/json"
+	"fmt"
+	"io/ioutil"
 	"math/rand"
 	"time"
+
+	"github.com/google/uuid"
 )
+
+func GenerateID(prefix string) string {
+	return fmt.Sprintf("%s%s", prefix, uuid.NewString()[:8])
+}
 
 func SampleFromSliceString(s []string, n int) []string {
 	if n >= len(s) {
@@ -42,4 +51,13 @@ func makeRange(min, max int) []int {
 		a[i] = min + i
 	}
 	return a
+}
+
+func WriteStructToJSON(s interface{}, fp string) error {
+	// save session to file and return
+	serialised, err := json.MarshalIndent(s, "", " ")
+	if err != nil {
+		return err
+	}
+	return ioutil.WriteFile(fp, serialised, 0644)
 }
