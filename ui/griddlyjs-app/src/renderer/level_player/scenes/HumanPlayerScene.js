@@ -35,133 +35,6 @@ class HumanPlayerScene extends Phaser.Scene {
     this.keyboardIntervals = new Map();
   }
 
-  createTrajectoryMenu = () => {
-    const trajectoryMenu = this.add.rectangle(
-      0,
-      0,
-      this.cameras.main.width,
-      trajectoryMenuHeight,
-      COLOR_PANEL_DARK
-    );
-    trajectoryMenu.setOrigin(0, 0);
-
-    const recordingButtonY =
-      recordingButtonPaddingY + recordingButtonHeight / 2;
-    const startRecordingButtonX =
-      recordingButtonsOffsetX + recordingButtonWidth / 2;
-    const playTrajectoryButtonX =
-      recordingButtonsOffsetX +
-      2 * recordingButtonPaddingX +
-      recordingButtonWidth +
-      recordingButtonWidth / 2;
-    const stopButtonX =
-      this.cameras.main.width - recordingButtonsOffsetX - recordingButtonWidth;
-
-    // Start Recording Button
-    this.startRecordingBg = this.add.rectangle(
-      startRecordingButtonX,
-      recordingButtonY,
-      recordingButtonWidth,
-      recordingButtonHeight,
-      COLOR_PANEL_LIGHT
-    );
-    // this.startRecordingBg.setOrigin(0,0);
-    this.startRecordingBg.setDepth(10);
-    this.startRecordingBg.setInteractive();
-    this.startRecordingBg.on("pointerdown", () => this.beginRecording());
-    this.startRecordingText = this.add
-      .text(startRecordingButtonX, recordingButtonY, "\uf111", {
-        fontFamily: "Font Awesome Solid",
-        color: COLOR_RECORDING_RECORD_TEXT,
-        fontSize: "24px",
-      })
-      .setDepth(11)
-      .setOrigin(0.5, 0.5);
-
-    // Play Trajectory Button
-    this.playTrajectoryBg = this.add.rectangle(
-      playTrajectoryButtonX,
-      recordingButtonY,
-      recordingButtonWidth,
-      recordingButtonHeight,
-      COLOR_PANEL_LIGHT
-    );
-    this.playTrajectoryBg.setDepth(10);
-    this.playTrajectoryBg.setInteractive();
-    this.playTrajectoryBg.on("pointerdown", () => this.beginPlayback());
-    this.playTrajectoryText = this.add
-      .text(playTrajectoryButtonX, recordingButtonY, "\uf04b", {
-        fontFamily: "Font Awesome Solid",
-        color: COLOR_RECORDING_PLAY_TEXT,
-        fontSize: "24px",
-      })
-      .setDepth(11)
-      .setOrigin(0.5, 0.5);
-
-    // Stop Button
-    this.stopBg = this.add.rectangle(
-      stopButtonX,
-      recordingButtonY,
-      recordingButtonWidth,
-      recordingButtonHeight,
-      COLOR_PANEL_LIGHT
-    );
-    this.stopBg.setDepth(10);
-    this.stopBg.setInteractive();
-    this.stopBg.on("pointerdown", () => this.stopRecordingOrPlayback());
-    this.stopText = this.add
-      .text(stopButtonX, recordingButtonY, "\uf04d", {
-        fontFamily: "Font Awesome Solid",
-        color: COLOR_RECORDING_STOP_TEXT,
-        fontSize: "24px",
-      })
-      .setDepth(11)
-      .setOrigin(0.5, 0.5);
-  };
-
-  updateTrajectoryMenu = () => {
-    const hasTrajectories = this.currentTrajectoryBuffer ? true : false;
-    if (this.isRecordingTrajectory) {
-      this.startRecordingBg.setFillStyle(COLOR_PANEL_LIGHTER);
-      this.startRecordingText.setColor(
-        this.blink ? COLOR_RECORDING_RECORD_TEXT : COLOR_RECORDING_BLINK_TEXT
-      );
-
-      this.playTrajectoryText.setColor(COLOR_RECORDING_DISABLED_TEXT);
-      this.playTrajectoryBg.setFillStyle(COLOR_PANEL_DARK);
-
-      this.stopBg.setFillStyle(COLOR_PANEL_LIGHT);
-      this.stopText.setColor(COLOR_RECORDING_STOP_TEXT);
-    } else if (this.isRunningTrajectory) {
-      this.startRecordingBg.setFillStyle(COLOR_PANEL_DARK);
-      this.startRecordingText.setColor(COLOR_RECORDING_DISABLED_TEXT);
-
-      this.playTrajectoryText.setColor(COLOR_RECORDING_PLAY_TEXT);
-      this.playTrajectoryBg.setFillStyle(COLOR_PANEL_LIGHTER);
-
-      this.stopBg.setFillStyle(COLOR_PANEL_LIGHT);
-      this.stopText.setColor(COLOR_RECORDING_STOP_TEXT);
-    } else if (hasTrajectories) {
-      this.startRecordingBg.setFillStyle(COLOR_PANEL_LIGHT);
-      this.startRecordingText.setColor(COLOR_RECORDING_RECORD_TEXT);
-
-      this.playTrajectoryText.setColor(COLOR_RECORDING_PLAY_TEXT);
-      this.playTrajectoryBg.setFillStyle(COLOR_PANEL_LIGHT);
-
-      this.stopBg.setFillStyle(COLOR_PANEL_LIGHT);
-      this.stopText.setColor(COLOR_RECORDING_DISABLED_TEXT);
-    } else {
-      this.startRecordingBg.setFillStyle(COLOR_PANEL_LIGHT);
-      this.startRecordingText.setColor(COLOR_RECORDING_RECORD_TEXT);
-
-      this.playTrajectoryText.setColor(COLOR_RECORDING_DISABLED_TEXT);
-      this.playTrajectoryBg.setFillStyle(COLOR_PANEL_DARK);
-
-      this.stopBg.setFillStyle(COLOR_PANEL_LIGHT);
-      this.stopText.setColor(COLOR_RECORDING_DISABLED_TEXT);
-    }
-  };
-
   createModals = () => {
     // Set the modals to invisible
     this.variableDebugModalActive = false;
@@ -229,6 +102,7 @@ class HumanPlayerScene extends Phaser.Scene {
   };
 
   init = (data) => {
+    console.log("INIT CALLED");
     try {
       // Functions to interact with the environment
       this.griddlyjs = data.griddlyjs;
@@ -237,6 +111,7 @@ class HumanPlayerScene extends Phaser.Scene {
       this.gdy = data.gdy;
 
       this.onDisplayMessage = data.onDisplayMessage;
+      this.onTrajectoryStep = data.onTrajectoryStep;
       this.onTrajectoryComplete = data.onTrajectoryComplete;
       this.getTrajectory = data.getTrajectory;
 
@@ -246,6 +121,8 @@ class HumanPlayerScene extends Phaser.Scene {
       this.avatarObject = this.gdy.Environment.Player.AvatarObject;
       this.rendererName = data.rendererName;
       this.renderConfig = data.rendererConfig;
+
+      this.level = data.level;
 
       if (this.renderConfig.Type === "BLOCK_2D") {
         this.grenderer = new Block2DRenderer(
@@ -262,6 +139,8 @@ class HumanPlayerScene extends Phaser.Scene {
           this.avatarObject
         );
       }
+
+      // this.resetTrajectoryBuffer();
     } catch (e) {
       this.displayError("Cannot load GDY file.", e);
     }
@@ -560,17 +439,30 @@ class HumanPlayerScene extends Phaser.Scene {
     this.resetLevel();
     this.isRecordingTrajectory = true;
     this.doBlink();
-    this.currentTrajectoryBuffer = {
-      steps: [],
-      seed: 100,
-    };
   };
 
-  endRecording = () => {
-    this.isRecordingTrajectory = false;
-    this.onTrajectoryComplete(this.currentTrajectoryBuffer);
-    this.resetLevel();
-  };
+  // resetTrajectoryBuffer = () => {
+  //   console.log("resetting trajectory buffer...");
+  //   if (
+  //     this.currentTrajectoryBuffer &&
+  //     this.currentTrajectoryBuffer.steps.length > 0
+  //   ) {
+  //     this.onTrajectoryComplete(
+  //       this.currentTrajectoryBuffer.steps.map((s) => s[1]).join("")
+  //     );
+  //   }
+  //   this.currentTrajectoryBuffer = {
+  //     steps: [],
+  //     seed: 100,
+  //   };
+  //   console.log(JSON.stringify(this.currentTrajectoryBuffer));
+  // };
+
+  // endRecording = () => {
+  //   this.isRecordingTrajectory = false;
+  //   this.onTrajectoryComplete(this.currentTrajectoryBuffer);
+  //   this.resetLevel();
+  // };
 
   beginPlayback = () => {
     this.currentTrajectoryBuffer = this.getTrajectory();
@@ -591,59 +483,54 @@ class HumanPlayerScene extends Phaser.Scene {
     this.currentState = this.griddlyjs.getState();
   };
 
-  processTrajectory = () => {
-    if (this.currentTrajectoryBuffer.steps.length === 0) {
-      this.isRunningTrajectory = false;
-      return;
-    }
+  // processTrajectory = () => {
+  //   if (this.currentTrajectoryBuffer.steps.length === 0) {
+  //     this.isRunningTrajectory = false;
+  //     return;
+  //   }
 
-    if (!this.cooldown) {
-      this.cooldown = true;
-      setTimeout(() => {
-        this.cooldown = false;
-      }, 20);
+  //   if (!this.cooldown) {
+  //     this.cooldown = true;
+  //     setTimeout(() => {
+  //       this.cooldown = false;
+  //     }, 20);
 
-      const action =
-        this.currentTrajectoryBuffer.steps[this.trajectoryActionIdx++];
+  //     const action =
+  //       this.currentTrajectoryBuffer.steps[this.trajectoryActionIdx++];
 
-      const stepResult = this.griddlyjs.step(action);
+  //     const stepResult = this.griddlyjs.step(action);
 
-      if (stepResult.reward > 0) {
-        console.log("Reward: ", stepResult.reward);
-      }
+  //     if (stepResult.reward > 0) {
+  //       console.log("Reward: ", stepResult.reward);
+  //     }
 
-      this.currentState = this.griddlyjs.getState();
+  //     this.currentState = this.griddlyjs.getState();
 
-      if (stepResult.terminated) {
-        this.endPlayback();
-      }
+  //     if (stepResult.terminated) {
+  //       this.endPlayback();
+  //     }
 
-      if (
-        this.trajectoryActionIdx === this.currentTrajectoryBuffer.steps.length
-      ) {
-        this.endPlayback();
-      }
-    }
-  };
+  //     if (
+  //       this.trajectoryActionIdx === this.currentTrajectoryBuffer.steps.length
+  //     ) {
+  //       this.endPlayback();
+  //     }
+  //   }
+  // };
 
   doUserAction = (action) => {
+    this.onTrajectoryStep(this.level, action);
     const stepResult = this.griddlyjs.step(action);
     this.globalVariableDebugText = this.getGlobalVariableDebugText();
 
-    if (stepResult.reward > 0) {
-      console.log("Reward: ", stepResult.reward);
-    }
-
     this.currentState = this.griddlyjs.getState();
-    if (stepResult.terminated) {
-      this.resetLevel();
-    }
 
-    if (this.isRecordingTrajectory) {
-      this.currentTrajectoryBuffer.steps.push(action);
-      if (stepResult.terminated) {
-        this.endRecording();
-      }
+    if (stepResult.terminated) {
+      console.log(`TERMINATED: ${this.level}`);
+      this.onTrajectoryComplete(this.level);
+      // this.resetTrajectoryBuffer();
+      this.resetLevel();
+      this.level = this.level + 1;
     }
   };
 
@@ -709,8 +596,8 @@ class HumanPlayerScene extends Phaser.Scene {
       this.updateState(this.griddlyjs.getState());
       this.createModals();
       this.updateModals();
-      this.createTrajectoryMenu();
-      this.updateTrajectoryMenu();
+      // this.createTrajectoryMenu();
+      // this.updateTrajectoryMenu();
       this.createHintsModal();
     }
   };
@@ -725,15 +612,15 @@ class HumanPlayerScene extends Phaser.Scene {
         if (
           this.currentLevelStringOrId !== this.griddlyjs.getLevelStringOrId()
         ) {
-          this.stopRecordingOrPlayback();
+          // this.stopRecordingOrPlayback();
           this.currentLevelStringOrId = this.griddlyjs.getLevelStringOrId();
           this.currentState = this.griddlyjs.getState();
-          this.currentTrajectoryBuffer = this.getTrajectory();
+          // this.currentTrajectoryBuffer = this.getTrajectory();
         }
 
-        if (this.isRunningTrajectory) {
-          this.processTrajectory();
-        }
+        // if (this.isRunningTrajectory) {
+        //   this.processTrajectory();
+        // }
 
         if (this.currentState && this.stateHash !== this.currentState.hash) {
           this.stateHash = this.currentState.hash;
@@ -741,7 +628,7 @@ class HumanPlayerScene extends Phaser.Scene {
         }
 
         this.updateModals();
-        this.updateTrajectoryMenu();
+        // this.updateTrajectoryMenu();
       }
     }
   };

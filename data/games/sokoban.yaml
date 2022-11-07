@@ -27,8 +27,8 @@ Environment:
     - |
       wwwwwwwwwwwww
       w........w..w
-      w...b.......w
-      w...A.b.w.hww
+      w...........w
+      w...A...w.hww
       www.wb..wwwww
       w.......w.h.w
       w.b........ww
@@ -83,7 +83,7 @@ Actions:
             - mov: _dest
         Dst:
           Object: [_empty, hole]
-      
+
       # Boxes can move into empty space
       - Src:
           Object: box

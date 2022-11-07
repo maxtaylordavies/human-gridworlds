@@ -30,6 +30,7 @@ class Player extends Component {
 
     if (this.props.griddlyjs) {
       if (prevProps.gdyHash === 0 && this.props.gdy) {
+        console.log("LINE 33");
         this.game.scene.remove("LoadingScene");
         this.game.scene.start("HumanPlayerScene", {
           gdy: this.props.gdy,
@@ -38,9 +39,12 @@ class Player extends Component {
           griddlyjs: this.props.griddlyjs,
           getTrajectory: () => this.props.trajectory,
           onDisplayMessage: this.props.onDisplayMessage,
+          onTrajectoryStep: this.props.onTrajectoryStep,
           onTrajectoryComplete: this.props.onTrajectoryComplete,
+          level: this.props.level,
         });
       } else if (prevProps.gdyHash !== this.props.gdyHash) {
+        console.log("LINE 46");
         this.game.scene.getScene("HumanPlayerScene").scene.restart({
           gdy: this.props.gdy,
           rendererConfig: this.props.rendererConfig,
@@ -48,7 +52,9 @@ class Player extends Component {
           griddlyjs: this.props.griddlyjs,
           getTrajectory: () => this.props.trajectory,
           onDisplayMessage: this.props.onDisplayMessage,
+          onTrajectoryStep: this.props.onTrajectoryStep,
           onTrajectoryComplete: this.props.onTrajectoryComplete,
+          level: this.props.level,
         });
       }
     }
