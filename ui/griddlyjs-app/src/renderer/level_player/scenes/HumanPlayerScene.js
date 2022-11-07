@@ -1,27 +1,7 @@
 import Phaser from "phaser";
 import Block2DRenderer from "../../Block2DRenderer";
 import Sprite2DRenderer from "../../Sprite2DRenderer";
-import {
-  COLOR_LOADING_TEXT,
-  COLOR_PANEL_DARK,
-  COLOR_PANEL_LIGHT,
-  COLOR_PANEL_LIGHTER,
-  COLOR_RECORDING_RECORD_TEXT,
-  COLOR_RECORDING_BLINK_TEXT,
-  COLOR_RECORDING_PLAY_TEXT,
-  COLOR_RECORDING_STOP_TEXT,
-  COLOR_RECORDING_DISABLED_TEXT,
-} from "../../ThemeConsts";
-
-const trajectoryMenuHeight = 45;
-
-const recordingButtonsOffsetX = 30;
-
-const recordingButtonPaddingY = 5;
-const recordingButtonPaddingX = 5;
-
-const recordingButtonWidth = 35;
-const recordingButtonHeight = 35;
+import { COLOR_LOADING_TEXT } from "../../ThemeConsts";
 
 class HumanPlayerScene extends Phaser.Scene {
   constructor() {
@@ -102,7 +82,6 @@ class HumanPlayerScene extends Phaser.Scene {
   };
 
   init = (data) => {
-    console.log("INIT CALLED");
     try {
       // Functions to interact with the environment
       this.griddlyjs = data.griddlyjs;
@@ -110,9 +89,8 @@ class HumanPlayerScene extends Phaser.Scene {
       // Data about the environment
       this.gdy = data.gdy;
 
-      this.onDisplayMessage = data.onDisplayMessage;
       this.onTrajectoryStep = data.onTrajectoryStep;
-      this.onTrajectoryComplete = data.onTrajectoryComplete;
+      this.onLevelComplete = data.onLevelComplete;
       this.getTrajectory = data.getTrajectory;
 
       this.gridHeight = this.griddlyjs.getHeight();
@@ -121,8 +99,6 @@ class HumanPlayerScene extends Phaser.Scene {
       this.avatarObject = this.gdy.Environment.Player.AvatarObject;
       this.rendererName = data.rendererName;
       this.renderConfig = data.rendererConfig;
-
-      this.level = data.level;
 
       if (this.renderConfig.Type === "BLOCK_2D") {
         this.grenderer = new Block2DRenderer(
@@ -151,11 +127,11 @@ class HumanPlayerScene extends Phaser.Scene {
   };
 
   displayError = (message, error) => {
-    this.onDisplayMessage(message, "error", error);
+    console.error(message, error);
   };
 
   displayWarning = (message, error) => {
-    this.onDisplayMessage(message, "warning", error);
+    console.warn(message, error);
   };
 
   updateState = (state) => {
@@ -447,7 +423,7 @@ class HumanPlayerScene extends Phaser.Scene {
   //     this.currentTrajectoryBuffer &&
   //     this.currentTrajectoryBuffer.steps.length > 0
   //   ) {
-  //     this.onTrajectoryComplete(
+  //     this.onLevelComplete(
   //       this.currentTrajectoryBuffer.steps.map((s) => s[1]).join("")
   //     );
   //   }
@@ -460,7 +436,7 @@ class HumanPlayerScene extends Phaser.Scene {
 
   // endRecording = () => {
   //   this.isRecordingTrajectory = false;
-  //   this.onTrajectoryComplete(this.currentTrajectoryBuffer);
+  //   this.onLevelComplete(this.currentTrajectoryBuffer);
   //   this.resetLevel();
   // };
 
@@ -519,18 +495,15 @@ class HumanPlayerScene extends Phaser.Scene {
   // };
 
   doUserAction = (action) => {
-    this.onTrajectoryStep(this.level, action);
+    this.onTrajectoryStep(action);
+
     const stepResult = this.griddlyjs.step(action);
     this.globalVariableDebugText = this.getGlobalVariableDebugText();
-
     this.currentState = this.griddlyjs.getState();
 
     if (stepResult.terminated) {
-      console.log(`TERMINATED: ${this.level}`);
-      this.onTrajectoryComplete(this.level);
-      // this.resetTrajectoryBuffer();
+      this.onLevelComplete();
       this.resetLevel();
-      this.level = this.level + 1;
     }
   };
 
@@ -585,8 +558,6 @@ class HumanPlayerScene extends Phaser.Scene {
   };
 
   create = () => {
-    console.log("Create");
-
     this.loadingText.destroy();
     this.loaded = true;
 
@@ -596,8 +567,6 @@ class HumanPlayerScene extends Phaser.Scene {
       this.updateState(this.griddlyjs.getState());
       this.createModals();
       this.updateModals();
-      // this.createTrajectoryMenu();
-      // this.updateTrajectoryMenu();
       this.createHintsModal();
     }
   };
@@ -615,7 +584,6 @@ class HumanPlayerScene extends Phaser.Scene {
           // this.stopRecordingOrPlayback();
           this.currentLevelStringOrId = this.griddlyjs.getLevelStringOrId();
           this.currentState = this.griddlyjs.getState();
-          // this.currentTrajectoryBuffer = this.getTrajectory();
         }
 
         // if (this.isRunningTrajectory) {
@@ -628,7 +596,6 @@ class HumanPlayerScene extends Phaser.Scene {
         }
 
         this.updateModals();
-        // this.updateTrajectoryMenu();
       }
     }
   };
