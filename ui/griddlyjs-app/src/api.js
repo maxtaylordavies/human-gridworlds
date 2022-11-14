@@ -19,9 +19,23 @@ const post = (url, data, token) => {
 };
 
 // endpoint functions
-export const createSession = async (experimentId, callback, onError) => {
+export const getSession = async (id, callback, onError) => {
+  get(`session?id=${id}`)
+    .then((response) => {
+      callback(response.data);
+    })
+    .catch((e) => onError(e));
+};
+
+export const createSession = async (
+  experimentId,
+  humanId,
+  callback,
+  onError
+) => {
   post("session", {
     experimentId,
+    humanId,
     isTest: true,
     context: "",
   })
