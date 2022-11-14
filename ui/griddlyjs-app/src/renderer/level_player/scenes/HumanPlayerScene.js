@@ -94,7 +94,8 @@ class HumanPlayerScene extends Phaser.Scene {
       this.onTrajectoryStep = data.onTrajectoryStep;
       this.onLevelComplete = data.onLevelComplete;
 
-      this.trajectoryString = data.trajectoryString;
+      this.trajectoryStrings = data.trajectoryStrings;
+      this.trajectoriesPlayedBack = 0;
 
       this.gridHeight = this.griddlyjs.getHeight();
       this.gridWidth = this.griddlyjs.getWidth();
@@ -128,7 +129,7 @@ class HumanPlayerScene extends Phaser.Scene {
       objects: {},
     };
 
-    if (this.trajectoryString) {
+    if (this.trajectoryStrings.length > 0) {
       this.beginPlayback();
     }
   };
@@ -405,15 +406,34 @@ class HumanPlayerScene extends Phaser.Scene {
     }
   };
 
-  beginPlayback = () => {
+  loadNextTrajectoryBuffer = () => {
+    if (this.trajectoriesPlayedBack >= this.trajectoryStrings.length) {
+      return;
+    }
+
     this.currentTrajectoryBuffer = {
       seed: 100,
-      steps: this.trajectoryString.split(",").map((char) => [0, +char]),
+      steps: this.trajectoryStrings[this.trajectoriesPlayedBack]
+        .split(",")
+        .map((char) => [0, +char]),
     };
 
     this.trajectoryActionIdx = 0;
-    this.isRunningTrajectory = true;
     this.resetLevel();
+  };
+
+  beginPlayback = () => {
+    this.isRunningTrajectory = true;
+    this.loadNextTrajectoryBuffer();
+  };
+
+  onTrajectoryPlayedBack = () => {
+    this.trajectoriesPlayedBack += 1;
+    if (this.trajectoriesPlayedBack < this.trajectoryStrings.length) {
+      this.loadNextTrajectoryBuffer();
+    } else {
+      this.endPlayback();
+    }
   };
 
   endPlayback = () => {
@@ -451,14 +471,11 @@ class HumanPlayerScene extends Phaser.Scene {
 
       this.currentState = this.griddlyjs.getState();
 
-      if (stepResult.terminated) {
-        this.endPlayback();
-      }
-
       if (
+        stepResult.terminated ||
         this.trajectoryActionIdx === this.currentTrajectoryBuffer.steps.length
       ) {
-        this.endPlayback();
+        this.onTrajectoryPlayedBack();
       }
     }
   };

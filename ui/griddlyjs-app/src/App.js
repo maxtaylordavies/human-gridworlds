@@ -13,9 +13,11 @@ const App = () => {
   const [griddlyjs, setGriddlyjs] = useState(new GriddlyJSCore());
 
   // initialise a bunch of state
+  const [loading, setLoading] = useState(true);
   const [session, setSession] = useState();
   const [levelCount, setlevelCount] = useState(0);
   const [agentPaths, setAgentPaths] = useState({});
+  const [pathsToShow, setPathsToShow] = useState([]);
   const [trajectories, setTrajectories] = useState({});
   const [gameState, setGameState] = useState({
     gdy: null,
@@ -67,6 +69,14 @@ const App = () => {
     }
   }, [levelCount]);
 
+  useEffect(() => {
+    if (session && agentPaths) {
+      if (session.levels && agentPaths.paths) {
+        setPathsToShow(agentPaths.paths[session.levels[levelCount]]);
+      }
+    }
+  }, [session, agentPaths, levelCount]);
+
   // initialise griddly, create a session on the server, and
   // then store the session in local state
   const performSetUp = async () => {
@@ -81,9 +91,10 @@ const App = () => {
   const fetchData = async () => {
     api.loadGameSpec(session, (gdy) => {
       loadGame(gdy);
-    });
-    api.loadAgentPaths(session, (paths) => {
-      setAgentPaths(paths);
+      api.loadAgentPaths(session, (paths) => {
+        setAgentPaths(paths);
+        setLoading(false);
+      });
     });
   };
 
@@ -154,7 +165,7 @@ const App = () => {
           onLevelComplete={() => {
             setlevelCount((prevCount) => prevCount + 1);
           }}
-          trajectoryString={""}
+          trajectoryStrings={pathsToShow}
         />
       </div>
       {finished && (

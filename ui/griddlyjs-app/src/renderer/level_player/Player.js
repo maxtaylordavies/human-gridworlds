@@ -38,9 +38,12 @@ class Player extends Component {
           griddlyjs: this.props.griddlyjs,
           onTrajectoryStep: this.props.onTrajectoryStep,
           onLevelComplete: this.props.onLevelComplete,
-          trajectoryString: this.props.trajectoryString,
+          trajectoryStrings: this.props.trajectoryStrings,
         });
-      } else if (prevProps.gdyHash !== this.props.gdyHash) {
+      } else if (
+        prevProps.gdyHash !== this.props.gdyHash ||
+        prevProps.trajectoryStrings !== this.props.trajectoryStrings
+      ) {
         this.game.scene.getScene("HumanPlayerScene").scene.restart({
           gdy: this.props.gdy,
           rendererConfig: this.props.rendererConfig,
@@ -48,7 +51,7 @@ class Player extends Component {
           griddlyjs: this.props.griddlyjs,
           onTrajectoryStep: this.props.onTrajectoryStep,
           onLevelComplete: this.props.onLevelComplete,
-          trajectoryString: this.props.trajectoryString,
+          trajectoryStrings: this.props.trajectoryStrings,
         });
       }
     }
