@@ -95,10 +95,10 @@ const App = () => {
         api.getSession(sid, onSession, console.Error);
       } else {
         // otherwise, we create a new session on the server, passing
-        // in an existing human_id if there is one
+        // in existing experiment_id and human_id if they exist
+        let eid = utils.getValueFromUrlOrLocalstorage("eid");
         let hid = utils.getValueFromUrlOrLocalstorage("hid");
-        console.log(`creating new session with human_id ${hid}`);
-        api.createSession("test1", hid, onSession, console.error);
+        api.createSession(eid, hid, onSession, console.error);
       }
     });
   };
