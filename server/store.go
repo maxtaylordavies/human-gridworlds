@@ -48,8 +48,13 @@ func (s Store) GetTrajectoryFilePath(id string) string {
 	return s.DataPath + "trajectories/" + id + ".json"
 }
 
-func (s Store) CreateSession(experimentID string, isTest bool, context string) (Session, error) {
+func (s Store) CreateSession(experimentID string, humanID string, isTest bool, context string) (Session, error) {
 	var sess Session
+
+	// generate new human id if none passed
+	if humanID == "" {
+		humanID = GenerateID("h-")
+	}
 
 	// choose random agent ids
 	allAgents, err := s.GetAllAgentIDsForGame("sokoban")
@@ -70,7 +75,7 @@ func (s Store) CreateSession(experimentID string, isTest bool, context string) (
 		IsTest:       isTest,
 		Context:      context,
 		GameID:       "sokoban",
-		HumanID:      GenerateID("h-"),
+		HumanID:      humanID,
 		AgentIDs:     agents,
 		Levels:       levels,
 	}
