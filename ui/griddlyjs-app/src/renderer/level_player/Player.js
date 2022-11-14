@@ -33,6 +33,8 @@ class Player extends Component {
         onTrajectoryStep: this.props.onTrajectoryStep,
         onLevelComplete: this.props.onLevelComplete,
         trajectoryStrings: this.props.trajectoryStrings,
+        onPlaybackStart: this.props.onPlaybackStart,
+        onPlaybackEnd: this.props.onPlaybackEnd,
       });
     }
   }
@@ -52,6 +54,8 @@ class Player extends Component {
           onTrajectoryStep: this.props.onTrajectoryStep,
           onLevelComplete: this.props.onLevelComplete,
           trajectoryStrings: this.props.trajectoryStrings,
+          onPlaybackStart: this.props.onPlaybackStart,
+          onPlaybackEnd: this.props.onPlaybackEnd,
         });
       }
     }

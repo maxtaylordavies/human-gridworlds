@@ -93,6 +93,8 @@ class HumanPlayerScene extends Phaser.Scene {
 
       this.onTrajectoryStep = data.onTrajectoryStep;
       this.onLevelComplete = data.onLevelComplete;
+      this.onPlaybackStart = data.onPlaybackStart;
+      this.onPlaybackEnd = data.onPlaybackEnd;
 
       this.trajectoryStrings = data.trajectoryStrings;
       this.trajectoriesPlayedBack = 0;
@@ -424,6 +426,7 @@ class HumanPlayerScene extends Phaser.Scene {
   beginPlayback = () => {
     this.isRunningTrajectory = true;
     this.loadNextTrajectoryBuffer();
+    this.onPlaybackStart();
   };
 
   onTrajectoryPlayedBack = () => {
@@ -440,6 +443,7 @@ class HumanPlayerScene extends Phaser.Scene {
     this.isRunningTrajectory = false;
     this.resetLevel();
     this.trajectoriesPlayedBack = 0;
+    this.onPlaybackEnd();
   };
 
   resetLevel = (seed = 100) => {

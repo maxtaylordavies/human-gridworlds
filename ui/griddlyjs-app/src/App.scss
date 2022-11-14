@@ -32,6 +32,19 @@
   text-align: center;
 }
 
+.game-container {
+  position: absolute;
+  width: 800px;
+  height: 550px;
+}
+
+.info-bar {
+  height: 50px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
 .button-panel {
   text-align: left;
   min-height: 15px;

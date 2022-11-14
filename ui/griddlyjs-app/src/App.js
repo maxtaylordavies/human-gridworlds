@@ -22,6 +22,7 @@ const App = () => {
     gdy: null,
     gdyHash: 0,
     gdyString: "",
+    playing: false,
   });
   const [rendererState, setRendererState] = useState({
     renderers: [],
@@ -184,7 +185,14 @@ const App = () => {
     <div>loading</div>
   ) : (
     <div className="main-container">
-      <div style={{ position: "absolute", opacity: finished ? 0.2 : 1 }}>
+      <div className="game-container" style={{ opacity: finished ? 0.2 : 1 }}>
+        <div className="info-bar">
+          <div>{gameState.playing ? "Playing" : "Watching"}</div>
+          <div>
+            Level {Math.max(levelCount + 1, session.levels.length)}/
+            {session.levels.length}
+          </div>
+        </div>
         <Player
           gdyHash={gameState.gdyHash}
           gdy={gameState.gdy}
@@ -198,6 +206,8 @@ const App = () => {
             setlevelCount((prevCount) => prevCount + 1);
           }}
           trajectoryStrings={pathsToShow}
+          onPlaybackStart={() => setGameState({ ...gameState, playing: false })}
+          onPlaybackEnd={() => setGameState({ ...gameState, playing: true })}
         />
       </div>
       {finished && (
