@@ -13,11 +13,10 @@ const App = () => {
   const [griddlyjs, setGriddlyjs] = useState(new GriddlyJSCore());
 
   // initialise a bunch of state
-  const [loading, setLoading] = useState(true);
-  const [session, setSession] = useState();
+  const [session, setSession] = useState(null);
   const [levelCount, setlevelCount] = useState(0);
-  const [agentPaths, setAgentPaths] = useState({});
-  const [pathsToShow, setPathsToShow] = useState([]);
+  const [agentPaths, setAgentPaths] = useState(null);
+  const [pathsToShow, setPathsToShow] = useState(null);
   const [trajectories, setTrajectories] = useState({});
   const [gameState, setGameState] = useState({
     gdy: null,
@@ -93,7 +92,6 @@ const App = () => {
       loadGame(gdy);
       api.loadAgentPaths(session, (paths) => {
         setAgentPaths(paths);
-        setLoading(false);
       });
     });
   };
@@ -150,7 +148,13 @@ const App = () => {
     api.storeTrajectory(session, traj, (resp) => {}, console.error);
   };
 
-  return (
+  const isReady = () => {
+    return session !== null && pathsToShow !== null && gameState.gdy !== null;
+  };
+
+  return !isReady() ? (
+    <div>loading</div>
+  ) : (
     <div className="main-container">
       <div style={{ position: "absolute", opacity: finished ? 0.2 : 1 }}>
         <Player
