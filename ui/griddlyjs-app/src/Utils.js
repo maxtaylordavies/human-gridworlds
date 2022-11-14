@@ -1,3 +1,18 @@
+export const getValueFromUrlOrLocalstorage = (key) => {
+  const params = new URLSearchParams(window.location.search);
+  return (
+    params.get(key) || JSON.parse(localStorage.getItem(`_gridworlds_${key}`))
+  );
+};
+
+export const writeToLocalStorage = (key, val) => {
+  localStorage.setItem(`_gridworlds_${key}`, JSON.stringify(val));
+};
+
+export const removeFromLocalStorage = (key) => {
+  localStorage.removeItem(`_gridworlds_${key}`);
+};
+
 export const findCompatibleRenderers = (observers, objects) => {
   const compatibleRenderers = new Map([
     [
