@@ -4,7 +4,7 @@ import yaml from "js-yaml";
 import GriddlyJSCore from "./GriddlyJSCore";
 import Player from "./renderer/level_player/Player";
 import * as api from "./api";
-import { findCompatibleRenderers } from "./utils";
+import * as utils from "./utils";
 import { hashString } from "./hash";
 import "./App.scss";
 
@@ -79,10 +79,27 @@ const App = () => {
   // initialise griddly, create a session on the server, and
   // then store the session in local state
   const performSetUp = async () => {
+    const onSession = (sess) => {
+      setSession(sess);
+      utils.writeToLocalStorage("sid", sess.id);
+      utils.writeToLocalStorage("hid", sess.humanId);
+    };
+
     await griddlyjs.init().then(() => {
-      api.createSession("test1", (sess) => {
-        setSession(sess);
-      });
+      // check for existing session_id in url or localstorage
+      // if we find one, then get the corresponding session from
+      // the server (rather than creating a new session)
+      let sid = utils.getValueFromUrlOrLocalstorage("sid");
+      if (sid) {
+        console.log(`found session_id ${sid}, retrieving`);
+        api.getSession(sid, onSession, console.Error);
+      } else {
+        // otherwise, we create a new session on the server, passing
+        // in an existing human_id if there is one
+        let hid = utils.getValueFromUrlOrLocalstorage("hid");
+        console.log(`creating new session with human_id ${hid}`);
+        api.createSession("test1", hid, onSession, console.error);
+      }
     });
   };
 
@@ -119,7 +136,7 @@ const App = () => {
   };
 
   const loadRenderers = (gdy) => {
-    const renderers = findCompatibleRenderers(
+    const renderers = utils.findCompatibleRenderers(
       gdy.Environment.Observers || {},
       gdy.Objects
     );
@@ -149,7 +166,14 @@ const App = () => {
     Object.keys(traj).forEach((k) => {
       traj[k] = traj[k].map((x) => x[1]).join(",");
     });
-    api.storeTrajectory(session, traj, (resp) => {}, console.error);
+    api.storeTrajectory(
+      session,
+      traj,
+      (resp) => {
+        utils.removeFromLocalStorage("sid");
+      },
+      console.error
+    );
   };
 
   const isReady = () => {
