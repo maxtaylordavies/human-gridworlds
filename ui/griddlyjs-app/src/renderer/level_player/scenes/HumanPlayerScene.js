@@ -92,6 +92,7 @@ class HumanPlayerScene extends Phaser.Scene {
       this.gdy = data.gdy;
 
       this.onTrajectoryStep = data.onTrajectoryStep;
+      this.onReward = data.onReward;
       this.onLevelComplete = data.onLevelComplete;
       this.onPlaybackStart = data.onPlaybackStart;
       this.onPlaybackEnd = data.onPlaybackEnd;
@@ -466,13 +467,7 @@ class HumanPlayerScene extends Phaser.Scene {
 
       const action =
         this.currentTrajectoryBuffer.steps[this.trajectoryActionIdx++];
-
       const stepResult = this.griddlyjs.step(action);
-
-      if (stepResult.reward > 0) {
-        console.log("Reward: ", stepResult.reward);
-      }
-
       this.currentState = this.griddlyjs.getState();
 
       if (
@@ -486,8 +481,8 @@ class HumanPlayerScene extends Phaser.Scene {
 
   doUserAction = (action) => {
     this.onTrajectoryStep(action);
-
     const stepResult = this.griddlyjs.step(action);
+    this.onReward(+stepResult.reward);
     this.globalVariableDebugText = this.getGlobalVariableDebugText();
     this.currentState = this.griddlyjs.getState();
 

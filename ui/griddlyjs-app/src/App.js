@@ -203,6 +203,11 @@ const App = () => {
           height={500}
           width={800}
           onTrajectoryStep={onTrajectoryStep}
+          onReward={(val) => {
+            setGameState((prev) => {
+              return { ...prev, score: prev.score + val };
+            });
+          }}
           onLevelComplete={() => {
             setlevelCount((prevCount) => prevCount + 1);
           }}
