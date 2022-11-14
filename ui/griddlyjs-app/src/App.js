@@ -135,6 +135,10 @@ const App = () => {
   };
 
   const onTrajectoryStep = (step) => {
+    if (finished) {
+      return;
+    }
+
     let traj = { ...trajectoriesRef.current };
     traj[session.levels[levelCountRef.current]].push(step);
     setTrajectories(traj);

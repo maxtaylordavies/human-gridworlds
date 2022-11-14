@@ -322,7 +322,6 @@ class HumanPlayerScene extends Phaser.Scene {
       const actionMapping = actionInputMappings[actionName];
       if (!actionMapping.internal) {
         const inputMappings = Object.entries(actionMapping.inputMappings);
-        console.log(inputMappings);
 
         const actionDirections = new Set();
         inputMappings.forEach((inputMapping) => {
@@ -440,6 +439,7 @@ class HumanPlayerScene extends Phaser.Scene {
     this.trajectoryActionIdx = 0;
     this.isRunningTrajectory = false;
     this.resetLevel();
+    this.trajectoriesPlayedBack = 0;
   };
 
   resetLevel = (seed = 100) => {
@@ -495,15 +495,13 @@ class HumanPlayerScene extends Phaser.Scene {
 
   processUserKeydown = (event) => {
     if (!this.isRunningTrajectory) {
-      const actionMapping = this.keyMap.get(event.keyCode);
-
-      const action = [actionMapping.actionTypeId, actionMapping.actionId];
-
-      this.doUserAction(action);
-
       if (this.keyboardIntervals.has(event.keyCode)) {
         clearInterval(this.keyboardIntervals.get(event.keyCode));
       }
+
+      const actionMapping = this.keyMap.get(event.keyCode);
+      const action = [actionMapping.actionTypeId, actionMapping.actionId];
+      this.doUserAction(action);
 
       this.keyboardIntervals.set(
         event.keyCode,

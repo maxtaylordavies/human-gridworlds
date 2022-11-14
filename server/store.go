@@ -59,7 +59,8 @@ func (s Store) CreateSession(experimentID string, isTest bool, context string) (
 	agents := SampleFromSliceString(allAgents, 3)
 
 	// choose random level ids
-	levels := append([]int{0}, SampleFromRange(1, 5, 2)...)
+	// levels := append([]int{0}, SampleFromRange(1, 5, 2)...)
+	levels := []int{0, 1, 2}
 
 	// create session
 	sess = Session{
