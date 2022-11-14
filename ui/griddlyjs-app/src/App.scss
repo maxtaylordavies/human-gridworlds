@@ -45,6 +45,15 @@
   justify-content: space-between;
 }
 
+.info-bar-stats {
+  display: flex;
+  flex-direction: row;
+}
+
+.info-bar-stats-item {
+  margin-left: 10px;
+}
+
 .button-panel {
   text-align: left;
   min-height: 15px;

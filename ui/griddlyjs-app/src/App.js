@@ -3,6 +3,7 @@ import yaml from "js-yaml";
 
 import GriddlyJSCore from "./GriddlyJSCore";
 import Player from "./renderer/level_player/Player";
+import InfoBar from "./InfoBar";
 import * as api from "./api";
 import * as utils from "./utils";
 import { hashString } from "./hash";
@@ -23,6 +24,7 @@ const App = () => {
     gdyHash: 0,
     gdyString: "",
     playing: false,
+    score: 0,
   });
   const [rendererState, setRendererState] = useState({
     renderers: [],
@@ -186,13 +188,12 @@ const App = () => {
   ) : (
     <div className="main-container">
       <div className="game-container" style={{ opacity: finished ? 0.2 : 1 }}>
-        <div className="info-bar">
-          <div>{gameState.playing ? "Playing" : "Watching"}</div>
-          <div>
-            Level {Math.max(levelCount + 1, session.levels.length)}/
-            {session.levels.length}
-          </div>
-        </div>
+        <InfoBar
+          playing={gameState.playing}
+          level={levelCount}
+          numLevels={session.levels.length}
+          score={gameState.score}
+        />
         <Player
           gdyHash={gameState.gdyHash}
           gdy={gameState.gdy}
