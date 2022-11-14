@@ -154,6 +154,7 @@ const App = () => {
           onLevelComplete={() => {
             setlevelCount((prevCount) => prevCount + 1);
           }}
+          trajectoryString={""}
         />
       </div>
       {finished && (
