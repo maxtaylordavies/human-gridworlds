@@ -3,6 +3,8 @@ import Block2DRenderer from "../../Block2DRenderer";
 import Sprite2DRenderer from "../../Sprite2DRenderer";
 import { COLOR_LOADING_TEXT } from "../../ThemeConsts";
 
+const COOLDOWN_MS = 200;
+
 class HumanPlayerScene extends Phaser.Scene {
   constructor() {
     super("HumanPlayerScene");
@@ -91,7 +93,9 @@ class HumanPlayerScene extends Phaser.Scene {
 
       this.onTrajectoryStep = data.onTrajectoryStep;
       this.onLevelComplete = data.onLevelComplete;
-      this.getTrajectory = data.getTrajectory;
+
+      this.trajectoryStrings = data.trajectoryStrings;
+      this.trajectoriesPlayedBack = 0;
 
       this.gridHeight = this.griddlyjs.getHeight();
       this.gridWidth = this.griddlyjs.getWidth();
@@ -124,6 +128,10 @@ class HumanPlayerScene extends Phaser.Scene {
     this.renderData = {
       objects: {},
     };
+
+    if (this.trajectoryStrings.length > 0) {
+      this.beginPlayback();
+    }
   };
 
   displayError = (message, error) => {
@@ -314,7 +322,6 @@ class HumanPlayerScene extends Phaser.Scene {
       const actionMapping = actionInputMappings[actionName];
       if (!actionMapping.internal) {
         const inputMappings = Object.entries(actionMapping.inputMappings);
-        console.log(inputMappings);
 
         const actionDirections = new Set();
         inputMappings.forEach((inputMapping) => {
@@ -398,59 +405,41 @@ class HumanPlayerScene extends Phaser.Scene {
     }
   };
 
-  doBlink() {
-    setTimeout(() => {
-      this.blink = !this.blink;
-      if (this.isRecordingTrajectory) {
-        this.doBlink();
-      }
-    }, 500);
-  }
-
-  beginRecording = () => {
-    if (this.isRecordingTrajectory) {
-      this.endRecording();
+  loadNextTrajectoryBuffer = () => {
+    if (this.trajectoriesPlayedBack >= this.trajectoryStrings.length) {
       return;
     }
+
+    this.currentTrajectoryBuffer = {
+      seed: 100,
+      steps: this.trajectoryStrings[this.trajectoriesPlayedBack]
+        .split(",")
+        .map((char) => [0, +char]),
+    };
+
+    this.trajectoryActionIdx = 0;
     this.resetLevel();
-    this.isRecordingTrajectory = true;
-    this.doBlink();
   };
 
-  // resetTrajectoryBuffer = () => {
-  //   console.log("resetting trajectory buffer...");
-  //   if (
-  //     this.currentTrajectoryBuffer &&
-  //     this.currentTrajectoryBuffer.steps.length > 0
-  //   ) {
-  //     this.onLevelComplete(
-  //       this.currentTrajectoryBuffer.steps.map((s) => s[1]).join("")
-  //     );
-  //   }
-  //   this.currentTrajectoryBuffer = {
-  //     steps: [],
-  //     seed: 100,
-  //   };
-  //   console.log(JSON.stringify(this.currentTrajectoryBuffer));
-  // };
-
-  // endRecording = () => {
-  //   this.isRecordingTrajectory = false;
-  //   this.onLevelComplete(this.currentTrajectoryBuffer);
-  //   this.resetLevel();
-  // };
-
   beginPlayback = () => {
-    this.currentTrajectoryBuffer = this.getTrajectory();
-    this.trajectoryActionIdx = 0;
     this.isRunningTrajectory = true;
-    this.resetLevel();
+    this.loadNextTrajectoryBuffer();
+  };
+
+  onTrajectoryPlayedBack = () => {
+    this.trajectoriesPlayedBack += 1;
+    if (this.trajectoriesPlayedBack < this.trajectoryStrings.length) {
+      this.loadNextTrajectoryBuffer();
+    } else {
+      this.endPlayback();
+    }
   };
 
   endPlayback = () => {
     this.trajectoryActionIdx = 0;
     this.isRunningTrajectory = false;
     this.resetLevel();
+    this.trajectoriesPlayedBack = 0;
   };
 
   resetLevel = (seed = 100) => {
@@ -459,40 +448,37 @@ class HumanPlayerScene extends Phaser.Scene {
     this.currentState = this.griddlyjs.getState();
   };
 
-  // processTrajectory = () => {
-  //   if (this.currentTrajectoryBuffer.steps.length === 0) {
-  //     this.isRunningTrajectory = false;
-  //     return;
-  //   }
+  processTrajectory = () => {
+    if (this.currentTrajectoryBuffer.steps.length === 0) {
+      this.isRunningTrajectory = false;
+      return;
+    }
 
-  //   if (!this.cooldown) {
-  //     this.cooldown = true;
-  //     setTimeout(() => {
-  //       this.cooldown = false;
-  //     }, 20);
+    if (!this.cooldown) {
+      this.cooldown = true;
+      setTimeout(() => {
+        this.cooldown = false;
+      }, COOLDOWN_MS);
 
-  //     const action =
-  //       this.currentTrajectoryBuffer.steps[this.trajectoryActionIdx++];
+      const action =
+        this.currentTrajectoryBuffer.steps[this.trajectoryActionIdx++];
 
-  //     const stepResult = this.griddlyjs.step(action);
+      const stepResult = this.griddlyjs.step(action);
 
-  //     if (stepResult.reward > 0) {
-  //       console.log("Reward: ", stepResult.reward);
-  //     }
+      if (stepResult.reward > 0) {
+        console.log("Reward: ", stepResult.reward);
+      }
 
-  //     this.currentState = this.griddlyjs.getState();
+      this.currentState = this.griddlyjs.getState();
 
-  //     if (stepResult.terminated) {
-  //       this.endPlayback();
-  //     }
-
-  //     if (
-  //       this.trajectoryActionIdx === this.currentTrajectoryBuffer.steps.length
-  //     ) {
-  //       this.endPlayback();
-  //     }
-  //   }
-  // };
+      if (
+        stepResult.terminated ||
+        this.trajectoryActionIdx === this.currentTrajectoryBuffer.steps.length
+      ) {
+        this.onTrajectoryPlayedBack();
+      }
+    }
+  };
 
   doUserAction = (action) => {
     this.onTrajectoryStep(action);
@@ -509,15 +495,13 @@ class HumanPlayerScene extends Phaser.Scene {
 
   processUserKeydown = (event) => {
     if (!this.isRunningTrajectory) {
-      const actionMapping = this.keyMap.get(event.keyCode);
-
-      const action = [actionMapping.actionTypeId, actionMapping.actionId];
-
-      this.doUserAction(action);
-
       if (this.keyboardIntervals.has(event.keyCode)) {
         clearInterval(this.keyboardIntervals.get(event.keyCode));
       }
+
+      const actionMapping = this.keyMap.get(event.keyCode);
+      const action = [actionMapping.actionTypeId, actionMapping.actionId];
+      this.doUserAction(action);
 
       this.keyboardIntervals.set(
         event.keyCode,
@@ -586,9 +570,9 @@ class HumanPlayerScene extends Phaser.Scene {
           this.currentState = this.griddlyjs.getState();
         }
 
-        // if (this.isRunningTrajectory) {
-        //   this.processTrajectory();
-        // }
+        if (this.isRunningTrajectory) {
+          this.processTrajectory();
+        }
 
         if (this.currentState && this.stateHash !== this.currentState.hash) {
           this.stateHash = this.currentState.hash;

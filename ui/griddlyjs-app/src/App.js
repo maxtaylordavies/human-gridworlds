@@ -13,9 +13,10 @@ const App = () => {
   const [griddlyjs, setGriddlyjs] = useState(new GriddlyJSCore());
 
   // initialise a bunch of state
-  const [session, setSession] = useState();
+  const [session, setSession] = useState(null);
   const [levelCount, setlevelCount] = useState(0);
-  const [agentPaths, setAgentPaths] = useState({});
+  const [agentPaths, setAgentPaths] = useState(null);
+  const [pathsToShow, setPathsToShow] = useState(null);
   const [trajectories, setTrajectories] = useState({});
   const [gameState, setGameState] = useState({
     gdy: null,
@@ -67,6 +68,14 @@ const App = () => {
     }
   }, [levelCount]);
 
+  useEffect(() => {
+    if (session && agentPaths) {
+      if (session.levels && agentPaths.paths) {
+        setPathsToShow(agentPaths.paths[session.levels[levelCount]]);
+      }
+    }
+  }, [session, agentPaths, levelCount]);
+
   // initialise griddly, create a session on the server, and
   // then store the session in local state
   const performSetUp = async () => {
@@ -81,9 +90,9 @@ const App = () => {
   const fetchData = async () => {
     api.loadGameSpec(session, (gdy) => {
       loadGame(gdy);
-    });
-    api.loadAgentPaths(session, (paths) => {
-      setAgentPaths(paths);
+      api.loadAgentPaths(session, (paths) => {
+        setAgentPaths(paths);
+      });
     });
   };
 
@@ -126,6 +135,10 @@ const App = () => {
   };
 
   const onTrajectoryStep = (step) => {
+    if (finished) {
+      return;
+    }
+
     let traj = { ...trajectoriesRef.current };
     traj[session.levels[levelCountRef.current]].push(step);
     setTrajectories(traj);
@@ -139,7 +152,13 @@ const App = () => {
     api.storeTrajectory(session, traj, (resp) => {}, console.error);
   };
 
-  return (
+  const isReady = () => {
+    return session !== null && pathsToShow !== null && gameState.gdy !== null;
+  };
+
+  return !isReady() ? (
+    <div>loading</div>
+  ) : (
     <div className="main-container">
       <div style={{ position: "absolute", opacity: finished ? 0.2 : 1 }}>
         <Player
@@ -154,6 +173,7 @@ const App = () => {
           onLevelComplete={() => {
             setlevelCount((prevCount) => prevCount + 1);
           }}
+          trajectoryStrings={pathsToShow}
         />
       </div>
       {finished && (

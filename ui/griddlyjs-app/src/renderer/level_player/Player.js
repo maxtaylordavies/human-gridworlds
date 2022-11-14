@@ -21,34 +21,37 @@ class Player extends Component {
     };
 
     this.game = new Phaser.Game(config);
-
     this.updateCanvasSize();
+
+    if (this.props.griddlyjs && this.props.gdy) {
+      this.game.scene.remove("LoadingScene");
+      this.game.scene.start("HumanPlayerScene", {
+        gdy: this.props.gdy,
+        rendererConfig: this.props.rendererConfig,
+        rendererName: this.props.rendererName,
+        griddlyjs: this.props.griddlyjs,
+        onTrajectoryStep: this.props.onTrajectoryStep,
+        onLevelComplete: this.props.onLevelComplete,
+        trajectoryStrings: this.props.trajectoryStrings,
+      });
+    }
   }
 
   componentDidUpdate(prevProps) {
     this.updateCanvasSize();
-
     if (this.props.griddlyjs) {
-      if (prevProps.gdyHash === 0 && this.props.gdy) {
-        this.game.scene.remove("LoadingScene");
-        this.game.scene.start("HumanPlayerScene", {
-          gdy: this.props.gdy,
-          rendererConfig: this.props.rendererConfig,
-          rendererName: this.props.rendererName,
-          griddlyjs: this.props.griddlyjs,
-          getTrajectory: () => this.props.trajectory,
-          onTrajectoryStep: this.props.onTrajectoryStep,
-          onLevelComplete: this.props.onLevelComplete,
-        });
-      } else if (prevProps.gdyHash !== this.props.gdyHash) {
+      if (
+        prevProps.gdyHash !== this.props.gdyHash ||
+        prevProps.trajectoryStrings !== this.props.trajectoryStrings
+      ) {
         this.game.scene.getScene("HumanPlayerScene").scene.restart({
           gdy: this.props.gdy,
           rendererConfig: this.props.rendererConfig,
           rendererName: this.props.rendererName,
           griddlyjs: this.props.griddlyjs,
-          getTrajectory: () => this.props.trajectory,
           onTrajectoryStep: this.props.onTrajectoryStep,
           onLevelComplete: this.props.onLevelComplete,
+          trajectoryStrings: this.props.trajectoryStrings,
         });
       }
     }
