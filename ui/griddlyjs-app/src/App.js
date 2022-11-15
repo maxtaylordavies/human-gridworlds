@@ -3,6 +3,7 @@ import yaml from "js-yaml";
 
 import GriddlyJSCore from "./GriddlyJSCore";
 import Player from "./renderer/level_player/Player";
+import InfoBar from "./InfoBar";
 import * as api from "./api";
 import * as utils from "./utils";
 import { hashString } from "./hash";
@@ -22,6 +23,8 @@ const App = () => {
     gdy: null,
     gdyHash: 0,
     gdyString: "",
+    playing: false,
+    score: 0,
   });
   const [rendererState, setRendererState] = useState({
     renderers: [],
@@ -66,6 +69,8 @@ const App = () => {
     } else if (gameState.gdy) {
       loadLevel();
     }
+
+    setGameState({ ...gameState, score: 0 });
   }, [levelCount]);
 
   useEffect(() => {
@@ -184,7 +189,13 @@ const App = () => {
     <div>loading</div>
   ) : (
     <div className="main-container">
-      <div style={{ position: "absolute", opacity: finished ? 0.2 : 1 }}>
+      <div className="game-container" style={{ opacity: finished ? 0.2 : 1 }}>
+        <InfoBar
+          playing={gameState.playing}
+          level={levelCount}
+          numLevels={session.levels.length}
+          score={gameState.score}
+        />
         <Player
           gdyHash={gameState.gdyHash}
           gdy={gameState.gdy}
@@ -194,10 +205,17 @@ const App = () => {
           height={500}
           width={800}
           onTrajectoryStep={onTrajectoryStep}
+          onReward={(val) => {
+            setGameState((prev) => {
+              return { ...prev, score: prev.score + val };
+            });
+          }}
           onLevelComplete={() => {
             setlevelCount((prevCount) => prevCount + 1);
           }}
           trajectoryStrings={pathsToShow}
+          onPlaybackStart={() => setGameState({ ...gameState, playing: false })}
+          onPlaybackEnd={() => setGameState({ ...gameState, playing: true })}
         />
       </div>
       {finished && (

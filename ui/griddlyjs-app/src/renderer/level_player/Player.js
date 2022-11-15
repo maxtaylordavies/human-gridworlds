@@ -31,8 +31,11 @@ class Player extends Component {
         rendererName: this.props.rendererName,
         griddlyjs: this.props.griddlyjs,
         onTrajectoryStep: this.props.onTrajectoryStep,
+        onReward: this.props.onReward,
         onLevelComplete: this.props.onLevelComplete,
         trajectoryStrings: this.props.trajectoryStrings,
+        onPlaybackStart: this.props.onPlaybackStart,
+        onPlaybackEnd: this.props.onPlaybackEnd,
       });
     }
   }
@@ -50,8 +53,11 @@ class Player extends Component {
           rendererName: this.props.rendererName,
           griddlyjs: this.props.griddlyjs,
           onTrajectoryStep: this.props.onTrajectoryStep,
+          onReward: this.props.onReward,
           onLevelComplete: this.props.onLevelComplete,
           trajectoryStrings: this.props.trajectoryStrings,
+          onPlaybackStart: this.props.onPlaybackStart,
+          onPlaybackEnd: this.props.onPlaybackEnd,
         });
       }
     }

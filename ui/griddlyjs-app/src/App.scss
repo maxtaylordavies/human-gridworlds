@@ -32,6 +32,48 @@
   text-align: center;
 }
 
+.game-container {
+  position: absolute;
+  width: 800px;
+  height: 550px;
+  overflow: hidden;
+  border-radius: 20px;
+}
+
+.info-bar {
+  height: 50px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  background-color: white;
+  color: black;
+  padding: 0 12px;
+}
+
+.info-bar-playing {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.info-bar-stats {
+  display: flex;
+  flex-direction: row;
+}
+
+.info-bar-stats-item {
+  display: flex;
+  margin-left: 10px;
+  height: fit-content;
+  padding: 4px 10px;
+  border-radius: 10px;
+  background-color: lightcoral;
+}
+
+.info-bar-stats-item-key {
+  margin-right: 5px;
+}
+
 .button-panel {
   text-align: left;
   min-height: 15px;
