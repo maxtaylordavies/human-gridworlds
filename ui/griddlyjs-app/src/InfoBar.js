@@ -11,7 +11,8 @@ const InfoBar = (props) => {
           "level",
           `${Math.min(props.level + 1, props.numLevels)}/${props.numLevels}`
         )}
-        {InfoBarItem("score", props.score)}
+        {InfoBarItem("level score", props.scores[0])}
+        {InfoBarItem("total score", props.scores[1])}
       </div>
     </div>
   );

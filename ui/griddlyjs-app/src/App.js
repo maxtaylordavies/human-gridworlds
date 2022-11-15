@@ -24,7 +24,8 @@ const App = () => {
     gdyHash: 0,
     gdyString: "",
     playing: false,
-    score: 0,
+    levelScore: 0,
+    totalScore: 0,
   });
   const [rendererState, setRendererState] = useState({
     renderers: [],
@@ -70,7 +71,7 @@ const App = () => {
       loadLevel();
     }
 
-    setGameState({ ...gameState, score: 0 });
+    setGameState({ ...gameState, levelScore: 0 });
   }, [levelCount]);
 
   useEffect(() => {
@@ -194,7 +195,7 @@ const App = () => {
           playing={gameState.playing}
           level={levelCount}
           numLevels={session.levels.length}
-          score={gameState.score}
+          scores={[gameState.levelScore, gameState.totalScore]}
         />
         <Player
           gdyHash={gameState.gdyHash}
@@ -207,7 +208,11 @@ const App = () => {
           onTrajectoryStep={onTrajectoryStep}
           onReward={(val) => {
             setGameState((prev) => {
-              return { ...prev, score: prev.score + val };
+              return {
+                ...prev,
+                levelScore: prev.levelScore + val,
+                totalScore: prev.totalScore + val,
+              };
             });
           }}
           onLevelComplete={() => {
