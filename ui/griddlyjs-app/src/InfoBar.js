@@ -7,11 +7,21 @@ const InfoBar = (props) => {
         {props.playing ? "Playing" : "Watching"}
       </div>
       <div className="info-bar-stats">
-        <div className="info-bar-stats-item">
-          level {Math.min(props.level + 1, props.numLevels)}/{props.numLevels}
-        </div>
-        <div className="info-bar-stats-item">score: {props.score}</div>
+        {InfoBarItem(
+          "level",
+          `${Math.min(props.level + 1, props.numLevels)}/${props.numLevels}`
+        )}
+        {InfoBarItem("score", props.score)}
       </div>
+    </div>
+  );
+};
+
+const InfoBarItem = (key, val) => {
+  return (
+    <div className="info-bar-stats-item">
+      <div className="info-bar-stats-item-key">{key}</div>
+      <div className="info-bar-stats-item-val">{val}</div>
     </div>
   );
 };

@@ -69,6 +69,8 @@ const App = () => {
     } else if (gameState.gdy) {
       loadLevel();
     }
+
+    setGameState({ ...gameState, score: 0 });
   }, [levelCount]);
 
   useEffect(() => {
