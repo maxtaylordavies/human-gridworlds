@@ -16,7 +16,8 @@ const InstructionModal = ({ visible, onStartClicked }) => {
               players - you will then play the level yourself.
             </p>
             <p>
-              You move around using the keys wasd. There are no other controls.
+              You move around using the keys <_kbd>w</_kbd> <_kbd>a</_kbd>{" "}
+              <_kbd>s</_kbd> <_kbd>d</_kbd>. There are no other controls.
             </p>
           </div>
           <button
@@ -29,6 +30,10 @@ const InstructionModal = ({ visible, onStartClicked }) => {
       </div>
     )
   );
+};
+
+const _kbd = ({ children }) => {
+  return <div className="keyboard-key">{children}</div>;
 };
 
 export default InstructionModal;
