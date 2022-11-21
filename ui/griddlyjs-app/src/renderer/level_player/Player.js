@@ -33,7 +33,7 @@ class Player extends Component {
         onTrajectoryStep: this.props.onTrajectoryStep,
         onReward: this.props.onReward,
         onLevelComplete: this.props.onLevelComplete,
-        trajectoryStrings: this.props.trajectoryStrings,
+        trajectoryString: this.props.trajectoryString,
         onPlaybackStart: this.props.onPlaybackStart,
         onPlaybackEnd: this.props.onPlaybackEnd,
       });
@@ -45,7 +45,7 @@ class Player extends Component {
     if (this.props.griddlyjs) {
       if (
         prevProps.gdyHash !== this.props.gdyHash ||
-        prevProps.trajectoryStrings !== this.props.trajectoryStrings
+        prevProps.trajectoryString !== this.props.trajectoryString
       ) {
         this.game.scene.getScene("HumanPlayerScene").scene.restart({
           gdy: this.props.gdy,
@@ -55,7 +55,7 @@ class Player extends Component {
           onTrajectoryStep: this.props.onTrajectoryStep,
           onReward: this.props.onReward,
           onLevelComplete: this.props.onLevelComplete,
-          trajectoryStrings: this.props.trajectoryStrings,
+          trajectoryString: this.props.trajectoryString,
           onPlaybackStart: this.props.onPlaybackStart,
           onPlaybackEnd: this.props.onPlaybackEnd,
         });
