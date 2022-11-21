@@ -4,6 +4,7 @@ import yaml from "js-yaml";
 import GriddlyJSCore from "./GriddlyJSCore";
 import Player from "./renderer/level_player/Player";
 import InfoBar from "./InfoBar";
+import InstructionModal from "./InstructionModal";
 import * as api from "./api";
 import * as utils from "./utils";
 import { hashString } from "./hash";
@@ -14,6 +15,7 @@ const App = () => {
   const [griddlyjs, setGriddlyjs] = useState(new GriddlyJSCore());
 
   // initialise a bunch of state
+  const [waiting, setWaiting] = useState(true);
   const [session, setSession] = useState(null);
   const [levelCount, setlevelCount] = useState(0);
   const [agentPaths, setAgentPaths] = useState(null);
@@ -234,43 +236,51 @@ const App = () => {
     <div>loading</div>
   ) : (
     <div className="main-container">
-      <div className="game-container" style={{ opacity: finished ? 0.2 : 1 }}>
-        <InfoBar
-          playing={gameState.playing}
-          level={levelCount}
-          numLevels={session.levels.length}
-          scores={[gameState.levelScore, gameState.totalScore]}
-        />
-        <Player
-          gdyHash={gameState.gdyHash}
-          gdy={gameState.gdy}
-          griddlyjs={griddlyjs}
-          rendererName={rendererState.rendererName}
-          rendererConfig={rendererState.rendererConfig}
-          height={500}
-          width={800}
-          onTrajectoryStep={onTrajectoryStep}
-          onReward={(val) => {
-            setGameState((prev) => {
-              return {
-                ...prev,
-                levelScore: prev.levelScore + val,
-                totalScore: prev.totalScore + val,
-              };
-            });
-          }}
-          onLevelComplete={() => {
-            setlevelCount((prevCount) => prevCount + 1);
-          }}
-          trajectoryString={
-            playbackState.pathsShown < playbackState.pathsToShow.length
-              ? playbackState.pathsToShow[playbackState.pathsShown]
-              : ""
-          }
-          onPlaybackStart={onPlaybackStart}
-          onPlaybackEnd={onPlaybackEnd}
-        />
-      </div>
+      {!waiting && (
+        <div className="game-container" style={{ opacity: finished ? 0.2 : 1 }}>
+          <InfoBar
+            playing={gameState.playing}
+            level={levelCount}
+            numLevels={session.levels.length}
+            scores={[gameState.levelScore, gameState.totalScore]}
+          />
+          <Player
+            gdyHash={gameState.gdyHash}
+            gdy={gameState.gdy}
+            griddlyjs={griddlyjs}
+            rendererName={rendererState.rendererName}
+            rendererConfig={rendererState.rendererConfig}
+            height={500}
+            width={800}
+            onTrajectoryStep={onTrajectoryStep}
+            onReward={(val) => {
+              setGameState((prev) => {
+                return {
+                  ...prev,
+                  levelScore: prev.levelScore + val,
+                  totalScore: prev.totalScore + val,
+                };
+              });
+            }}
+            onLevelComplete={() => {
+              setlevelCount((prevCount) => prevCount + 1);
+            }}
+            trajectoryString={
+              playbackState.pathsShown < playbackState.pathsToShow.length
+                ? playbackState.pathsToShow[playbackState.pathsShown]
+                : ""
+            }
+            onPlaybackStart={onPlaybackStart}
+            onPlaybackEnd={onPlaybackEnd}
+          />
+        </div>
+      )}
+      <InstructionModal
+        visible={waiting}
+        onStartClicked={() => {
+          setWaiting(false);
+        }}
+      />
       {finished && (
         <div>
           <div style={{ color: "white", fontSize: 36 }}>

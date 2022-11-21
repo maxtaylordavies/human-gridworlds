@@ -32,6 +32,50 @@
   text-align: center;
 }
 
+.instruction-modal {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background-color: white;
+  width: 500px;
+  height: 600px;
+  border-radius: 15px;
+  padding: 20px;
+
+  .instruction-modal-title {
+    font-size: 30px;
+    font-weight: bold;
+    width: 100%;
+    margin-top: -10px;
+    text-align: left;
+    color: grey;
+  }
+
+  .instruction-modal-body {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .instruction-modal-text {
+    width: 80%;
+    text-align: left;
+    color: grey;
+    font-size: 20px;
+    line-height: 24px;
+  }
+
+  .instruction-modal-start-button {
+    width: 200px;
+    height: 40px;
+    border-radius: 20px;
+    border: none;
+    background: green;
+    color: white;
+    font-size: 20px;
+    margin-top: 15px;
+  }
+}
+
 .game-container {
   position: absolute;
   width: 800px;
