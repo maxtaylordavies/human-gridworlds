@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import { motion } from "framer-motion";
 import yaml from "js-yaml";
 
 import GriddlyJSCore from "./GriddlyJSCore";
@@ -237,7 +238,13 @@ const App = () => {
   ) : (
     <div className="main-container">
       {!waiting && (
-        <div className="game-container" style={{ opacity: finished ? 0.2 : 1 }}>
+        <motion.div
+          className="game-container"
+          style={{ opacity: finished ? 0.2 : 1 }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.4 }}
+        >
           <InfoBar
             playing={gameState.playing}
             level={levelCount}
@@ -273,7 +280,7 @@ const App = () => {
             onPlaybackStart={onPlaybackStart}
             onPlaybackEnd={onPlaybackEnd}
           />
-        </div>
+        </motion.div>
       )}
       <InstructionModal
         visible={waiting}
