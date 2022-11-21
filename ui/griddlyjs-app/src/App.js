@@ -17,7 +17,10 @@ const App = () => {
   const [session, setSession] = useState(null);
   const [levelCount, setlevelCount] = useState(0);
   const [agentPaths, setAgentPaths] = useState(null);
-  const [pathsToShow, setPathsToShow] = useState(null);
+  const [playbackState, setPlaybackState] = useState({
+    pathsToShow: null,
+    pathsShown: -1,
+  });
   const [trajectories, setTrajectories] = useState({});
   const [gameState, setGameState] = useState({
     gdy: null,
@@ -77,10 +80,17 @@ const App = () => {
   useEffect(() => {
     if (session && agentPaths) {
       if (session.levels && agentPaths.paths) {
-        setPathsToShow(agentPaths.paths[session.levels[levelCount]]);
+        setPlaybackState({
+          pathsToShow: agentPaths.paths[session.levels[levelCount]],
+          pathsShown: 0,
+        });
       }
     }
   }, [session, agentPaths, levelCount]);
+
+  useEffect(() => {
+    updateAvatar();
+  }, [playbackState.pathsShown]);
 
   // initialise griddly, create a session on the server, and
   // then store the session in local state
@@ -141,6 +151,24 @@ const App = () => {
     griddlyjs.reset(levelString);
   };
 
+  const updateAvatar = () => {
+    if (!(gameState.gdy && playbackState.pathsToShow)) {
+      return;
+    }
+
+    let path = "sprite2d/player.png";
+    if (playbackState.pathsShown < playbackState.pathsToShow.length) {
+      path = session.agentAvatars[playbackState.pathsShown];
+    }
+
+    let gdy = gameState.gdy;
+    let idx = gdy.Objects.findIndex((obj) => obj.Name === "avatar");
+    if (idx !== -1) {
+      gdy.Objects[idx].Observers.Sprite2D[0].Image = path;
+    }
+    setGameState({ ...gameState, gdy });
+  };
+
   const loadRenderers = (gdy) => {
     const renderers = utils.findCompatibleRenderers(
       gdy.Environment.Observers || {},
@@ -182,8 +210,24 @@ const App = () => {
     );
   };
 
+  const onPlaybackStart = () => {
+    setGameState({ ...gameState, playing: false });
+  };
+
+  const onPlaybackEnd = () => {
+    let count = playbackState.pathsShown + 1;
+    if (count >= playbackState.pathsToShow.length) {
+      setGameState({ ...gameState, playing: true });
+    }
+    setPlaybackState({ ...playbackState, pathsShown: count });
+  };
+
   const isReady = () => {
-    return session !== null && pathsToShow !== null && gameState.gdy !== null;
+    return (
+      session !== null &&
+      playbackState.pathsToShow !== null &&
+      gameState.gdy !== null
+    );
   };
 
   return !isReady() ? (
@@ -218,9 +262,13 @@ const App = () => {
           onLevelComplete={() => {
             setlevelCount((prevCount) => prevCount + 1);
           }}
-          trajectoryStrings={pathsToShow}
-          onPlaybackStart={() => setGameState({ ...gameState, playing: false })}
-          onPlaybackEnd={() => setGameState({ ...gameState, playing: true })}
+          trajectoryString={
+            playbackState.pathsShown < playbackState.pathsToShow.length
+              ? playbackState.pathsToShow[playbackState.pathsShown]
+              : ""
+          }
+          onPlaybackStart={onPlaybackStart}
+          onPlaybackEnd={onPlaybackEnd}
         />
       </div>
       {finished && (

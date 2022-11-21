@@ -97,15 +97,15 @@ class HumanPlayerScene extends Phaser.Scene {
       this.onPlaybackStart = data.onPlaybackStart;
       this.onPlaybackEnd = data.onPlaybackEnd;
 
-      this.trajectoryStrings = data.trajectoryStrings;
-      this.trajectoriesPlayedBack = 0;
+      this.trajectoryString = data.trajectoryString;
 
       this.gridHeight = this.griddlyjs.getHeight();
       this.gridWidth = this.griddlyjs.getWidth();
 
-      this.avatarObject = this.gdy.Environment.Player.AvatarObject;
       this.rendererName = data.rendererName;
       this.renderConfig = data.rendererConfig;
+
+      this.avatarObject = this.gdy.Environment.Player.AvatarObject;
 
       if (this.renderConfig.Type === "BLOCK_2D") {
         this.grenderer = new Block2DRenderer(
@@ -122,8 +122,6 @@ class HumanPlayerScene extends Phaser.Scene {
           this.avatarObject
         );
       }
-
-      // this.resetTrajectoryBuffer();
     } catch (e) {
       this.displayError("Cannot load GDY file.", e);
     }
@@ -132,7 +130,7 @@ class HumanPlayerScene extends Phaser.Scene {
       objects: {},
     };
 
-    if (this.trajectoryStrings.length > 0) {
+    if (this.trajectoryString) {
       this.beginPlayback();
     }
   };
@@ -161,6 +159,7 @@ class HumanPlayerScene extends Phaser.Scene {
       const objectTemplateName = object.name + object.renderTileId;
       if (object.id in this.renderData.objects) {
         const currentObjectData = this.renderData.objects[object.id];
+
         this.grenderer.updateObject(
           currentObjectData.sprite,
           object.name,
@@ -408,42 +407,22 @@ class HumanPlayerScene extends Phaser.Scene {
     }
   };
 
-  loadNextTrajectoryBuffer = () => {
-    if (this.trajectoriesPlayedBack >= this.trajectoryStrings.length) {
-      return;
-    }
-
-    this.currentTrajectoryBuffer = {
-      seed: 100,
-      steps: this.trajectoryStrings[this.trajectoriesPlayedBack]
-        .split(",")
-        .map((char) => [0, +char]),
-    };
-
-    this.trajectoryActionIdx = 0;
-    this.resetLevel();
-  };
-
   beginPlayback = () => {
     this.isRunningTrajectory = true;
-    this.loadNextTrajectoryBuffer();
+    this.currentTrajectoryBuffer = {
+      seed: 100,
+      steps: this.trajectoryString.split(",").map((char) => [0, +char]),
+    };
+    this.trajectoryActionIdx = 0;
+    this.resetLevel();
     this.onPlaybackStart();
-  };
-
-  onTrajectoryPlayedBack = () => {
-    this.trajectoriesPlayedBack += 1;
-    if (this.trajectoriesPlayedBack < this.trajectoryStrings.length) {
-      this.loadNextTrajectoryBuffer();
-    } else {
-      this.endPlayback();
-    }
   };
 
   endPlayback = () => {
     this.trajectoryActionIdx = 0;
     this.isRunningTrajectory = false;
     this.resetLevel();
-    this.trajectoriesPlayedBack = 0;
+    // this.trajectoriesPlayedBack = 0;
     this.onPlaybackEnd();
   };
 
@@ -474,7 +453,7 @@ class HumanPlayerScene extends Phaser.Scene {
         stepResult.terminated ||
         this.trajectoryActionIdx === this.currentTrajectoryBuffer.steps.length
       ) {
-        this.onTrajectoryPlayedBack();
+        this.endPlayback();
       }
     }
   };
@@ -523,7 +502,7 @@ class HumanPlayerScene extends Phaser.Scene {
     this.loadingText = this.add.text(
       this.cameras.main.width / 2,
       this.cameras.main.height / 2,
-      "Loading assets for " + envName,
+      "",
       {
         fontFamily: "Droid Sans Mono",
         font: "32px",
