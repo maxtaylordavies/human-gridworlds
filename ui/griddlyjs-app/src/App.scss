@@ -32,6 +32,67 @@
   text-align: center;
 }
 
+.instruction-modal {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background-color: white;
+  width: 525px;
+  height: 650px;
+  border-radius: 15px;
+  padding: 20px;
+  z-index: 10;
+
+  .instruction-modal-title {
+    font-size: 30px;
+    font-weight: bold;
+    width: 100%;
+    margin-top: -10px;
+    text-align: left;
+    color: grey;
+  }
+
+  .instruction-modal-body {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .instruction-modal-text {
+    width: 85%;
+    text-align: left;
+    color: grey;
+    font-size: 20px;
+    line-height: 24px;
+  }
+
+  .instruction-modal-score-key {
+    margin-bottom: 1rem;
+  }
+
+  .instruction-modal-start-button {
+    width: 200px;
+    height: 40px;
+    border-radius: 20px;
+    border: none;
+    background: green;
+    color: white;
+    font-size: 20px;
+    margin-top: 15px;
+  }
+}
+
+.keyboard-key {
+  display: inline;
+  font-weight: normal;
+  border-radius: 3px;
+  padding: 0 3px 2px;
+  border: 1px solid #999;
+  background-color: rgb(209, 209, 209);
+  font-size: 14px;
+  opacity: 0.8;
+  color: #3b3b3b;
+}
+
 .game-container {
   position: absolute;
   width: 800px;

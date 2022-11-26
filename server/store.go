@@ -17,6 +17,12 @@ type Session struct {
 	HumanID      string   `json:"humanId"`
 	AgentIDs     []string `json:"agentIds"`
 	Levels       []int    `json:"levels"`
+	Utility      Utility  `json:"utility"`
+}
+
+type Utility struct {
+	Terrains []int `json:"terrains"`
+	Goals    []int `json:"goals"`
 }
 
 type Trajectory struct {
@@ -74,10 +80,14 @@ func (s Store) CreateSession(experimentID string, humanID string, isTest bool, c
 		CreatedAt:    time.Now().Unix(),
 		IsTest:       isTest,
 		Context:      context,
-		GameID:       "sokoban",
+		GameID:       "multijewel",
 		HumanID:      humanID,
 		AgentIDs:     agents,
 		Levels:       levels,
+		Utility: Utility{
+			Terrains: []int{-1, -100},
+			Goals:    []int{10, 25, 50},
+		},
 	}
 
 	// save session to file and return

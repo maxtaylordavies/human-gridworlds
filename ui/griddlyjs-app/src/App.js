@@ -1,9 +1,11 @@
 import React, { useEffect, useRef, useState } from "react";
+import { motion } from "framer-motion";
 import yaml from "js-yaml";
 
 import GriddlyJSCore from "./GriddlyJSCore";
 import Player from "./renderer/level_player/Player";
 import InfoBar from "./InfoBar";
+import InstructionModal from "./InstructionModal";
 import * as api from "./api";
 import * as utils from "./utils";
 import { hashString } from "./hash";
@@ -14,6 +16,7 @@ const App = () => {
   const [griddlyjs, setGriddlyjs] = useState(new GriddlyJSCore());
 
   // initialise a bunch of state
+  const [waiting, setWaiting] = useState(true);
   const [session, setSession] = useState(null);
   const [levelCount, setlevelCount] = useState(0);
   const [agentPaths, setAgentPaths] = useState(null);
@@ -122,11 +125,28 @@ const App = () => {
   // fetch the game spec file and the expert agents' trajectory data
   const fetchData = async () => {
     api.loadGameSpec(session, (gdy) => {
-      loadGame(gdy);
+      loadGame(setRewards(gdy));
       api.loadAgentPaths(session, (paths) => {
         setAgentPaths(paths);
       });
     });
+  };
+
+  const setRewards = (gdy) => {
+    let u = session.utility["terrains"].concat(session.utility["goals"]);
+    let j = 0;
+
+    gdy.Actions[0].Behaviours = gdy.Actions[0].Behaviours.map((b) => {
+      let src = {
+        ...b.Src,
+        Commands: b.Src.Commands.map((cmd) =>
+          cmd.reward === undefined ? cmd : { reward: u[j++] }
+        ),
+      };
+      return { ...b, Src: src };
+    });
+
+    return gdy;
   };
 
   // load the game spec into griddly
@@ -234,43 +254,59 @@ const App = () => {
     <div>loading</div>
   ) : (
     <div className="main-container">
-      <div className="game-container" style={{ opacity: finished ? 0.2 : 1 }}>
-        <InfoBar
-          playing={gameState.playing}
-          level={levelCount}
-          numLevels={session.levels.length}
-          scores={[gameState.levelScore, gameState.totalScore]}
-        />
-        <Player
-          gdyHash={gameState.gdyHash}
-          gdy={gameState.gdy}
-          griddlyjs={griddlyjs}
-          rendererName={rendererState.rendererName}
-          rendererConfig={rendererState.rendererConfig}
-          height={500}
-          width={800}
-          onTrajectoryStep={onTrajectoryStep}
-          onReward={(val) => {
-            setGameState((prev) => {
-              return {
-                ...prev,
-                levelScore: prev.levelScore + val,
-                totalScore: prev.totalScore + val,
-              };
-            });
-          }}
-          onLevelComplete={() => {
-            setlevelCount((prevCount) => prevCount + 1);
-          }}
-          trajectoryString={
-            playbackState.pathsShown < playbackState.pathsToShow.length
-              ? playbackState.pathsToShow[playbackState.pathsShown]
-              : ""
-          }
-          onPlaybackStart={onPlaybackStart}
-          onPlaybackEnd={onPlaybackEnd}
-        />
-      </div>
+      {!waiting && (
+        <motion.div
+          className="game-container"
+          style={{ opacity: finished ? 0.2 : 1 }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.4 }}
+        >
+          <InfoBar
+            playing={gameState.playing}
+            level={levelCount}
+            numLevels={session.levels.length}
+            scores={[gameState.levelScore, gameState.totalScore]}
+          />
+          <Player
+            gdyHash={gameState.gdyHash}
+            gdy={gameState.gdy}
+            griddlyjs={griddlyjs}
+            rendererName={rendererState.rendererName}
+            rendererConfig={rendererState.rendererConfig}
+            height={500}
+            width={800}
+            onTrajectoryStep={onTrajectoryStep}
+            onReward={(val) => {
+              setGameState((prev) => {
+                return {
+                  ...prev,
+                  levelScore: prev.levelScore + val,
+                  totalScore: prev.totalScore + val,
+                };
+              });
+            }}
+            onLevelComplete={() => {
+              setlevelCount((prevCount) => prevCount + 1);
+            }}
+            trajectoryString={
+              playbackState.pathsShown < playbackState.pathsToShow.length
+                ? playbackState.pathsToShow[playbackState.pathsShown]
+                : ""
+            }
+            onPlaybackStart={onPlaybackStart}
+            onPlaybackEnd={onPlaybackEnd}
+          />
+        </motion.div>
+      )}
+      <InstructionModal
+        visible={waiting}
+        onStartClicked={() => {
+          setWaiting(false);
+        }}
+        session={session}
+        gdy={gameState.gdy}
+      />
       {finished && (
         <div>
           <div style={{ color: "white", fontSize: 36 }}>
