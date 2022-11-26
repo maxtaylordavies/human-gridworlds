@@ -44,7 +44,7 @@ const InstructionModal = ({ visible, onStartClicked, session, gdy }) => {
               <p>
                 Each level contains one or more goal items. you complete the
                 level by collecting any one item, but different items have
-                different points values:
+                different values:
               </p>
               <div className="instruction-modal-score-key">
                 {session &&
