@@ -1,7 +1,20 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
-const InstructionModal = ({ visible, onStartClicked }) => {
+const InstructionModal = ({ visible, onStartClicked, session, gdy }) => {
+  const [objectImages, setObjectImages] = useState(null);
+
+  useEffect(() => {
+    let tmp = gdy.Objects.filter((obj) => obj.Name !== "player").map((obj) => ({
+      name: obj.Name,
+      path: obj.Observers.Sprite2D[0].Image,
+    }));
+    setObjectImages({
+      terrains: tmp.filter((x) => !x.name.includes("goal")).map((x) => x.path),
+      goals: tmp.filter((x) => x.name.includes("goal")).map((x) => x.path),
+    });
+  }, [gdy]);
+
   return (
     <AnimatePresence>
       {visible && (
@@ -27,6 +40,24 @@ const InstructionModal = ({ visible, onStartClicked }) => {
               <p>
                 You move around using the keys <_kbd>w</_kbd> <_kbd>a</_kbd>{" "}
                 <_kbd>s</_kbd> <_kbd>d</_kbd>. There are no other controls.
+              </p>
+              <p>
+                Each level contains one or more goal items. you complete the
+                level by collecting any one item, but different items have
+                different points values:
+              </p>
+              <div className="instruction-modal-score-key">
+                {session &&
+                  objectImages &&
+                  session.utility.goals.map((r, i) => (
+                    <div>
+                      <img src={`resources/images/${objectImages.goals[i]}`} />{" "}
+                      = {r}
+                    </div>
+                  ))}
+              </div>
+              <p>
+                You may lose points from moving over different types of terrain.
               </p>
             </div>
             <motion.button

@@ -125,11 +125,28 @@ const App = () => {
   // fetch the game spec file and the expert agents' trajectory data
   const fetchData = async () => {
     api.loadGameSpec(session, (gdy) => {
-      loadGame(gdy);
+      loadGame(setRewards(gdy));
       api.loadAgentPaths(session, (paths) => {
         setAgentPaths(paths);
       });
     });
+  };
+
+  const setRewards = (gdy) => {
+    let u = session.utility["terrains"].concat(session.utility["goals"]);
+    let j = 0;
+
+    gdy.Actions[0].Behaviours = gdy.Actions[0].Behaviours.map((b) => {
+      let src = {
+        ...b.Src,
+        Commands: b.Src.Commands.map((cmd) =>
+          cmd.reward === undefined ? cmd : { reward: u[j++] }
+        ),
+      };
+      return { ...b, Src: src };
+    });
+
+    return gdy;
   };
 
   // load the game spec into griddly
@@ -287,6 +304,8 @@ const App = () => {
         onStartClicked={() => {
           setWaiting(false);
         }}
+        session={session}
+        gdy={gameState.gdy}
       />
       {finished && (
         <div>
