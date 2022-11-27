@@ -91,6 +91,19 @@ class HumanPlayerScene extends Phaser.Scene {
       // Data about the environment
       this.gdy = data.gdy;
 
+      this.occlusionPositions = [];
+      data.occlusionMap
+        .replaceAll(" ", "")
+        .split("\n")
+        .forEach((line, i) => {
+          this.occlusionPositions = this.occlusionPositions.concat(
+            [...line.matchAll(new RegExp("F", "gi"))].map((f) => ({
+              x: f.index,
+              y: i,
+            }))
+          );
+        });
+
       this.onTrajectoryStep = data.onTrajectoryStep;
       this.onReward = data.onReward;
       this.onLevelComplete = data.onLevelComplete;
@@ -458,12 +471,60 @@ class HumanPlayerScene extends Phaser.Scene {
     }
   };
 
+  addFog = ({ x, y }) => {
+    let timestamp = `${Date.now()}`.slice(6);
+    let id = `${timestamp}${x}${y}`;
+    this.currentState.objects.push({
+      id,
+      location: { x, y },
+      name: "fog",
+      orientation: "NONE",
+      playerId: 0,
+      renderTileId: 0,
+      zidx: 10,
+    });
+  };
+
+  manhattanDistance = (pos1, pos2) => {
+    return Math.abs(pos2.x - pos1.x) + Math.abs(pos2.y - pos1.y);
+  };
+
+  euclideanDistance = (pos1, pos2) => {
+    return Math.sqrt((pos2.x - pos1.x) ** 2 + (pos2.y - pos1.y) ** 2);
+  };
+
+  computeOcclusions = () => {
+    // remove existing fog
+    this.currentState.objects = this.currentState.objects.filter(
+      (obj) => obj.name !== "fog"
+    );
+
+    let tmp = this.currentState.objects.filter((obj) => obj.name === "player");
+    if (tmp.length === 0) {
+      return;
+    }
+    let playerPos = tmp[0].location;
+
+    // add new fog
+    this.occlusionPositions
+      .filter(
+        (pos) =>
+          this.isRunningTrajectory ||
+          this.euclideanDistance(playerPos, pos) >= 2
+      )
+      .forEach((pos) => {
+        this.addFog(pos);
+      });
+  };
+
   doUserAction = (action) => {
     this.onTrajectoryStep(action);
     const stepResult = this.griddlyjs.step(action);
     this.onReward(+stepResult.reward);
     this.globalVariableDebugText = this.getGlobalVariableDebugText();
     this.currentState = this.griddlyjs.getState();
+
+    this.computeOcclusions();
 
     if (stepResult.terminated) {
       this.onLevelComplete();

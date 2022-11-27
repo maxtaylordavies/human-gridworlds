@@ -30,8 +30,7 @@ const App = () => {
     gdyHash: 0,
     gdyString: "",
     playing: false,
-    levelScore: 0,
-    totalScore: 0,
+    score: 0,
   });
   const [rendererState, setRendererState] = useState({
     renderers: [],
@@ -76,8 +75,6 @@ const App = () => {
     } else if (gameState.gdy) {
       loadLevel();
     }
-
-    setGameState({ ...gameState, levelScore: 0 });
   }, [levelCount]);
 
   useEffect(() => {
@@ -94,6 +91,15 @@ const App = () => {
   useEffect(() => {
     updateAvatar();
   }, [playbackState.pathsShown]);
+
+  // useEffect(() => {
+  //   if (gameState.score === -3) {
+  //     let tmp = { ...gameState.gdy };
+  //     tmp.Environment.Levels[session.levels[levelCount]] =
+  //       tmp.Environment.Levels[session.levels[levelCount]].replace("F", ".");
+  //     setGameState({ ...gameState, gdy: tmp });
+  //   }
+  // }, [gameState.score]);
 
   // initialise griddly, create a session on the server, and
   // then store the session in local state
@@ -266,11 +272,16 @@ const App = () => {
             playing={gameState.playing}
             level={levelCount}
             numLevels={session.levels.length}
-            scores={[gameState.levelScore, gameState.totalScore]}
+            score={gameState.score}
           />
           <Player
             gdyHash={gameState.gdyHash}
             gdy={gameState.gdy}
+            occlusionMap={
+              gameState.gdy.Environment.OcclusionMaps[
+                session.levels[levelCount]
+              ]
+            }
             griddlyjs={griddlyjs}
             rendererName={rendererState.rendererName}
             rendererConfig={rendererState.rendererConfig}
@@ -279,11 +290,7 @@ const App = () => {
             onTrajectoryStep={onTrajectoryStep}
             onReward={(val) => {
               setGameState((prev) => {
-                return {
-                  ...prev,
-                  levelScore: prev.levelScore + val,
-                  totalScore: prev.totalScore + val,
-                };
+                return { ...prev, score: prev.score + val };
               });
             }}
             onLevelComplete={() => {

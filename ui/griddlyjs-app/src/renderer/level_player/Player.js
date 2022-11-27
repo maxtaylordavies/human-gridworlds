@@ -27,6 +27,7 @@ class Player extends Component {
       this.game.scene.remove("LoadingScene");
       this.game.scene.start("HumanPlayerScene", {
         gdy: this.props.gdy,
+        occlusionMap: this.props.occlusionMap,
         rendererConfig: this.props.rendererConfig,
         rendererName: this.props.rendererName,
         griddlyjs: this.props.griddlyjs,
@@ -49,6 +50,7 @@ class Player extends Component {
       ) {
         this.game.scene.getScene("HumanPlayerScene").scene.restart({
           gdy: this.props.gdy,
+          occlusionMap: this.props.occlusionMap,
           rendererConfig: this.props.rendererConfig,
           rendererName: this.props.rendererName,
           griddlyjs: this.props.griddlyjs,
