@@ -46,7 +46,8 @@ class Player extends Component {
     if (this.props.griddlyjs) {
       if (
         prevProps.gdyHash !== this.props.gdyHash ||
-        prevProps.trajectoryString !== this.props.trajectoryString
+        prevProps.trajectoryString !== this.props.trajectoryString ||
+        prevProps.occlusionMap !== this.props.occlusionMap
       ) {
         this.game.scene.getScene("HumanPlayerScene").scene.restart({
           gdy: this.props.gdy,

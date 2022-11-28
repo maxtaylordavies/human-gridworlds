@@ -92,17 +92,19 @@ class HumanPlayerScene extends Phaser.Scene {
       this.gdy = data.gdy;
 
       this.occlusionPositions = [];
-      data.occlusionMap
-        .replaceAll(" ", "")
-        .split("\n")
-        .forEach((line, i) => {
-          this.occlusionPositions = this.occlusionPositions.concat(
-            [...line.matchAll(new RegExp("F", "gi"))].map((f) => ({
-              x: f.index,
-              y: i,
-            }))
-          );
-        });
+      if (data.occlusionMap) {
+        data.occlusionMap
+          .replaceAll(" ", "")
+          .split("\n")
+          .forEach((line, i) => {
+            this.occlusionPositions = this.occlusionPositions.concat(
+              [...line.matchAll(new RegExp("F", "gi"))].map((f) => ({
+                x: f.index,
+                y: i,
+              }))
+            );
+          });
+      }
 
       this.onTrajectoryStep = data.onTrajectoryStep;
       this.onReward = data.onReward;
@@ -157,6 +159,8 @@ class HumanPlayerScene extends Phaser.Scene {
   };
 
   updateState = (state) => {
+    state = this.computeOcclusions(state);
+
     const newObjectIds = state.objects.map((object) => {
       return object.id;
     });
@@ -471,10 +475,10 @@ class HumanPlayerScene extends Phaser.Scene {
     }
   };
 
-  addFog = ({ x, y }) => {
+  createFog = ({ x, y }) => {
     let timestamp = `${Date.now()}`.slice(6);
     let id = `${timestamp}${x}${y}`;
-    this.currentState.objects.push({
+    return {
       id,
       location: { x, y },
       name: "fog",
@@ -482,7 +486,7 @@ class HumanPlayerScene extends Phaser.Scene {
       playerId: 0,
       renderTileId: 0,
       zidx: 10,
-    });
+    };
   };
 
   manhattanDistance = (pos1, pos2) => {
@@ -493,28 +497,28 @@ class HumanPlayerScene extends Phaser.Scene {
     return Math.sqrt((pos2.x - pos1.x) ** 2 + (pos2.y - pos1.y) ** 2);
   };
 
-  computeOcclusions = () => {
-    // remove existing fog
-    this.currentState.objects = this.currentState.objects.filter(
-      (obj) => obj.name !== "fog"
-    );
-
-    let tmp = this.currentState.objects.filter((obj) => obj.name === "player");
-    if (tmp.length === 0) {
+  computeOcclusions = (state) => {
+    let players = state.objects.filter((obj) => obj.name === "player");
+    if (players.length === 0) {
       return;
     }
-    let playerPos = tmp[0].location;
+
+    // remove existing fog
+    state.objects = state.objects.filter((obj) => obj.name !== "fog");
 
     // add new fog
-    this.occlusionPositions
-      .filter(
-        (pos) =>
-          this.isRunningTrajectory ||
-          this.euclideanDistance(playerPos, pos) >= 2
-      )
-      .forEach((pos) => {
-        this.addFog(pos);
-      });
+    state.objects = [
+      ...state.objects,
+      ...this.occlusionPositions
+        .filter(
+          (pos) =>
+            this.isRunningTrajectory ||
+            this.euclideanDistance(players[0].location, pos) >= 2
+        )
+        .map(this.createFog),
+    ];
+
+    return state;
   };
 
   doUserAction = (action) => {
@@ -523,8 +527,6 @@ class HumanPlayerScene extends Phaser.Scene {
     this.onReward(+stepResult.reward);
     this.globalVariableDebugText = this.getGlobalVariableDebugText();
     this.currentState = this.griddlyjs.getState();
-
-    this.computeOcclusions();
 
     if (stepResult.terminated) {
       this.onLevelComplete();

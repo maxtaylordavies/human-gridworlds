@@ -81,7 +81,7 @@ const App = () => {
     if (session && agentPaths) {
       if (session.levels && agentPaths.paths) {
         setPlaybackState({
-          pathsToShow: agentPaths.paths[session.levels[levelCount]],
+          pathsToShow: agentPaths.paths[session.levels[levelCount]] || [],
           pathsShown: 0,
         });
       }
@@ -91,15 +91,6 @@ const App = () => {
   useEffect(() => {
     updateAvatar();
   }, [playbackState.pathsShown]);
-
-  // useEffect(() => {
-  //   if (gameState.score === -3) {
-  //     let tmp = { ...gameState.gdy };
-  //     tmp.Environment.Levels[session.levels[levelCount]] =
-  //       tmp.Environment.Levels[session.levels[levelCount]].replace("F", ".");
-  //     setGameState({ ...gameState, gdy: tmp });
-  //   }
-  // }, [gameState.score]);
 
   // initialise griddly, create a session on the server, and
   // then store the session in local state
@@ -188,7 +179,7 @@ const App = () => {
     }
 
     let gdy = gameState.gdy;
-    let idx = gdy.Objects.findIndex((obj) => obj.Name === "avatar");
+    let idx = gdy.Objects.findIndex((obj) => obj.Name === "player");
     if (idx !== -1) {
       gdy.Objects[idx].Observers.Sprite2D[0].Image = path;
     }
@@ -263,9 +254,8 @@ const App = () => {
       {!waiting && (
         <motion.div
           className="game-container"
-          style={{ opacity: finished ? 0.2 : 1 }}
           initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
+          animate={{ opacity: finished ? 0.2 : 1 }}
           transition={{ duration: 0.4 }}
         >
           <InfoBar
@@ -306,6 +296,14 @@ const App = () => {
           />
         </motion.div>
       )}
+      {finished && (
+        <div style={{ zIndex: 10 }}>
+          <div style={{ color: "white", fontSize: 36 }}>
+            Experiment complete
+          </div>
+          <div>thanks for playing :)</div>
+        </div>
+      )}
       <InstructionModal
         visible={waiting}
         onStartClicked={() => {
@@ -314,14 +312,6 @@ const App = () => {
         session={session}
         gdy={gameState.gdy}
       />
-      {finished && (
-        <div>
-          <div style={{ color: "white", fontSize: 36 }}>
-            Experiment complete
-          </div>
-          <div>thanks for playing :)</div>
-        </div>
-      )}
     </div>
   );
 };
