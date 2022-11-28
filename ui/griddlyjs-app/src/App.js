@@ -255,7 +255,7 @@ const App = () => {
         <motion.div
           className="game-container"
           initial={{ opacity: 0 }}
-          animate={{ opacity: finished ? 0.2 : 1 }}
+          animate={{ opacity: finished ? 0.1 : 1 }}
           transition={{ duration: 0.4 }}
         >
           <InfoBar
@@ -295,9 +295,9 @@ const App = () => {
       {finished && (
         <div style={{ zIndex: 10 }}>
           <div style={{ color: "white", fontSize: 36 }}>
-            Experiment complete
+            Experiment complete! Your final score is {gameState.score}
           </div>
-          <div>thanks for playing :)</div>
+          <div>You can now close this tab</div>
         </div>
       )}
       <InstructionModal

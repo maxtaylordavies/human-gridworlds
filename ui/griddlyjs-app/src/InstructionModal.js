@@ -56,9 +56,6 @@ const InstructionModal = ({ visible, onStartClicked, session, gdy }) => {
                     </div>
                   ))}
               </div>
-              <p>
-                You may lose points from moving over different types of terrain.
-              </p>
             </div>
             <motion.button
               className="instruction-modal-start-button"
