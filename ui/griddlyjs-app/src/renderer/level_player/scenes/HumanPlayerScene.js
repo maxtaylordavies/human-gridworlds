@@ -91,21 +91,6 @@ class HumanPlayerScene extends Phaser.Scene {
       // Data about the environment
       this.gdy = data.gdy;
 
-      this.occlusionPositions = [];
-      if (data.occlusionMap) {
-        data.occlusionMap
-          .replaceAll(" ", "")
-          .split("\n")
-          .forEach((line, i) => {
-            this.occlusionPositions = this.occlusionPositions.concat(
-              [...line.matchAll(new RegExp("F", "gi"))].map((f) => ({
-                x: f.index,
-                y: i,
-              }))
-            );
-          });
-      }
-
       this.onTrajectoryStep = data.onTrajectoryStep;
       this.onReward = data.onReward;
       this.onLevelComplete = data.onLevelComplete;
@@ -116,6 +101,16 @@ class HumanPlayerScene extends Phaser.Scene {
 
       this.gridHeight = this.griddlyjs.getHeight();
       this.gridWidth = this.griddlyjs.getWidth();
+
+      this.occlusionWindow = data.occlusionWindow;
+      this.occlusionPositions = [];
+      if (this.occlusionWindow !== -1) {
+        for (let x = 0; x < this.gridWidth; x++) {
+          for (let y = 0; y < this.gridHeight; y++) {
+            this.occlusionPositions.push({ x, y });
+          }
+        }
+      }
 
       this.rendererName = data.rendererName;
       this.renderConfig = data.rendererConfig;
@@ -476,10 +471,8 @@ class HumanPlayerScene extends Phaser.Scene {
   };
 
   createFog = ({ x, y }) => {
-    let timestamp = `${Date.now()}`.slice(6);
-    let id = `${timestamp}${x}${y}`;
     return {
-      id,
+      id: (Math.random() + 1).toString(36).substring(2),
       location: { x, y },
       name: "fog",
       orientation: "NONE",
@@ -506,16 +499,17 @@ class HumanPlayerScene extends Phaser.Scene {
     // remove existing fog
     state.objects = state.objects.filter((obj) => obj.name !== "fog");
 
+    const filterFunc = (pos) => {
+      let windowCentre = this.isRunningTrajectory
+        ? { x: (this.gridWidth - 1) / 2, y: (this.gridHeight - 1) / 2 }
+        : players[0].location;
+      return this.euclideanDistance(windowCentre, pos) >= this.occlusionWindow;
+    };
+
     // add new fog
     state.objects = [
       ...state.objects,
-      ...this.occlusionPositions
-        .filter(
-          (pos) =>
-            this.isRunningTrajectory ||
-            this.euclideanDistance(players[0].location, pos) >= 2
-        )
-        .map(this.createFog),
+      ...this.occlusionPositions.filter(filterFunc).map(this.createFog),
     ];
 
     return state;

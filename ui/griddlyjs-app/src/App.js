@@ -267,11 +267,7 @@ const App = () => {
           <Player
             gdyHash={gameState.gdyHash}
             gdy={gameState.gdy}
-            occlusionMap={
-              gameState.gdy.Environment.OcclusionMaps[
-                session.levels[levelCount]
-              ]
-            }
+            occlusionWindow={session.occlusionWindows[levelCount]}
             griddlyjs={griddlyjs}
             rendererName={rendererState.rendererName}
             rendererConfig={rendererState.rendererConfig}

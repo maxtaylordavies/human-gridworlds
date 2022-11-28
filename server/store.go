@@ -8,17 +8,18 @@ import (
 )
 
 type Session struct {
-	ID           string   `json:"id"`
-	ExperimentID string   `json:"experimentId"`
-	CreatedAt    int64    `json:"createdAt"` // unix timestamp
-	IsTest       bool     `json:"isTest"`
-	Context      string   `json:"context"`
-	GameID       string   `json:"gameId"`
-	HumanID      string   `json:"humanId"`
-	AgentIDs     []string `json:"agentIds"`
-	AgentAvatars []string `json:"agentAvatars"`
-	Levels       []int    `json:"levels"`
-	Utility      Utility  `json:"utility"`
+	ID               string   `json:"id"`
+	ExperimentID     string   `json:"experimentId"`
+	CreatedAt        int64    `json:"createdAt"` // unix timestamp
+	IsTest           bool     `json:"isTest"`
+	Context          string   `json:"context"`
+	GameID           string   `json:"gameId"`
+	HumanID          string   `json:"humanId"`
+	AgentIDs         []string `json:"agentIds"`
+	AgentAvatars     []string `json:"agentAvatars"`
+	Levels           []int    `json:"levels"`
+	OcclusionWindows []int    `json:"occlusionWindows"`
+	Utility          Utility  `json:"utility"`
 }
 
 type Utility struct {
@@ -89,7 +90,8 @@ func (s Store) CreateSession(experimentID string, humanID string, isTest bool, c
 			"gvgai/oryx/alien2.png",
 			"gvgai/oryx/alien3.png",
 		},
-		Levels: []int{0, 1},
+		Levels:           []int{0, 1},
+		OcclusionWindows: []int{-1, -1, -1, 4, 4},
 		Utility: Utility{
 			Terrains: []int{-1, -100},
 			Goals:    []int{10, 25, 50},
