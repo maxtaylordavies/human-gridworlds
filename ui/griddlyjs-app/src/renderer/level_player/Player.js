@@ -27,6 +27,7 @@ class Player extends Component {
       this.game.scene.remove("LoadingScene");
       this.game.scene.start("HumanPlayerScene", {
         gdy: this.props.gdy,
+        occlusionMap: this.props.occlusionMap,
         rendererConfig: this.props.rendererConfig,
         rendererName: this.props.rendererName,
         griddlyjs: this.props.griddlyjs,
@@ -45,10 +46,12 @@ class Player extends Component {
     if (this.props.griddlyjs) {
       if (
         prevProps.gdyHash !== this.props.gdyHash ||
-        prevProps.trajectoryString !== this.props.trajectoryString
+        prevProps.trajectoryString !== this.props.trajectoryString ||
+        prevProps.occlusionMap !== this.props.occlusionMap
       ) {
         this.game.scene.getScene("HumanPlayerScene").scene.restart({
           gdy: this.props.gdy,
+          occlusionMap: this.props.occlusionMap,
           rendererConfig: this.props.rendererConfig,
           rendererName: this.props.rendererName,
           griddlyjs: this.props.griddlyjs,

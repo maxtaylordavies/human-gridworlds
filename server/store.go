@@ -16,6 +16,7 @@ type Session struct {
 	GameID       string   `json:"gameId"`
 	HumanID      string   `json:"humanId"`
 	AgentIDs     []string `json:"agentIds"`
+	AgentAvatars []string `json:"agentAvatars"`
 	Levels       []int    `json:"levels"`
 	Utility      Utility  `json:"utility"`
 }
@@ -63,15 +64,15 @@ func (s Store) CreateSession(experimentID string, humanID string, isTest bool, c
 	}
 
 	// choose random agent ids
-	allAgents, err := s.GetAllAgentIDsForGame("sokoban")
-	if err != nil {
-		return sess, err
-	}
-	agents := SampleFromSliceString(allAgents, 3)
+	// allAgents, err := s.GetAllAgentIDsForGame("multijewel")
+	// if err != nil {
+	// 	return sess, err
+	// }
+	// agentIds := SampleFromSliceString(allAgents, 3)
 
 	// choose random level ids
 	// levels := append([]int{0}, SampleFromRange(1, 5, 2)...)
-	levels := []int{0, 1, 2}
+	// levels := []int{0, 1}
 
 	// create session
 	sess = Session{
@@ -82,8 +83,13 @@ func (s Store) CreateSession(experimentID string, humanID string, isTest bool, c
 		Context:      context,
 		GameID:       "multijewel",
 		HumanID:      humanID,
-		AgentIDs:     agents,
-		Levels:       levels,
+		AgentIDs:     []string{"a-0001", "a-0002"},
+		AgentAvatars: []string{
+			"gvgai/oryx/alien1.png",
+			"gvgai/oryx/alien2.png",
+			"gvgai/oryx/alien3.png",
+		},
+		Levels: []int{0, 1},
 		Utility: Utility{
 			Terrains: []int{-1, -100},
 			Goals:    []int{10, 25, 50},
@@ -91,7 +97,7 @@ func (s Store) CreateSession(experimentID string, humanID string, isTest bool, c
 	}
 
 	// save session to file and return
-	err = WriteStructToJSON(sess, s.DataPath+"sessions/"+sess.ID+".json")
+	err := WriteStructToJSON(sess, s.DataPath+"sessions/"+sess.ID+".json")
 	return sess, err
 }
 

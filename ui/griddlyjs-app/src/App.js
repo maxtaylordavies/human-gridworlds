@@ -30,8 +30,7 @@ const App = () => {
     gdyHash: 0,
     gdyString: "",
     playing: false,
-    levelScore: 0,
-    totalScore: 0,
+    score: 0,
   });
   const [rendererState, setRendererState] = useState({
     renderers: [],
@@ -76,15 +75,13 @@ const App = () => {
     } else if (gameState.gdy) {
       loadLevel();
     }
-
-    setGameState({ ...gameState, levelScore: 0 });
   }, [levelCount]);
 
   useEffect(() => {
     if (session && agentPaths) {
       if (session.levels && agentPaths.paths) {
         setPlaybackState({
-          pathsToShow: agentPaths.paths[session.levels[levelCount]],
+          pathsToShow: agentPaths.paths[session.levels[levelCount]] || [],
           pathsShown: 0,
         });
       }
@@ -182,7 +179,7 @@ const App = () => {
     }
 
     let gdy = gameState.gdy;
-    let idx = gdy.Objects.findIndex((obj) => obj.Name === "avatar");
+    let idx = gdy.Objects.findIndex((obj) => obj.Name === "player");
     if (idx !== -1) {
       gdy.Objects[idx].Observers.Sprite2D[0].Image = path;
     }
@@ -257,20 +254,24 @@ const App = () => {
       {!waiting && (
         <motion.div
           className="game-container"
-          style={{ opacity: finished ? 0.2 : 1 }}
           initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
+          animate={{ opacity: finished ? 0.2 : 1 }}
           transition={{ duration: 0.4 }}
         >
           <InfoBar
             playing={gameState.playing}
             level={levelCount}
             numLevels={session.levels.length}
-            scores={[gameState.levelScore, gameState.totalScore]}
+            score={gameState.score}
           />
           <Player
             gdyHash={gameState.gdyHash}
             gdy={gameState.gdy}
+            occlusionMap={
+              gameState.gdy.Environment.OcclusionMaps[
+                session.levels[levelCount]
+              ]
+            }
             griddlyjs={griddlyjs}
             rendererName={rendererState.rendererName}
             rendererConfig={rendererState.rendererConfig}
@@ -279,11 +280,7 @@ const App = () => {
             onTrajectoryStep={onTrajectoryStep}
             onReward={(val) => {
               setGameState((prev) => {
-                return {
-                  ...prev,
-                  levelScore: prev.levelScore + val,
-                  totalScore: prev.totalScore + val,
-                };
+                return { ...prev, score: prev.score + val };
               });
             }}
             onLevelComplete={() => {
@@ -299,6 +296,14 @@ const App = () => {
           />
         </motion.div>
       )}
+      {finished && (
+        <div style={{ zIndex: 10 }}>
+          <div style={{ color: "white", fontSize: 36 }}>
+            Experiment complete
+          </div>
+          <div>thanks for playing :)</div>
+        </div>
+      )}
       <InstructionModal
         visible={waiting}
         onStartClicked={() => {
@@ -307,14 +312,6 @@ const App = () => {
         session={session}
         gdy={gameState.gdy}
       />
-      {finished && (
-        <div>
-          <div style={{ color: "white", fontSize: 36 }}>
-            Experiment complete
-          </div>
-          <div>thanks for playing :)</div>
-        </div>
-      )}
     </div>
   );
 };

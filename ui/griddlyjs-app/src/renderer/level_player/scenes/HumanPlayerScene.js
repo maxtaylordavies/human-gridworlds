@@ -91,6 +91,21 @@ class HumanPlayerScene extends Phaser.Scene {
       // Data about the environment
       this.gdy = data.gdy;
 
+      this.occlusionPositions = [];
+      if (data.occlusionMap) {
+        data.occlusionMap
+          .replaceAll(" ", "")
+          .split("\n")
+          .forEach((line, i) => {
+            this.occlusionPositions = this.occlusionPositions.concat(
+              [...line.matchAll(new RegExp("F", "gi"))].map((f) => ({
+                x: f.index,
+                y: i,
+              }))
+            );
+          });
+      }
+
       this.onTrajectoryStep = data.onTrajectoryStep;
       this.onReward = data.onReward;
       this.onLevelComplete = data.onLevelComplete;
@@ -144,6 +159,8 @@ class HumanPlayerScene extends Phaser.Scene {
   };
 
   updateState = (state) => {
+    state = this.computeOcclusions(state);
+
     const newObjectIds = state.objects.map((object) => {
       return object.id;
     });
@@ -456,6 +473,52 @@ class HumanPlayerScene extends Phaser.Scene {
         this.endPlayback();
       }
     }
+  };
+
+  createFog = ({ x, y }) => {
+    let timestamp = `${Date.now()}`.slice(6);
+    let id = `${timestamp}${x}${y}`;
+    return {
+      id,
+      location: { x, y },
+      name: "fog",
+      orientation: "NONE",
+      playerId: 0,
+      renderTileId: 0,
+      zidx: 10,
+    };
+  };
+
+  manhattanDistance = (pos1, pos2) => {
+    return Math.abs(pos2.x - pos1.x) + Math.abs(pos2.y - pos1.y);
+  };
+
+  euclideanDistance = (pos1, pos2) => {
+    return Math.sqrt((pos2.x - pos1.x) ** 2 + (pos2.y - pos1.y) ** 2);
+  };
+
+  computeOcclusions = (state) => {
+    let players = state.objects.filter((obj) => obj.name === "player");
+    if (players.length === 0) {
+      return;
+    }
+
+    // remove existing fog
+    state.objects = state.objects.filter((obj) => obj.name !== "fog");
+
+    // add new fog
+    state.objects = [
+      ...state.objects,
+      ...this.occlusionPositions
+        .filter(
+          (pos) =>
+            this.isRunningTrajectory ||
+            this.euclideanDistance(players[0].location, pos) >= 2
+        )
+        .map(this.createFog),
+    ];
+
+    return state;
   };
 
   doUserAction = (action) => {
