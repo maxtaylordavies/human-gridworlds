@@ -27,6 +27,7 @@ class Player extends Component {
       this.game.scene.remove("LoadingScene");
       this.game.scene.start("HumanPlayerScene", {
         gdy: this.props.gdy,
+        avatarPath: this.props.avatarPath,
         occlusionWindow: this.props.occlusionWindow,
         rendererConfig: this.props.rendererConfig,
         rendererName: this.props.rendererName,
@@ -46,11 +47,13 @@ class Player extends Component {
     if (this.props.griddlyjs) {
       if (
         prevProps.gdyHash !== this.props.gdyHash ||
+        prevProps.avatarPath !== this.props.avatarPath ||
         prevProps.trajectoryString !== this.props.trajectoryString ||
         prevProps.occlusionWindow !== this.props.occlusionWindow
       ) {
         this.game.scene.getScene("HumanPlayerScene").scene.restart({
           gdy: this.props.gdy,
+          avatarPath: this.props.avatarPath,
           occlusionWindow: this.props.occlusionWindow,
           rendererConfig: this.props.rendererConfig,
           rendererName: this.props.rendererName,

@@ -90,6 +90,7 @@ class HumanPlayerScene extends Phaser.Scene {
 
       // Data about the environment
       this.gdy = data.gdy;
+      this.gdy.Objects[0].Observers.Sprite2D[0].Image = data.avatarPath;
 
       this.onTrajectoryStep = data.onTrajectoryStep;
       this.onReward = data.onReward;

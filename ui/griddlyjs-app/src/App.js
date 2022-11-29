@@ -88,10 +88,6 @@ const App = () => {
     }
   }, [session, agentPaths, levelCount]);
 
-  useEffect(() => {
-    updateAvatar();
-  }, [playbackState.pathsShown]);
-
   // initialise griddly, create a session on the server, and
   // then store the session in local state
   const performSetUp = async () => {
@@ -166,24 +162,6 @@ const App = () => {
     const levelString =
       gameState.gdy.Environment.Levels[session.levels[levelCount]];
     griddlyjs.reset(levelString);
-  };
-
-  const updateAvatar = () => {
-    if (!(gameState.gdy && playbackState.pathsToShow)) {
-      return;
-    }
-
-    let path = "sprite2d/player.png";
-    if (playbackState.pathsShown < playbackState.pathsToShow.length) {
-      path = session.agentAvatars[playbackState.pathsShown];
-    }
-
-    let gdy = gameState.gdy;
-    let idx = gdy.Objects.findIndex((obj) => obj.Name === "player");
-    if (idx !== -1) {
-      gdy.Objects[idx].Observers.Sprite2D[0].Image = path;
-    }
-    setGameState({ ...gameState, gdy });
   };
 
   const loadRenderers = (gdy) => {
@@ -267,6 +245,10 @@ const App = () => {
           <Player
             gdyHash={gameState.gdyHash}
             gdy={gameState.gdy}
+            avatarPath={
+              session.agentAvatars[playbackState.pathsShown] ||
+              "sprite2d/player.png"
+            }
             occlusionWindow={session.occlusionWindows[levelCount]}
             griddlyjs={griddlyjs}
             rendererName={rendererState.rendererName}
