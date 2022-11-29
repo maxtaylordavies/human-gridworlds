@@ -421,6 +421,11 @@ class HumanPlayerScene extends Phaser.Scene {
   };
 
   beginPlayback = () => {
+    this.keyboardIntervals.forEach((interval, key) => {
+      clearInterval(interval);
+    });
+    this.keyboardIntervals.clear();
+
     this.isRunningTrajectory = true;
     this.currentTrajectoryBuffer = {
       seed: 100,
