@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from "react";
 
 import { Modal } from "./Modal";
-import { INTER_AGENT_INTERVAL_MS } from "../constants";
 
-const AgentTurnPopup = ({ agentImage, ready }) => {
+const AgentTurnPopup = ({ agentImage, ready, delay, duration }) => {
   const [open, setOpen] = useState(false);
   const [image, setImage] = useState("");
 
@@ -13,16 +12,12 @@ const AgentTurnPopup = ({ agentImage, ready }) => {
     }
   }, [agentImage, ready]);
 
-  useEffect(() => {
-    console.log(`open changed to ${open}`);
-  }, [open]);
-
   const update = () => {
     setTimeout(() => {
       setImage(agentImage);
       setOpen(true);
-      setTimeout(() => setOpen(false), INTER_AGENT_INTERVAL_MS - 350);
-    }, 250);
+      setTimeout(() => setOpen(false), duration - (delay + 200));
+    }, delay);
   };
 
   return (

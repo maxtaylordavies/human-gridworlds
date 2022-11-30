@@ -93,6 +93,15 @@
   color: #3b3b3b;
 }
 
+.level-popup {
+  z-index: 30;
+  background: white;
+  color: black;
+  font-size: 34px;
+  padding: 10px 25px;
+  border-radius: 10px;
+}
+
 .agent-turn-popup {
   z-index: 20;
   background: white;

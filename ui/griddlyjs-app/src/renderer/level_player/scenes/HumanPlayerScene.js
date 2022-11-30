@@ -3,10 +3,7 @@ import Phaser from "phaser";
 import Block2DRenderer from "../../Block2DRenderer";
 import Sprite2DRenderer from "../../Sprite2DRenderer";
 import { COLOR_LOADING_TEXT } from "../../ThemeConsts";
-import {
-  INTER_STEP_INTERVAL_MS,
-  INTER_AGENT_INTERVAL_MS,
-} from "../../../constants";
+import { INTER_STEP_INTERVAL_MS } from "../../../constants";
 
 class HumanPlayerScene extends Phaser.Scene {
   constructor() {
@@ -116,6 +113,8 @@ class HumanPlayerScene extends Phaser.Scene {
         }
       }
 
+      this.beforePlaybackMs = data.beforePlaybackMs;
+
       this.rendererName = data.rendererName;
       this.renderConfig = data.rendererConfig;
 
@@ -147,7 +146,7 @@ class HumanPlayerScene extends Phaser.Scene {
     if (this.trajectoryString) {
       setTimeout(() => {
         this.beginPlayback();
-      }, INTER_AGENT_INTERVAL_MS);
+      }, this.beforePlaybackMs);
     }
   };
 

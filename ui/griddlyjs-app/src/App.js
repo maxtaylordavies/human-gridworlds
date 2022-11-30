@@ -7,6 +7,8 @@ import Player from "./renderer/level_player/Player";
 import InfoBar from "./components/InfoBar";
 import InstructionModal from "./components/InstructionModal";
 import AgentTurnPopup from "./components/AgentTurnPopup";
+import LevelPopup from "./components/LevelPopup";
+import { INTER_LEVEL_INTERVAL_MS, INTER_AGENT_INTERVAL_MS } from "./constants";
 import * as api from "./api";
 import * as utils from "./utils";
 import { hashString } from "./hash";
@@ -75,19 +77,14 @@ const App = () => {
       // otherwise, load the next level
     } else if (gameState.gdy) {
       loadLevel();
+      // setTimeout(() => updatePathsToShow(), INTER_LEVEL_INTERVAL_MS);
+      updatePathsToShow();
     }
   }, [levelCount]);
 
   useEffect(() => {
-    if (session && agentPaths) {
-      if (session.levels && agentPaths.paths) {
-        setPlaybackState({
-          pathsToShow: agentPaths.paths[session.levels[levelCount]] || [],
-          pathsShown: 0,
-        });
-      }
-    }
-  }, [session, agentPaths, levelCount]);
+    updatePathsToShow();
+  }, [session, agentPaths]);
 
   // initialise griddly, create a session on the server, and
   // then store the session in local state
@@ -163,6 +160,17 @@ const App = () => {
     const levelString =
       gameState.gdy.Environment.Levels[session.levels[levelCount]];
     griddlyjs.reset(levelString);
+  };
+
+  const updatePathsToShow = () => {
+    if (session && agentPaths) {
+      if (session.levels && agentPaths.paths) {
+        setPlaybackState({
+          pathsToShow: agentPaths.paths[session.levels[levelCount]] || [],
+          pathsShown: 0,
+        });
+      }
+    }
   };
 
   const loadRenderers = (gdy) => {
@@ -275,6 +283,10 @@ const App = () => {
             }
             onPlaybackStart={onPlaybackStart}
             onPlaybackEnd={onPlaybackEnd}
+            beforePlaybackMs={
+              INTER_AGENT_INTERVAL_MS +
+              (playbackState.pathsShown === 0 ? INTER_LEVEL_INTERVAL_MS : 0)
+            }
           />
         </motion.div>
       )}
@@ -294,9 +306,20 @@ const App = () => {
         session={session}
         gdy={gameState.gdy}
       />
+      <LevelPopup
+        level={levelCount + 1}
+        ready={!(waiting || finished)}
+        duration={INTER_LEVEL_INTERVAL_MS}
+        delay={250}
+      />
       <AgentTurnPopup
         agentImage={session.agentAvatars[playbackState.pathsShown] || ""}
         ready={!(waiting || finished)}
+        delay={playbackState.pathsShown === 0 ? INTER_LEVEL_INTERVAL_MS : 250}
+        duration={
+          INTER_AGENT_INTERVAL_MS +
+          (playbackState.pathsShown === 0 ? INTER_LEVEL_INTERVAL_MS : 0)
+        }
       />
     </div>
   );

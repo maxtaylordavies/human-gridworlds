@@ -38,6 +38,7 @@ class Player extends Component {
         trajectoryString: this.props.trajectoryString,
         onPlaybackStart: this.props.onPlaybackStart,
         onPlaybackEnd: this.props.onPlaybackEnd,
+        beforePlaybackMs: this.props.beforePlaybackMs,
       });
     }
   }
@@ -49,7 +50,8 @@ class Player extends Component {
         prevProps.gdyHash !== this.props.gdyHash ||
         prevProps.avatarPath !== this.props.avatarPath ||
         prevProps.trajectoryString !== this.props.trajectoryString ||
-        prevProps.occlusionWindow !== this.props.occlusionWindow
+        prevProps.occlusionWindow !== this.props.occlusionWindow ||
+        prevProps.beforePlaybackMs !== this.props.beforePlaybackMs
       ) {
         this.game.scene.getScene("HumanPlayerScene").scene.restart({
           gdy: this.props.gdy,
@@ -64,6 +66,7 @@ class Player extends Component {
           trajectoryString: this.props.trajectoryString,
           onPlaybackStart: this.props.onPlaybackStart,
           onPlaybackEnd: this.props.onPlaybackEnd,
+          beforePlaybackMs: this.props.beforePlaybackMs,
         });
       }
     }
