@@ -1,4 +1,5 @@
 import React from "react";
+import ScorePopup from "./ScorePopup";
 
 const InfoBar = (props) => {
   return (
@@ -11,7 +12,10 @@ const InfoBar = (props) => {
           "level",
           `${Math.min(props.level + 1, props.numLevels)}/${props.numLevels}`
         )}
-        {InfoBarItem("score", props.score)}
+        <div style={{ position: "relative" }}>
+          {InfoBarItem("score", props.score)}
+          <ScorePopup score={props.score} />
+        </div>
       </div>
     </div>
   );

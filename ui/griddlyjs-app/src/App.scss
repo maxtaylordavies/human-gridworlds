@@ -97,7 +97,6 @@
   position: absolute;
   width: 800px;
   height: 550px;
-  overflow: hidden;
   border-radius: 20px;
 }
 
@@ -110,6 +109,7 @@
   background-color: white;
   color: black;
   padding: 0 12px;
+  border-radius: 20px 20px 0 0;
 }
 
 .info-bar-playing {
@@ -133,6 +133,21 @@
 
 .info-bar-stats-item-key {
   margin-right: 5px;
+}
+
+.score-popup {
+  position: absolute;
+  top: -45px;
+  right: -5px;
+  background-color: #00A040;
+  color: white;
+  font-weight: bold;
+  border-radius: 10px;
+  width: 110px;
+  height: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .button-panel {

@@ -6,6 +6,7 @@ import GriddlyJSCore from "./GriddlyJSCore";
 import Player from "./renderer/level_player/Player";
 import InfoBar from "./InfoBar";
 import InstructionModal from "./InstructionModal";
+import ScorePopup from "./ScorePopup";
 import * as api from "./api";
 import * as utils from "./utils";
 import { hashString } from "./hash";
@@ -258,7 +259,10 @@ const App = () => {
             onTrajectoryStep={onTrajectoryStep}
             onReward={(val) => {
               setGameState((prev) => {
-                return { ...prev, score: prev.score + val };
+                return {
+                  ...prev,
+                  score: prev.score + val,
+                };
               });
             }}
             onLevelComplete={() => {
