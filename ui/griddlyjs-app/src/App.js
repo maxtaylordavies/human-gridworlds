@@ -4,9 +4,9 @@ import yaml from "js-yaml";
 
 import GriddlyJSCore from "./GriddlyJSCore";
 import Player from "./renderer/level_player/Player";
-import InfoBar from "./InfoBar";
-import InstructionModal from "./InstructionModal";
-import AgentTurnPopup from "./AgentTurnPopup";
+import InfoBar from "./components/InfoBar";
+import InstructionModal from "./components/InstructionModal";
+import AgentTurnPopup from "./components/AgentTurnPopup";
 import * as api from "./api";
 import * as utils from "./utils";
 import { hashString } from "./hash";

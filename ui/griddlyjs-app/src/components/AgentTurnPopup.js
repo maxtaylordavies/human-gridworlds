@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 
 import { Modal } from "./Modal";
-import { INTER_AGENT_INTERVAL_MS } from "./constants";
+import { INTER_AGENT_INTERVAL_MS } from "../constants";
 
 const AgentTurnPopup = ({ agentImage, ready }) => {
   const [open, setOpen] = useState(false);
