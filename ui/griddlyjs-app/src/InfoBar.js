@@ -5,7 +5,14 @@ const InfoBar = (props) => {
   return (
     <div className="info-bar">
       <div className="info-bar-playing">
-        {props.playing ? "Playing" : "Watching"}
+        {props.avatarPath ? (
+          <span>
+            <img src={`resources/images/${props.avatarPath}`} />
+            's turn
+          </span>
+        ) : (
+          "Your turn"
+        )}
       </div>
       <div className="info-bar-stats">
         {InfoBarItem(

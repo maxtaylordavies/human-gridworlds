@@ -6,7 +6,7 @@ import GriddlyJSCore from "./GriddlyJSCore";
 import Player from "./renderer/level_player/Player";
 import InfoBar from "./InfoBar";
 import InstructionModal from "./InstructionModal";
-import ScorePopup from "./ScorePopup";
+import AgentTurnPopup from "./AgentTurnPopup";
 import * as api from "./api";
 import * as utils from "./utils";
 import { hashString } from "./hash";
@@ -238,7 +238,7 @@ const App = () => {
           transition={{ duration: 0.4 }}
         >
           <InfoBar
-            playing={gameState.playing}
+            avatarPath={session.agentAvatars[playbackState.pathsShown] || ""}
             level={levelCount}
             numLevels={session.levels.length}
             score={gameState.score}
@@ -293,6 +293,10 @@ const App = () => {
         }}
         session={session}
         gdy={gameState.gdy}
+      />
+      <AgentTurnPopup
+        agentImage={session.agentAvatars[playbackState.pathsShown] || ""}
+        ready={!(waiting || finished)}
       />
     </div>
   );

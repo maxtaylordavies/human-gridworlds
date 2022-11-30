@@ -1,9 +1,12 @@
 import Phaser from "phaser";
+
 import Block2DRenderer from "../../Block2DRenderer";
 import Sprite2DRenderer from "../../Sprite2DRenderer";
 import { COLOR_LOADING_TEXT } from "../../ThemeConsts";
-
-const COOLDOWN_MS = 200;
+import {
+  INTER_STEP_INTERVAL_MS,
+  INTER_AGENT_INTERVAL_MS,
+} from "../../../constants";
 
 class HumanPlayerScene extends Phaser.Scene {
   constructor() {
@@ -142,7 +145,9 @@ class HumanPlayerScene extends Phaser.Scene {
     };
 
     if (this.trajectoryString) {
-      this.beginPlayback();
+      setTimeout(() => {
+        this.beginPlayback();
+      }, INTER_AGENT_INTERVAL_MS);
     }
   };
 
@@ -460,7 +465,7 @@ class HumanPlayerScene extends Phaser.Scene {
       this.cooldown = true;
       setTimeout(() => {
         this.cooldown = false;
-      }, COOLDOWN_MS);
+      }, INTER_STEP_INTERVAL_MS);
 
       const action =
         this.currentTrajectoryBuffer.steps[this.trajectoryActionIdx++];
@@ -471,6 +476,7 @@ class HumanPlayerScene extends Phaser.Scene {
         stepResult.terminated ||
         this.trajectoryActionIdx === this.currentTrajectoryBuffer.steps.length
       ) {
+        // setTimeout(() => this.endPlayback(), 1000);
         this.endPlayback();
       }
     }
