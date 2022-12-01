@@ -17,71 +17,56 @@ class HumanPlayerScene extends Phaser.Scene {
     this.keyboardIntervals = new Map();
   }
 
-  createModals = () => {
-    // Set the modals to invisible
-    this.variableDebugModalActive = false;
-    this.controlsModalActive = false;
+  // createModals = () => {
+  //   // Set the modals to invisible
+  //   this.variableDebugModalActive = false;
+  //   this.controlsModalActive = false;
 
-    // Get all the global variables
-    this.globalVariableDebugText = this.getGlobalVariableDebugText();
+  //   // Get all the global variables
+  //   this.globalVariableDebugText = this.getGlobalVariableDebugText();
 
-    this.variableDebugModal = this.add.text(
-      this.cameras.main.width / 2,
-      this.cameras.main.height / 5,
-      this.globalVariableDebugText
-    );
-    this.variableDebugModal.setBackgroundColor("#000000AA");
-    this.variableDebugModal.setDepth(100);
-    this.variableDebugModal.setOrigin(0, 0);
-    this.variableDebugModal.setVisible(false);
-    this.variableDebugModal.setFontSize(12);
+  //   this.variableDebugModal = this.add.text(
+  //     this.cameras.main.width / 2,
+  //     this.cameras.main.height / 5,
+  //     this.globalVariableDebugText
+  //   );
+  //   this.variableDebugModal.setBackgroundColor("#000000AA");
+  //   this.variableDebugModal.setDepth(100);
+  //   this.variableDebugModal.setOrigin(0, 0);
+  //   this.variableDebugModal.setVisible(false);
+  //   this.variableDebugModal.setFontSize(12);
 
-    const actionDescription = [];
-    const actionNames = this.griddlyjs.getActionNames();
-    actionNames.forEach((actionName) => {
-      actionDescription.push(actionName + ": ");
-      this.keyMap.forEach((actionMapping, key) => {
-        if (actionMapping.actionName === actionName)
-          actionDescription.push(
-            "  " + String.fromCharCode(key) + ": " + actionMapping.description
-          );
-      });
-      actionDescription.push("");
-    });
+  //   const actionDescription = [];
+  //   const actionNames = this.griddlyjs.getActionNames();
+  //   actionNames.forEach((actionName) => {
+  //     actionDescription.push(actionName + ": ");
+  //     this.keyMap.forEach((actionMapping, key) => {
+  //       if (actionMapping.actionName === actionName)
+  //         actionDescription.push(
+  //           "  " + String.fromCharCode(key) + ": " + actionMapping.description
+  //         );
+  //     });
+  //     actionDescription.push("");
+  //   });
 
-    this.controlsModal = this.add.text(
-      this.cameras.main.width / 2,
-      this.cameras.main.height / 5,
-      [
-        "Name: " + this.gdy.Environment.Name,
-        "Description: " + this.gdy.Environment.Description,
-        "",
-        "Actions:",
-        "",
-        ...actionDescription,
-      ]
-    );
-    this.controlsModal.setWordWrapWidth(this.cameras.main.width / 2);
-    this.controlsModal.setBackgroundColor("#000000AA");
-    this.controlsModal.setDepth(100);
-    this.controlsModal.setOrigin(0.5, 0);
-    this.controlsModal.setVisible(false);
-  };
-
-  createHintsModal = () => {
-    this.hintsModal = this.add.text(
-      this.cameras.main.width / 2,
-      this.cameras.main.height - 20,
-      [
-        "Press 'P' to show action mapping and 'I' to show environment variables.",
-      ]
-    );
-    this.hintsModal.setBackgroundColor("#000000AA");
-    this.hintsModal.setDepth(100);
-    this.hintsModal.setOrigin(0.5, 0);
-    this.hintsModal.setVisible(true);
-    this.hintsModal.setFontSize(10);
-  };
+  //   this.controlsModal = this.add.text(
+  //     this.cameras.main.width / 2,
+  //     this.cameras.main.height / 5,
+  //     [
+  //       "Name: " + this.gdy.Environment.Name,
+  //       "Description: " + this.gdy.Environment.Description,
+  //       "",
+  //       "Actions:",
+  //       "",
+  //       ...actionDescription,
+  //     ]
+  //   );
+  //   this.controlsModal.setWordWrapWidth(this.cameras.main.width / 2);
+  //   this.controlsModal.setBackgroundColor("#000000AA");
+  //   this.controlsModal.setDepth(100);
+  //   this.controlsModal.setOrigin(0.5, 0);
+  //   this.controlsModal.setVisible(false);
+  // };
 
   init = (data) => {
     try {
@@ -256,23 +241,23 @@ class HumanPlayerScene extends Phaser.Scene {
     ];
   }
 
-  updateModals() {
-    if (this.variableDebugModalActive) {
-      this.variableDebugModal.setText(this.globalVariableDebugText);
-      this.variableDebugModal.setFontFamily("Droid Sans Mono");
-      this.variableDebugModal.setPosition(0, 0);
-      this.variableDebugModal.setWordWrapWidth(this.cameras.main.width / 2);
-    }
+  // updateModals() {
+  //   if (this.variableDebugModalActive) {
+  //     this.variableDebugModal.setText(this.globalVariableDebugText);
+  //     this.variableDebugModal.setFontFamily("Droid Sans Mono");
+  //     this.variableDebugModal.setPosition(0, 0);
+  //     this.variableDebugModal.setWordWrapWidth(this.cameras.main.width / 2);
+  //   }
 
-    if (this.controlsModalActive) {
-      this.controlsModal.setWordWrapWidth(this.cameras.main.width / 2);
-      this.controlsModal.setFontFamily("Droid Sans Mono");
-      this.controlsModal.setPosition(
-        this.cameras.main.width / 2,
-        this.cameras.main.height / 5
-      );
-    }
-  }
+  //   if (this.controlsModalActive) {
+  //     this.controlsModal.setWordWrapWidth(this.cameras.main.width / 2);
+  //     this.controlsModal.setFontFamily("Droid Sans Mono");
+  //     this.controlsModal.setPosition(
+  //       this.cameras.main.width / 2,
+  //       this.cameras.main.height / 5
+  //     );
+  //   }
+  // }
 
   toggleVariableDebugModal() {
     this.variableDebugModalActive = !this.variableDebugModalActive;
@@ -596,9 +581,8 @@ class HumanPlayerScene extends Phaser.Scene {
       this.mapping = this.setupKeyboardMapping();
       this.grenderer.init(this.gridWidth, this.gridHeight);
       this.updateState(this.griddlyjs.getState());
-      this.createModals();
-      this.updateModals();
-      this.createHintsModal();
+      // this.createModals();
+      // this.updateModals();
     }
   };
 
@@ -626,7 +610,7 @@ class HumanPlayerScene extends Phaser.Scene {
           this.updateState(this.currentState);
         }
 
-        this.updateModals();
+        // this.updateModals();
       }
     }
   };
