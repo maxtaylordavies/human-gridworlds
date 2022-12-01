@@ -60,12 +60,14 @@ const InstructionModal = ({ visible, onStartClicked, session, gdy }) => {
             complete the level yourself.{" "}
           </p>
           <div className="instruction-modal-character-key">
-            <img
-              src="resources/images/custom/redsquare.png"
-              height="40px"
-              style={{ marginRight: 10 }}
-            />
-            <img src="resources/images/custom/bluecircle.png" height="40px" />
+            {session &&
+              session.agentIds.map((id) => (
+                <img
+                  src={`resources/images/${session.agentAvatars[id]}`}
+                  height="40px"
+                  style={{ marginRight: 10 }}
+                />
+              ))}
           </div>
           <p>
             These characters may not get the same number of points from each

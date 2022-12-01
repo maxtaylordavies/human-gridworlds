@@ -15,12 +15,19 @@ func GenerateID(prefix string) string {
 }
 
 func SampleFromSliceString(s []string, n int) []string {
-	if n >= len(s) {
-		return s
-	}
-
 	r := rand.New(rand.NewSource(time.Now().Unix()))
 	perm, res := r.Perm(len(s)), []string{}
+
+	for i := 0; i < n; i++ {
+		res = append(res, s[perm[i]])
+	}
+
+	return res
+}
+
+func SampleFromSliceInt(s []int, n int) []int {
+	r := rand.New(rand.NewSource(time.Now().Unix()))
+	perm, res := r.Perm(len(s)), []int{}
 
 	for i := 0; i < n; i++ {
 		res = append(res, s[perm[i]])

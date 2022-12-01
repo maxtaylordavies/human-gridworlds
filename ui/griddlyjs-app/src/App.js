@@ -33,7 +33,7 @@ const App = () => {
     gdyHash: 0,
     gdyString: "",
     playing: false,
-    score: 0,
+    score: 100,
   });
   const [rendererState, setRendererState] = useState({
     renderers: [],
@@ -246,7 +246,11 @@ const App = () => {
           transition={{ duration: 0.4 }}
         >
           <InfoBar
-            avatarPath={session.agentAvatars[playbackState.pathsShown] || ""}
+            avatarPath={
+              session.agentAvatars[
+                session.agentIds[playbackState.pathsShown]
+              ] || ""
+            }
             level={levelCount}
             numLevels={session.levels.length}
             score={gameState.score}
@@ -255,8 +259,9 @@ const App = () => {
             gdyHash={gameState.gdyHash}
             gdy={gameState.gdy}
             avatarPath={
-              session.agentAvatars[playbackState.pathsShown] ||
-              "sprite2d/player.png"
+              session.agentAvatars[
+                session.agentIds[playbackState.pathsShown]
+              ] || "sprite2d/player.png"
             }
             occlusionWindow={session.occlusionWindows[levelCount]}
             griddlyjs={griddlyjs}
@@ -317,7 +322,9 @@ const App = () => {
         delay={250}
       />
       <AgentTurnPopup
-        agentImage={session.agentAvatars[playbackState.pathsShown] || ""}
+        agentImage={
+          session.agentAvatars[session.agentIds[playbackState.pathsShown]] || ""
+        }
         ready={!(waiting || finished)}
         delay={playbackState.pathsShown === 0 ? INTER_LEVEL_INTERVAL_MS : 250}
         duration={
