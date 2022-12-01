@@ -292,10 +292,14 @@ const App = () => {
       )}
       {finished && (
         <div style={{ zIndex: 10 }}>
-          <div style={{ color: "white", fontSize: 36 }}>
+          <div style={{ color: "black", fontSize: 32, fontWeight: 500 }}>
             Experiment complete! Your final score is {gameState.score}
           </div>
-          <div>You can now close this tab</div>
+          <div style={{ color: "black", fontSize: 26, fontWeight: 500 }}>
+            {session.isTest
+              ? `Session ID: ${session.id}`
+              : "You can now close this tab"}
+          </div>
         </div>
       )}
       <InstructionModal
@@ -308,7 +312,7 @@ const App = () => {
       />
       <LevelPopup
         level={levelCount + 1}
-        ready={!(waiting || finished)}
+        ready={!(waiting || finished || levelCount >= session.levels.length)}
         duration={INTER_LEVEL_INTERVAL_MS}
         delay={250}
       />
