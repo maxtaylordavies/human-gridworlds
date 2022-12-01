@@ -550,10 +550,10 @@ class HumanPlayerScene extends Phaser.Scene {
       const action = [actionMapping.actionTypeId, actionMapping.actionId];
       this.doUserAction(action);
 
-      this.keyboardIntervals.set(
-        event.keyCode,
-        setInterval(() => this.doUserAction(action), 100)
-      );
+      // this.keyboardIntervals.set(
+      //   event.keyCode,
+      //   setInterval(() => this.doUserAction(action), 100)
+      // );
     }
   };
 
