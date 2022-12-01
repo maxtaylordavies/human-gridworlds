@@ -435,6 +435,7 @@ class HumanPlayerScene extends Phaser.Scene {
       seed: 100,
       steps: this.trajectoryString.split(",").map((char) => [0, +char]),
     };
+
     this.trajectoryActionIdx = 0;
     this.resetLevel();
     this.onPlaybackStart();

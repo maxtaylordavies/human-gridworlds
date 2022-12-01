@@ -26,29 +26,51 @@ const InstructionModal = ({ visible, onStartClicked, session, gdy }) => {
             Welcome! This experiment involves playing a simple game, with
             multiple levels.
           </p>
+          <img
+            src="resources/images/sprite2d/player.png"
+            height="40px"
+            style={{ marginBottom: "1rem" }}
+          />
           <p>
-            For each level, you will first watch some recordings of other
-            players - you will then play the level yourself.
-          </p>
-          <p>
-            You move around using the keys <_kbd>w</_kbd> <_kbd>a</_kbd>{" "}
-            <_kbd>s</_kbd> <_kbd>d</_kbd>. There are no other controls.
-          </p>
-          <p>
-            Each level contains one or more goal items. you complete the level
-            by collecting any one item, but different items have different
-            values:
+            You control a human avatar, which you can move around using the keys{" "}
+            <_kbd>w</_kbd> <_kbd>a</_kbd> <_kbd>s</_kbd> <_kbd>d</_kbd>.{" "}
+            <b>
+              To complete each level, you need to collect one of the coloured
+              jewels.
+            </b>{" "}
+            Collecting any jewel will complete the level, but each jewel is
+            worth a different number of points.
           </p>
           <div className="instruction-modal-score-key">
             {session &&
               objectImages &&
               session.utility.goals.map((r, i) => (
-                <div>
-                  <img src={`resources/images/${objectImages.goals[i]}`} /> ={" "}
-                  {r}
+                <div className="instruction-modal-score-key-item">
+                  <img
+                    src={`resources/images/${objectImages.goals[i]}`}
+                    height="40px"
+                  />
+                  <span>{i <= 2 ? r : "?"}</span>
                 </div>
               ))}
           </div>
+          <p>
+            There are two other characters in the game. At each level, they will
+            take turns to complete it - you should watch what they do, and then
+            complete the level yourself.{" "}
+          </p>
+          <div className="instruction-modal-character-key">
+            <img
+              src="resources/images/custom/redsquare.png"
+              height="40px"
+              style={{ marginRight: 10 }}
+            />
+            <img src="resources/images/custom/bluecircle.png" height="40px" />
+          </div>
+          <p>
+            These characters may not get the same number of points from each
+            jewel as you. They can also see in the dark, whereas you can't
+          </p>
         </div>
         <motion.button
           className="instruction-modal-start-button"
