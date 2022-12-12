@@ -1,7 +1,7 @@
 import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
-export const Modal = ({ key, open, children, styleProps, className }) => {
+export const Modal = ({ key, open, children, styleProps, className, ref }) => {
   return (
     <AnimatePresence>
       {open && (
@@ -13,6 +13,7 @@ export const Modal = ({ key, open, children, styleProps, className }) => {
           exit={{ opacity: 0 }}
           transition={{ duration: 0.2 }}
           style={{ styleProps }}
+          ref={ref}
         >
           {children}
         </motion.div>

@@ -38,20 +38,18 @@
   flex-direction: column;
   justify-content: space-between;
   background-color: white;
-  width: 600px;
-  height: 740px;
-  border: 2px solid black;
+  width: 525px;
+  height: 625px;
+  border: 3px solid black;
   border-radius: 15px;
-  padding: 20px;
   z-index: 10;
-  // overflow-y: scroll;
 
   .instruction-modal-title {
     font-size: 26px;
     font-weight: bold;
     width: 100%;
-    margin-top: -10px;
-    margin-bottom: 20px;
+    margin-top: 5px;
+    margin-left: 15px;
     text-align: left;
     color: black;
   }
@@ -59,10 +57,13 @@
   .instruction-modal-body {
     display: flex;
     flex-direction: column;
+    overflow-y: scroll;
   }
 
   .instruction-modal-text {
     width: 90%;
+    margin-left: 20px;
+    margin-bottom: 10px;
     text-align: left;
     color: black;
     font-size: 20px;
@@ -79,7 +80,12 @@
       flex-direction: column;
       align-items: center;
       color: grey;
-      font-size: 18px;
+      font-size: 22px;
+      font-weight: bold;
+
+      span {
+        margin-top: -7px;
+      }
     }
   }
 
@@ -87,15 +93,37 @@
     margin-bottom: 1rem;
   }
 
-  .instruction-modal-start-button {
-    width: 200px;
-    height: 40px;
-    border-radius: 20px;
-    border: none;
-    background: green;
-    color: white;
-    font-size: 20px;
-    margin-top: 15px;
+  .instruction-modal-button-row {
+    padding: 15px;
+    display: flex;
+    justify-content: space-between;
+    border-top: 3px solid black;
+
+    .instruction-modal-button {
+      width: 140px;
+      height: 40px;
+      border-radius: 20px;
+      font-size: 20px;
+      font-weight: 600;
+    }
+
+    .instruction-modal-button.next {
+      border: 3px solid #00916E;
+      color: #00916E;
+      background: #d6fff1;
+    }
+
+    .instruction-modal-button.back {
+      border: none;
+      background: #C4C4C4;
+    }
+  
+    .instruction-modal-button.start {
+      width: 200px;
+      background: #00916E;
+      color: white;
+      border: none;
+    }
   }
 }
 
