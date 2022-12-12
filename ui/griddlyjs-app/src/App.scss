@@ -138,9 +138,12 @@
   width: 800px;
   height: 550px;
   border-radius: 20px;
+  z-index: 5;
 }
 
 .info-bar {
+  position: relative;
+  z-index: 10;
   height: 55px;
   display: flex;
   flex-direction: row;
@@ -178,17 +181,17 @@
 
 .score-popup {
   position: absolute;
-  top: -45px;
-  right: -5px;
-  background-color: #00A040;
+  left: 345px;
+  background-color: #a600c6;
   color: white;
   font-weight: bold;
   border-radius: 10px;
-  width: 110px;
-  height: 30px;
+  width: 120px;
+  height: 40px;
   display: flex;
   justify-content: center;
   align-items: center;
+  z-index: 1;
 }
 
 .button-panel {
