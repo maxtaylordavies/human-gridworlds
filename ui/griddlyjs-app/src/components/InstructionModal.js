@@ -32,8 +32,8 @@ const InstructionModal = ({ visible, onStartClicked, session, gdy }) => {
             style={{ marginBottom: "1rem" }}
           />
           <p>
-            You control a human avatar, which you can move around using the keys{" "}
-            <_kbd>w</_kbd> <_kbd>a</_kbd> <_kbd>s</_kbd> <_kbd>d</_kbd>.{" "}
+            You control a human avatar, which you can move around using the{" "}
+            <b>arrow keys</b> on your keyboard.
             <b>
               To complete each level, you need to collect one of the coloured
               jewels.
