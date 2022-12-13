@@ -12,7 +12,6 @@ type Session struct {
 	ExperimentID     string            `json:"experimentId"`
 	CreatedAt        int64             `json:"createdAt"` // unix timestamp
 	IsTest           bool              `json:"isTest"`
-	Context          string            `json:"context"`
 	GameID           string            `json:"gameId"`
 	HumanID          string            `json:"humanId"`
 	AgentIDs         []string          `json:"agentIds"`
@@ -20,6 +19,7 @@ type Session struct {
 	Levels           []int             `json:"levels"`
 	OcclusionWindows []int             `json:"occlusionWindows"`
 	Utility          Utility           `json:"utility"`
+	Context          interface{}       `json:"context"`
 }
 
 type Utility struct {
@@ -29,7 +29,7 @@ type Utility struct {
 
 type Trajectory struct {
 	ID      string         `json:"id"`
-	Context string         `json:"context"`
+	Context interface{}    `json:"context"`
 	GameID  string         `json:"gameId"`
 	AgentID string         `json:"agentId"` // could be prerecorded agent OR human participant
 	Paths   map[int]string `json:"paths"`   // maps level index to recorded path
@@ -56,7 +56,7 @@ func (s Store) GetTrajectoryFilePath(id string) string {
 	return s.DataPath + "trajectories/" + id + ".json"
 }
 
-func (s Store) CreateSession(experimentID string, humanID string, isTest bool, context string) (Session, error) {
+func (s Store) CreateSession(experimentID string, humanID string, isTest bool, context interface{}) (Session, error) {
 	var sess Session
 
 	// generate new human id if none passed
@@ -83,7 +83,6 @@ func (s Store) CreateSession(experimentID string, humanID string, isTest bool, c
 		ExperimentID: experimentID,
 		CreatedAt:    time.Now().Unix(),
 		IsTest:       isTest,
-		Context:      context,
 		GameID:       "multijewel",
 		HumanID:      humanID,
 		AgentIDs:     agentIds,
@@ -98,6 +97,7 @@ func (s Store) CreateSession(experimentID string, humanID string, isTest bool, c
 			Terrains: []int{-1},
 			Goals:    goalValues,
 		},
+		Context: context,
 	}
 
 	// save session to file and return
@@ -168,7 +168,7 @@ func (s Store) GetLevelPaths(gameID string, agentIDs []string, levels []int) Set
 	return set
 }
 
-func (s Store) StoreTrajectory(gameID string, agentID string, paths map[int]string, context string) error {
+func (s Store) StoreTrajectory(gameID string, agentID string, paths map[int]string, context interface{}) error {
 	// create trajectory object
 	traj := Trajectory{
 		ID:      gameID + "_" + agentID,

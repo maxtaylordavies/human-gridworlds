@@ -17,57 +17,6 @@ class HumanPlayerScene extends Phaser.Scene {
     this.keyboardIntervals = new Map();
   }
 
-  // createModals = () => {
-  //   // Set the modals to invisible
-  //   this.variableDebugModalActive = false;
-  //   this.controlsModalActive = false;
-
-  //   // Get all the global variables
-  //   this.globalVariableDebugText = this.getGlobalVariableDebugText();
-
-  //   this.variableDebugModal = this.add.text(
-  //     this.cameras.main.width / 2,
-  //     this.cameras.main.height / 5,
-  //     this.globalVariableDebugText
-  //   );
-  //   this.variableDebugModal.setBackgroundColor("#000000AA");
-  //   this.variableDebugModal.setDepth(100);
-  //   this.variableDebugModal.setOrigin(0, 0);
-  //   this.variableDebugModal.setVisible(false);
-  //   this.variableDebugModal.setFontSize(12);
-
-  //   const actionDescription = [];
-  //   const actionNames = this.griddlyjs.getActionNames();
-  //   actionNames.forEach((actionName) => {
-  //     actionDescription.push(actionName + ": ");
-  //     this.keyMap.forEach((actionMapping, key) => {
-  //       if (actionMapping.actionName === actionName)
-  //         actionDescription.push(
-  //           "  " + String.fromCharCode(key) + ": " + actionMapping.description
-  //         );
-  //     });
-  //     actionDescription.push("");
-  //   });
-
-  //   this.controlsModal = this.add.text(
-  //     this.cameras.main.width / 2,
-  //     this.cameras.main.height / 5,
-  //     [
-  //       "Name: " + this.gdy.Environment.Name,
-  //       "Description: " + this.gdy.Environment.Description,
-  //       "",
-  //       "Actions:",
-  //       "",
-  //       ...actionDescription,
-  //     ]
-  //   );
-  //   this.controlsModal.setWordWrapWidth(this.cameras.main.width / 2);
-  //   this.controlsModal.setBackgroundColor("#000000AA");
-  //   this.controlsModal.setDepth(100);
-  //   this.controlsModal.setOrigin(0.5, 0);
-  //   this.controlsModal.setVisible(false);
-  // };
-
   init = (data) => {
     try {
       // Functions to interact with the environment
@@ -241,24 +190,6 @@ class HumanPlayerScene extends Phaser.Scene {
     ];
   }
 
-  // updateModals() {
-  //   if (this.variableDebugModalActive) {
-  //     this.variableDebugModal.setText(this.globalVariableDebugText);
-  //     this.variableDebugModal.setFontFamily("Droid Sans Mono");
-  //     this.variableDebugModal.setPosition(0, 0);
-  //     this.variableDebugModal.setWordWrapWidth(this.cameras.main.width / 2);
-  //   }
-
-  //   if (this.controlsModalActive) {
-  //     this.controlsModal.setWordWrapWidth(this.cameras.main.width / 2);
-  //     this.controlsModal.setFontFamily("Droid Sans Mono");
-  //     this.controlsModal.setPosition(
-  //       this.cameras.main.width / 2,
-  //       this.cameras.main.height / 5
-  //     );
-  //   }
-  // }
-
   toggleVariableDebugModal() {
     this.variableDebugModalActive = !this.variableDebugModalActive;
     this.variableDebugModal.setVisible(this.variableDebugModalActive);
@@ -299,26 +230,18 @@ class HumanPlayerScene extends Phaser.Scene {
 
     const movementKeySets = [
       {
-        "0,-1": Phaser.Input.Keyboard.KeyCodes.UP,
-        "-1,0": Phaser.Input.Keyboard.KeyCodes.LEFT,
-        "0,1": Phaser.Input.Keyboard.KeyCodes.DOWN,
-        "1,0": Phaser.Input.Keyboard.KeyCodes.RIGHT,
-      },
-      {
         "0,-1": Phaser.Input.Keyboard.KeyCodes.W,
         "-1,0": Phaser.Input.Keyboard.KeyCodes.A,
         "0,1": Phaser.Input.Keyboard.KeyCodes.S,
         "1,0": Phaser.Input.Keyboard.KeyCodes.D,
       },
+      {
+        "0,-1": Phaser.Input.Keyboard.KeyCodes.UP,
+        "-1,0": Phaser.Input.Keyboard.KeyCodes.LEFT,
+        "0,1": Phaser.Input.Keyboard.KeyCodes.DOWN,
+        "1,0": Phaser.Input.Keyboard.KeyCodes.RIGHT,
+      },
     ];
-
-    this.input.keyboard.on("keydown-P", (event) => {
-      this.toggleControlsModal();
-    });
-
-    this.input.keyboard.on("keydown-I", (event) => {
-      this.toggleVariableDebugModal();
-    });
 
     this.keyMap = new Map();
 
@@ -339,6 +262,7 @@ class HumanPlayerScene extends Phaser.Scene {
         if (directional && movementKeySets.length > 0) {
           // pop movement keys
           const movementKeys = movementKeySets.pop();
+
           inputMappings.forEach((inputMapping) => {
             const actionId = Number(inputMapping[0]);
             const mapping = inputMapping[1];

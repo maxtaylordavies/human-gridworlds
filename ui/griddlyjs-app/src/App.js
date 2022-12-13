@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { Profiler, useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import yaml from "js-yaml";
 
@@ -99,16 +99,20 @@ const App = () => {
       // check for existing session_id in url or localstorage
       // if we find one, then get the corresponding session from
       // the server (rather than creating a new session)
-      let sid = utils.getValueFromUrlOrLocalstorage("sid");
+      const sid = utils.getValueFromUrlOrLocalstorage("sid");
       if (sid) {
         console.log(`found session_id ${sid}, retrieving`);
         api.getSession(sid, onSession, console.Error);
       } else {
         // otherwise, we create a new session on the server, passing
         // in existing experiment_id and human_id if they exist
-        let eid = utils.getValueFromUrlOrLocalstorage("eid");
-        let hid = utils.getValueFromUrlOrLocalstorage("hid");
-        api.createSession(eid, hid, onSession, console.error);
+        api.createSession(
+          utils.getValueFromUrlOrLocalstorage("eid"),
+          utils.getValueFromUrlOrLocalstorage("hid"),
+          utils.getProlificMetadata(),
+          onSession,
+          console.error
+        );
       }
     });
   };
@@ -295,18 +299,6 @@ const App = () => {
           />
         </motion.div>
       )}
-      {finished && (
-        <div style={{ zIndex: 10 }}>
-          <div style={{ color: "black", fontSize: 32, fontWeight: 500 }}>
-            Experiment complete! Your final score is {gameState.score}
-          </div>
-          <div style={{ color: "black", fontSize: 26, fontWeight: 500 }}>
-            {session.isTest
-              ? `Session ID: ${session.id}`
-              : "You can now close this tab"}
-          </div>
-        </div>
-      )}
       <InstructionModal
         visible={waiting}
         onStartClicked={() => {
@@ -332,6 +324,16 @@ const App = () => {
           (playbackState.pathsShown === 0 ? INTER_LEVEL_INTERVAL_MS : 0)
         }
       />
+      {finished && (
+        <div style={{ zIndex: 10 }}>
+          <div style={{ color: "black", fontSize: 32, fontWeight: 500 }}>
+            Experiment complete! Your final score is {gameState.score}
+          </div>
+          <div style={{ color: "black", fontSize: 26, fontWeight: 500 }}>
+            Your completion code for Prolific is <b>CAL3DWSD</b>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

@@ -14,15 +14,13 @@ const InfoBar = (props) => {
           "Your turn"
         )}
       </div>
+      <ScorePopup score={props.score} />
       <div className="info-bar-stats">
         {InfoBarItem(
           "level",
           `${Math.min(props.level + 1, props.numLevels)}/${props.numLevels}`
         )}
-        <div style={{ position: "relative" }}>
-          {InfoBarItem("score", props.score)}
-          <ScorePopup score={props.score} />
-        </div>
+        {InfoBarItem("score", props.score)}
       </div>
     </div>
   );
