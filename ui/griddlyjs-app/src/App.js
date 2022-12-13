@@ -77,7 +77,6 @@ const App = () => {
       // otherwise, load the next level
     } else if (gameState.gdy) {
       loadLevel();
-      // setTimeout(() => updatePathsToShow(), INTER_LEVEL_INTERVAL_MS);
       updatePathsToShow();
     }
   }, [levelCount]);
@@ -93,6 +92,7 @@ const App = () => {
       setSession(sess);
       utils.writeToLocalStorage("sid", sess.id);
       utils.writeToLocalStorage("hid", sess.humanId);
+      utils.writeToLocalStorage("eid", sess.experimentId);
     };
 
     await griddlyjs.init().then(() => {
@@ -107,7 +107,8 @@ const App = () => {
         // otherwise, we create a new session on the server, passing
         // in existing experiment_id and human_id if they exist
         api.createSession(
-          utils.getValueFromUrlOrLocalstorage("eid"),
+          // utils.getValueFromUrlOrLocalstorage("eid"),
+          "prolific-pilot-dec-13",
           utils.getValueFromUrlOrLocalstorage("hid"),
           utils.getProlificMetadata(),
           onSession,
@@ -211,6 +212,7 @@ const App = () => {
     api.storeTrajectory(
       session,
       traj,
+      utils.getProlificMetadata(),
       (resp) => {
         utils.removeFromLocalStorage("sid");
       },
@@ -239,7 +241,7 @@ const App = () => {
   };
 
   return !isReady() ? (
-    <div>loading</div>
+    <div>loading...</div>
   ) : (
     <div className="main-container">
       {!waiting && (

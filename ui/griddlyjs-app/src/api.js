@@ -37,7 +37,7 @@ export const createSession = async (
   post("session", {
     experimentId,
     humanId,
-    isTest: true,
+    isTest: false,
     context,
   })
     .then((response) => {

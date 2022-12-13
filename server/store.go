@@ -73,7 +73,7 @@ func (s Store) CreateSession(experimentID string, humanID string, isTest bool, c
 
 	// choose random goal values
 	ABValues := SampleFromSliceInt([]int{50, 20}, 2)
-	DEValues := SampleFromSliceInt([]int{30, 60}, 2)
+	DEValues := SampleFromSliceInt([]int{30, 40}, 2)
 	CValue := 5
 	goalValues := append(append(ABValues, CValue), DEValues...)
 
