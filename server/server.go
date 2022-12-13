@@ -64,6 +64,11 @@ func (s *Server) registerRoutes() {
 		respond(w, payload)
 	})
 
+	// participant information sheet pdf
+	s.Router.HandleFunc("/pis", func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, "PIS.pdf")
+	})
+
 	// api routes
 	s.Router.HandleFunc("/api/game", func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodGet {

@@ -69,6 +69,15 @@
     font-size: 20px;
     line-height: 24px;
     font-weight: 500;
+
+    a {
+      color: blue;
+      text-decoration: underline;
+    }
+
+    ul {
+      margin-top: 1em;
+    }
   }
 
   .instruction-modal-score-key {
