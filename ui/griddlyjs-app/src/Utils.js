@@ -5,6 +5,17 @@ export const getValueFromUrlOrLocalstorage = (key) => {
   );
 };
 
+export const getProlificMetadata = () => {
+  const metadata = {};
+  const params = new URLSearchParams(window.location.search);
+  params.forEach((val, key) => {
+    if (key.startsWith("PRLFC")) {
+      metadata[key] = val;
+    }
+  });
+  return metadata;
+};
+
 export const writeToLocalStorage = (key, val) => {
   localStorage.setItem(`_gridworlds_${key}`, JSON.stringify(val));
 };

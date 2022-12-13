@@ -30,6 +30,7 @@ export const getSession = async (id, callback, onError) => {
 export const createSession = async (
   experimentId,
   humanId,
+  context,
   callback,
   onError
 ) => {
@@ -37,7 +38,7 @@ export const createSession = async (
     experimentId,
     humanId,
     isTest: true,
-    context: "",
+    context,
   })
     .then((response) => {
       callback(response.data);
@@ -65,12 +66,18 @@ export const loadAgentPaths = async (session, callback, onError) => {
     .catch((e) => onError(e));
 };
 
-export const storeTrajectory = async (session, paths, callback, onError) => {
+export const storeTrajectory = async (
+  session,
+  paths,
+  context,
+  callback,
+  onError
+) => {
   post("trajectory", {
     game_id: session.gameId,
     agent_id: session.humanId,
-    context: "",
     paths: paths,
+    context,
   })
     .then((response) => {
       callback(response.data);

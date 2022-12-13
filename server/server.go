@@ -91,10 +91,10 @@ func (s *Server) registerRoutes() {
 			http.ServeFile(w, r, s.Store.GetSessionFilePath(id))
 		} else if r.Method == http.MethodPost {
 			var data struct {
-				ExperimentID string `json:"experimentId"`
-				HumanID      string `json:"humanId"`
-				IsTest       bool   `json:"isTest"`
-				Context      string `json:"context"`
+				ExperimentID string      `json:"experimentId"`
+				HumanID      string      `json:"humanId"`
+				IsTest       bool        `json:"isTest"`
+				Context      interface{} `json:"context"`
 			}
 
 			err := decodePostRequest(r, &data)
@@ -126,7 +126,7 @@ func (s *Server) registerRoutes() {
 			var data struct {
 				GameID  string         `json:"game_id"`
 				AgentID string         `json:"agent_id"`
-				Context string         `json:"context"`
+				Context interface{}    `json:"context"`
 				Paths   map[int]string `json:"paths"`
 			}
 
