@@ -60,6 +60,15 @@ func makeRange(min, max int) []int {
 	return a
 }
 
+func ReadStructFromJSON(s interface{}, fp string) error {
+	data, err := ioutil.ReadFile(fp)
+	if err != nil {
+		return err
+	}
+
+	return json.Unmarshal(data, s)
+}
+
 func WriteStructToJSON(s interface{}, fp string) error {
 	// save session to file and return
 	serialised, err := json.MarshalIndent(s, "", " ")

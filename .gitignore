@@ -5,3 +5,4 @@
 data/
 gdy-schema.json
 .vscode/
+tmp/

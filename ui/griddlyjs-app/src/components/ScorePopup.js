@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 
 import { motion, AnimatePresence } from "framer-motion";
 
+const emoji = { high: "🎉", medium: "😐", low: "🤦‍♂️" };
+
 const ScorePopup = ({ score }) => {
   const [open, setOpen] = useState(false);
   const [prevScore, setprevScore] = useState(score);
@@ -20,18 +22,20 @@ const ScorePopup = ({ score }) => {
     }
   }, [scoreDelta]);
 
+  const bracket = scoreDelta > 30 ? "high" : scoreDelta < 10 ? "low" : "medium";
+
   return (
     <AnimatePresence>
       {open && (
         <motion.div
           key="score-popup"
-          className="score-popup"
+          className={`score-popup ${bracket}`}
           initial={{ opacity: 0, top: 10 }}
-          animate={{ opacity: 1, top: -60 }}
+          animate={{ opacity: 1, top: -70 }}
           exit={{ opacity: 0, top: 0 }}
           transition={{ duration: 0.4 }}
         >
-          +{scoreDelta} points!
+          +{scoreDelta} points {emoji[bracket]}
         </motion.div>
       )}
     </AnimatePresence>

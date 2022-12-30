@@ -20,6 +20,7 @@ type Session struct {
 	OcclusionWindows []int             `json:"occlusionWindows"`
 	Utility          Utility           `json:"utility"`
 	Context          interface{}       `json:"context"`
+	FreeTextResponse string            `json:"freeTextResponse"`
 }
 
 type Utility struct {
@@ -180,4 +181,21 @@ func (s Store) StoreTrajectory(gameID string, agentID string, paths map[int]stri
 
 	// save session to file and return
 	return WriteStructToJSON(traj, s.DataPath+"trajectories/"+traj.ID+".json")
+}
+
+func (s Store) StoreFreeTextResponse(sessionID string, response string) error {
+	// load session file
+	fp := s.GetSessionFilePath(sessionID)
+	var sess Session
+
+	err := ReadStructFromJSON(&sess, fp)
+	if err != nil {
+		return err
+	}
+
+	// write free text response
+	sess.FreeTextResponse = response
+
+	// re-save session file
+	return WriteStructToJSON(sess, fp)
 }

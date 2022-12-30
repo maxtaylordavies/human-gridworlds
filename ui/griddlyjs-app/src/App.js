@@ -6,8 +6,10 @@ import GriddlyJSCore from "./GriddlyJSCore";
 import Player from "./renderer/level_player/Player";
 import InfoBar from "./components/InfoBar";
 import InstructionModal from "./components/InstructionModal";
+import ExperimentCompleteModal from "./components/ExperimentCompleteModal";
 import AgentTurnPopup from "./components/AgentTurnPopup";
 import LevelPopup from "./components/LevelPopup";
+import ItemValues from "./components/ItemValues";
 import { INTER_LEVEL_INTERVAL_MS, INTER_AGENT_INTERVAL_MS } from "./constants";
 import * as api from "./api";
 import * as utils from "./utils";
@@ -40,6 +42,10 @@ const App = () => {
     rendererName: "",
     rendererConfig: {},
   });
+  const [objectImages, setObjectImages] = useState({
+    terrains: [],
+    goals: [],
+  });
   const [finished, setFinished] = useState(false);
 
   // create refs for state values that will be updated inside callback functions
@@ -63,9 +69,22 @@ const App = () => {
   }, [session]);
 
   useEffect(() => {
-    if (gameState.gdy) {
-      loadLevel();
+    if (!gameState.gdy) {
+      return;
     }
+
+    let tmp = gameState.gdy.Objects.filter((obj) => obj.Name !== "player").map(
+      (obj) => ({
+        name: obj.Name,
+        path: obj.Observers.Sprite2D[0].Image,
+      })
+    );
+    setObjectImages({
+      terrains: tmp.filter((x) => !x.name.includes("goal")).map((x) => x.path),
+      goals: tmp.filter((x) => x.name.includes("goal")).map((x) => x.path),
+    });
+
+    loadLevel();
   }, [gameState.gdy]);
 
   useEffect(() => {
@@ -73,7 +92,7 @@ const App = () => {
     // then finish the experiment
     if (session && levelCount >= session.levels.length) {
       setFinished(true);
-      onExperimentFinished();
+      uploadTrajectories();
       // otherwise, load the next level
     } else if (gameState.gdy) {
       loadLevel();
@@ -204,7 +223,7 @@ const App = () => {
     setTrajectories(traj);
   };
 
-  const onExperimentFinished = () => {
+  const uploadTrajectories = () => {
     let traj = { ...trajectoriesRef.current };
     Object.keys(traj).forEach((k) => {
       traj[k] = traj[k].map((x) => x[1]).join(",");
@@ -218,6 +237,10 @@ const App = () => {
       },
       console.error
     );
+  };
+
+  const uploadFreeTextResponse = (response) => {
+    api.storeFreeTextResponse(session, response, (resp) => {}, console.error);
   };
 
   const onPlaybackStart = () => {
@@ -251,6 +274,7 @@ const App = () => {
           animate={{ opacity: finished ? 0.1 : 1 }}
           transition={{ duration: 0.4 }}
         >
+          <ItemValues session={session} objectImages={objectImages} />
           <InfoBar
             avatarPath={
               session.agentAvatars[
@@ -307,7 +331,7 @@ const App = () => {
           setWaiting(false);
         }}
         session={session}
-        gdy={gameState.gdy}
+        objectImages={objectImages}
       />
       <LevelPopup
         level={levelCount + 1}
@@ -326,16 +350,11 @@ const App = () => {
           (playbackState.pathsShown === 0 ? INTER_LEVEL_INTERVAL_MS : 0)
         }
       />
-      {finished && (
-        <div style={{ zIndex: 10 }}>
-          <div style={{ color: "black", fontSize: 32, fontWeight: 500 }}>
-            Experiment complete! Your final score is {gameState.score}
-          </div>
-          <div style={{ color: "black", fontSize: 26, fontWeight: 500 }}>
-            Your completion code for Prolific is <b>CAL3DWSD</b>
-          </div>
-        </div>
-      )}
+      <ExperimentCompleteModal
+        visible={finished}
+        score={gameState.score}
+        submitResponse={uploadFreeTextResponse}
+      />
     </div>
   );
 };

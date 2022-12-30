@@ -84,3 +84,19 @@ export const storeTrajectory = async (
     })
     .catch((e) => onError(e));
 };
+
+export const storeFreeTextResponse = async (
+  session,
+  response,
+  callback,
+  onError
+) => {
+  post("freeTextResponse", {
+    session_id: session.id,
+    response,
+  })
+    .then((resp) => {
+      callback(resp.data);
+    })
+    .catch((e) => onError(e));
+};
