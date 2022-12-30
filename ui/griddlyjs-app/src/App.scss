@@ -80,24 +80,6 @@
     }
   }
 
-  .instruction-modal-score-key {
-    display: flex;
-    margin-bottom: 1rem;
-
-    .instruction-modal-score-key-item {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      color: grey;
-      font-size: 22px;
-      font-weight: bold;
-
-      span {
-        margin-top: -7px;
-      }
-    }
-  }
-
   .instruction-modal-character-key {
     margin-bottom: 1rem;
   }
@@ -133,6 +115,24 @@
       color: white;
       border: none;
     }
+  }
+}
+
+.instruction-modal-score-key {
+  display: flex;
+  margin-bottom: 1rem;
+}
+
+.instruction-modal-score-key-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: grey;
+  font-size: 22px;
+  font-weight: bold;
+
+  span {
+    margin-top: -7px;
   }
 }
 
@@ -173,7 +173,7 @@
 .game-container {
   position: absolute;
   width: 800px;
-  height: 550px;
+  height: 600px;
   border-radius: 20px;
   z-index: 5;
 }
@@ -218,17 +218,29 @@
 
 .score-popup {
   position: absolute;
-  left: 345px;
-  background-color: #a600c6;
+  left: 320px;
   color: white;
+  font-size: 20px;
   font-weight: bold;
   border-radius: 10px;
-  width: 120px;
-  height: 40px;
+  width: 160px;
+  height: 55px;
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 1;
+}
+
+.score-popup.high {
+  background: #00C14D;
+}
+
+.score-popup.medium {
+ background: #FF9900; 
+}
+
+.score-popup.low {
+  background: #FF0000;
 }
 
 .button-panel {
@@ -278,4 +290,91 @@
 
 .loading-logo {
   margin: auto;
+}
+
+.item-values-container {
+  display: flex;
+  margin-bottom: 8px;
+  justify-content: flex-end;
+
+  .item-values-element {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 18px;
+    font-weight: bold;
+    margin-right: -7px;
+  
+    span {
+      margin-top: -8px;
+    }
+  }
+}
+
+.experiment-complete-modal {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background-color: white;
+  width: 525px;
+  height: 625px;
+  border: 3px solid black;
+  border-radius: 15px;
+  z-index: 10;
+
+  .experiment-complete-modal-title {
+    font-size: 26px;
+    font-weight: bold;
+    width: 100%;
+    margin-top: 5px;
+    margin-left: 15px;
+    text-align: left;
+    color: black;
+  }
+
+  .experiment-complete-modal-body {
+    display: flex;
+    flex-direction: column;
+    overflow-y: scroll;
+  }
+
+  .experiment-complete-modal-text {
+    width: 90%;
+    margin-left: 20px;
+    margin-bottom: 1rem;
+    text-align: left;
+    color: black;
+    font-size: 20px;
+    line-height: 24px;
+    font-weight: 500;
+  }
+
+  textarea {
+    width: 100%;
+    background-color: #e2e2e2;
+    border: none;
+    border-radius: 10px;
+    padding: 5px 10px;
+    color: black;
+    font-size: 16px;
+    resize: none;
+  }
+
+  .experiment-complete-modal-button-row {
+    padding: 15px;
+    display: flex;
+    justify-content: flex-end;
+    border-top: 3px solid black;
+
+    .experiment-complete-modal-button {
+      height: 40px;
+      border-radius: 20px;
+      font-size: 20px;
+      font-weight: 600;
+      width: 200px;
+      background: #00916E;
+      color: white;
+      border: none;
+    }
+  }
 }

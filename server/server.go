@@ -178,6 +178,30 @@ func (s *Server) registerRoutes() {
 		respond(w, paths)
 	})
 
+	s.Router.HandleFunc("/api/freeTextResponse", func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodPost {
+			http.Error(w, "method not supported", http.StatusBadRequest)
+			return
+		}
+
+		var data struct {
+			SessionID string `json:"session_id"`
+			Response  string `json:"response"`
+		}
+
+		err := decodePostRequest(r, &data)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+
+		err = s.Store.StoreFreeTextResponse(data.SessionID, data.Response)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+	})
+
 	// for serving ui
 	s.Router.PathPrefix("/").Handler(http.FileServer(http.Dir(distPath)))
 }

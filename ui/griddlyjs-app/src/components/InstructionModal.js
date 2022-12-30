@@ -3,8 +3,12 @@ import { motion, AnimatePresence } from "framer-motion";
 
 import { Modal } from "./Modal";
 
-const InstructionModal = ({ visible, onStartClicked, session, gdy }) => {
-  const [objectImages, setObjectImages] = useState(null);
+const InstructionModal = ({
+  visible,
+  onStartClicked,
+  session,
+  objectImages,
+}) => {
   const [stage, setStage] = useState("Consent");
   const [screenIdx, setScreenIdx] = useState(0);
 
@@ -148,17 +152,6 @@ const InstructionModal = ({ visible, onStartClicked, session, gdy }) => {
       },
     ],
   };
-
-  useEffect(() => {
-    let tmp = gdy.Objects.filter((obj) => obj.Name !== "player").map((obj) => ({
-      name: obj.Name,
-      path: obj.Observers.Sprite2D[0].Image,
-    }));
-    setObjectImages({
-      terrains: tmp.filter((x) => !x.name.includes("goal")).map((x) => x.path),
-      goals: tmp.filter((x) => x.name.includes("goal")).map((x) => x.path),
-    });
-  }, [gdy]);
 
   return (
     <Modal key="instruction-modal" className="instruction-modal" open={visible}>
