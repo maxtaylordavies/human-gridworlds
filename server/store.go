@@ -1,8 +1,6 @@
 package main
 
 import (
-	"io/ioutil"
-	"strings"
 	"time"
 )
 
@@ -57,11 +55,7 @@ func (s Store) CreateSession(experimentID string, humanID string, isTest bool, c
 	}
 
 	// choose random agent ids
-	allAgents, err := s.GetAllAgentIDsForGame("multijewel")
-	if err != nil {
-		return sess, err
-	}
-	agentIds := SampleFromSliceString(allAgents, 2)
+	agentIds := SampleFromSliceString(AgentIDs, 2)
 
 	// choose random goal values
 	ABValues := SampleFromSliceInt([]int{50, 20}, 2)
@@ -93,29 +87,8 @@ func (s Store) CreateSession(experimentID string, humanID string, isTest bool, c
 	}
 
 	// save session to file and return
-	err = WriteStructToJSON(sess, s.DataPath+"sessions/"+sess.ID+".json")
+	err := WriteStructToJSON(sess, s.DataPath+"sessions/"+sess.ID+".json")
 	return sess, err
-}
-
-func (s Store) GetAllAgentIDsForGame(gameID string) ([]string, error) {
-	var agentIDs []string
-
-	files, err := ioutil.ReadDir(s.DataPath + "trajectories/")
-	if err != nil {
-		return agentIDs, err
-	}
-
-	for _, f := range files {
-		fn := f.Name()
-		if strings.HasSuffix(fn, ".json") {
-			tmp := strings.Split(strings.TrimSuffix(fn, ".json"), "_")
-			if tmp[0] == gameID && strings.HasPrefix(tmp[1], "a-") {
-				agentIDs = append(agentIDs, tmp[1])
-			}
-		}
-	}
-
-	return agentIDs, nil
 }
 
 func (s Store) GetLevelPaths(gameID string, agentIDs []string, levels []int) SetOfLevelPaths {
