@@ -92,7 +92,6 @@ const App = () => {
     // then finish the experiment
     if (session && levelCount >= session.levels.length) {
       setFinished(true);
-      uploadTrajectories();
       // otherwise, load the next level
     } else if (gameState.gdy) {
       loadLevel();
@@ -103,6 +102,20 @@ const App = () => {
   useEffect(() => {
     updatePathsToShow();
   }, [session, agentPaths]);
+
+  useEffect(() => {
+    const onFinished = async () => {
+      await uploadTrajectories();
+      await uploadFinalScore();
+      utils.removeFromLocalStorage("sid");
+    };
+
+    // if gameplay is finished, we can upload the trajectories and final score
+    // and remove the session id from localstorage
+    if (finished) {
+      onFinished();
+    }
+  }, [finished]);
 
   // initialise griddly, create a session on the server, and
   // then store the session in local state
@@ -127,7 +140,7 @@ const App = () => {
         // in existing experiment_id and human_id if they exist
         api.createSession(
           // utils.getValueFromUrlOrLocalstorage("eid"),
-          "prolific-pilot-dec-13",
+          "prolific-run-dec-31",
           utils.getValueFromUrlOrLocalstorage("hid"),
           utils.getProlificMetadata(),
           onSession,
@@ -223,24 +236,20 @@ const App = () => {
     setTrajectories(traj);
   };
 
-  const uploadTrajectories = () => {
+  const uploadTrajectories = async () => {
     let traj = { ...trajectoriesRef.current };
     Object.keys(traj).forEach((k) => {
       traj[k] = traj[k].map((x) => x[1]).join(",");
     });
-    api.storeTrajectory(
-      session,
-      traj,
-      utils.getProlificMetadata(),
-      (resp) => {
-        utils.removeFromLocalStorage("sid");
-      },
-      console.error
-    );
+    await api.storeTrajectory(session, traj, utils.getProlificMetadata());
   };
 
-  const uploadFreeTextResponse = (response) => {
-    api.storeFreeTextResponse(session, response, (resp) => {}, console.error);
+  const uploadFinalScore = async () => {
+    await api.storeFinalScore(session, gameState.score);
+  };
+
+  const uploadFreeTextResponse = async (response) => {
+    await api.storeFreeTextResponse(session, response);
   };
 
   const onPlaybackStart = () => {

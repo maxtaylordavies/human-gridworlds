@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import React, { useState } from "react";
+import { motion } from "framer-motion";
 
 import { Modal } from "./Modal";
 
@@ -90,13 +90,13 @@ const InstructionModal = ({
             <p>
               <b>
                 To complete each level, you need to collect one of the coloured
-                jewels.
+                gems.
               </b>{" "}
             </p>
             <p>
-              Collecting any jewel will complete the level, but each jewel will
-              earn you a different number of points. The points value of each
-              jewel will not change between levels.
+              Collecting any gem will complete the level, but each gem will earn
+              you a different number of points. The value of each gem is as
+              follows:
             </p>
             <div className="instruction-modal-score-key">
               {session &&
@@ -122,8 +122,13 @@ const InstructionModal = ({
             <p>
               As well as your human character, there are two aliens in the game.
               At each level, they will take turns to complete it. You should
-              watch what they do, and then complete the level yourself, trying
-              to score as many points as possible.{" "}
+              watch what they do, and then complete the level yourself.
+            </p>
+            <p>
+              <b>
+                You may want to copy what one of the aliens does - but be
+                careful, an alien might prefer a different gem to you.
+              </b>{" "}
             </p>
             <div className="instruction-modal-character-key">
               {session &&
@@ -136,14 +141,27 @@ const InstructionModal = ({
                 ))}
             </div>
             <p>
-              Each alien has different preferences for the jewels in the game -
-              the best jewel for an alien to get <b>may or may not</b> also be
-              the best for you, so be careful!
+              Some levels may be partly hidden by darkness, so that you can only
+              see a small part of the environment at once. The aliens have
+              special eyesight that allows them to see through the darkness, so
+              they can always see where they are going.
+            </p>
+          </>
+        ),
+        buttonLabel: "Next",
+        onClick: () => setScreenIdx((curr) => curr + 1),
+      },
+      {
+        content: (
+          <>
+            <p>
+              You start the game with 100 points. Every step you take will{" "}
+              <b>cost 1 point</b>, so you should try to minimise unnecessary
+              movement.
             </p>
             <p>
-              Some levels may be partly hidden by darkness.{" "}
-              <b>The aliens can both see through this darkness</b> with their
-              special alien eyesight, but you as a human cannot.{" "}
+              Your goal is to get the highest score you can.{" "}
+              <b>High scores will earn a bonus payment</b>, so do your best!
             </p>
           </>
         ),
@@ -195,10 +213,6 @@ const InstructionModal = ({
       </div>
     </Modal>
   );
-};
-
-const _kbd = ({ children }) => {
-  return <div className="keyboard-key">{children}</div>;
 };
 
 export default InstructionModal;

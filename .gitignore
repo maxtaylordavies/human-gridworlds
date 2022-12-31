@@ -3,6 +3,7 @@
 **/node_modules
 
 data/
+remote_data/
 gdy-schema.json
 .vscode/
 tmp/

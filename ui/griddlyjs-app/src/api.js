@@ -66,37 +66,25 @@ export const loadAgentPaths = async (session, callback, onError) => {
     .catch((e) => onError(e));
 };
 
-export const storeTrajectory = async (
-  session,
-  paths,
-  context,
-  callback,
-  onError
-) => {
-  post("trajectory", {
+export const storeTrajectory = async (session, paths, context) => {
+  return post("trajectory", {
     game_id: session.gameId,
     agent_id: session.humanId,
     paths: paths,
     context,
-  })
-    .then((response) => {
-      callback(response.data);
-    })
-    .catch((e) => onError(e));
+  });
 };
 
-export const storeFreeTextResponse = async (
-  session,
-  response,
-  callback,
-  onError
-) => {
-  post("freeTextResponse", {
+export const storeFreeTextResponse = async (session, response) => {
+  return post("freeTextResponse", {
     session_id: session.id,
     response,
-  })
-    .then((resp) => {
-      callback(resp.data);
-    })
-    .catch((e) => onError(e));
+  });
+};
+
+export const storeFinalScore = async (session, score) => {
+  return post("finalScore", {
+    session_id: session.id,
+    score,
+  });
 };

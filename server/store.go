@@ -20,6 +20,7 @@ type Session struct {
 	OcclusionWindows []int             `json:"occlusionWindows"`
 	Utility          Utility           `json:"utility"`
 	Context          interface{}       `json:"context"`
+	FinalScore       int               `json:"finalScore"`
 	FreeTextResponse string            `json:"freeTextResponse"`
 }
 
@@ -195,6 +196,23 @@ func (s Store) StoreFreeTextResponse(sessionID string, response string) error {
 
 	// write free text response
 	sess.FreeTextResponse = response
+
+	// re-save session file
+	return WriteStructToJSON(sess, fp)
+}
+
+func (s Store) StoreFinalScore(sessionID string, score int) error {
+	// load session file
+	fp := s.GetSessionFilePath(sessionID)
+	var sess Session
+
+	err := ReadStructFromJSON(&sess, fp)
+	if err != nil {
+		return err
+	}
+
+	// write free text response
+	sess.FinalScore = score
 
 	// re-save session file
 	return WriteStructToJSON(sess, fp)

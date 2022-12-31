@@ -178,6 +178,30 @@ func (s *Server) registerRoutes() {
 		respond(w, paths)
 	})
 
+	s.Router.HandleFunc("/api/finalScore", func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodPost {
+			http.Error(w, "method not supported", http.StatusBadRequest)
+			return
+		}
+
+		var data struct {
+			SessionID string `json:"session_id"`
+			Score     int    `json:"score"`
+		}
+
+		err := decodePostRequest(r, &data)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+
+		err = s.Store.StoreFinalScore(data.SessionID, data.Score)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+	})
+
 	s.Router.HandleFunc("/api/freeTextResponse", func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodPost {
 			http.Error(w, "method not supported", http.StatusBadRequest)
