@@ -66,12 +66,10 @@ export const loadAgentPaths = async (session, callback, onError) => {
     .catch((e) => onError(e));
 };
 
-export const storeTrajectory = async (session, paths, context) => {
-  return post("trajectory", {
-    game_id: session.gameId,
-    agent_id: session.humanId,
-    paths: paths,
-    context,
+export const storeTrajectories = async (session, trajectories) => {
+  return post("trajectories", {
+    session_id: session.id,
+    trajectories,
   });
 };
 

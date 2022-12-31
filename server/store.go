@@ -1,11 +1,17 @@
 package main
 
 import (
-	"encoding/json"
 	"io/ioutil"
 	"strings"
 	"time"
 )
+
+type Trajectories map[int]string // maps level index to recorded path
+
+type Utility struct {
+	Terrains []int `json:"terrains"`
+	Goals    []int `json:"goals"`
+}
 
 type Session struct {
 	ID               string            `json:"id"`
@@ -20,21 +26,9 @@ type Session struct {
 	OcclusionWindows []int             `json:"occlusionWindows"`
 	Utility          Utility           `json:"utility"`
 	Context          interface{}       `json:"context"`
+	Trajectories     Trajectories      `json:"trajectories"`
 	FinalScore       int               `json:"finalScore"`
 	FreeTextResponse string            `json:"freeTextResponse"`
-}
-
-type Utility struct {
-	Terrains []int `json:"terrains"`
-	Goals    []int `json:"goals"`
-}
-
-type Trajectory struct {
-	ID      string         `json:"id"`
-	Context interface{}    `json:"context"`
-	GameID  string         `json:"gameId"`
-	AgentID string         `json:"agentId"` // could be prerecorded agent OR human participant
-	Paths   map[int]string `json:"paths"`   // maps level index to recorded path
 }
 
 type SetOfLevelPaths struct {
@@ -52,10 +46,6 @@ func (s Store) GetGameSpecFilePath(id string) string {
 
 func (s Store) GetSessionFilePath(id string) string {
 	return s.DataPath + "sessions/" + id + ".json"
-}
-
-func (s Store) GetTrajectoryFilePath(id string) string {
-	return s.DataPath + "trajectories/" + id + ".json"
 }
 
 func (s Store) CreateSession(experimentID string, humanID string, isTest bool, context interface{}) (Session, error) {
@@ -140,15 +130,9 @@ func (s Store) GetLevelPaths(gameID string, agentIDs []string, levels []int) Set
 
 	// iterate through requested agents
 	for _, aid := range agentIDs {
-		// for each agent, attempt to find + parse their trajectory file (for the given gameID)
-		f, err := ioutil.ReadFile(s.GetTrajectoryFilePath(gameID + "_" + aid))
-		if err != nil {
-			continue
-		}
-
-		var t Trajectory
-		err = json.Unmarshal(f, &t)
-		if err != nil {
+		// retrieve paths for agent - if not present, then skip to next agent
+		traj, ok := AgentTrajectories[aid]
+		if !ok {
 			continue
 		}
 
@@ -160,7 +144,7 @@ func (s Store) GetLevelPaths(gameID string, agentIDs []string, levels []int) Set
 			// for each level, if the agent has trajectory data for level l,
 			// we add it to set.Paths[l] - otherwise, we add an empty string
 			path := ""
-			if p, ok := t.Paths[l]; ok {
+			if p, ok := traj[l]; ok {
 				path = p
 			}
 			set.Paths[l] = append(set.Paths[l], path)
@@ -170,18 +154,20 @@ func (s Store) GetLevelPaths(gameID string, agentIDs []string, levels []int) Set
 	return set
 }
 
-func (s Store) StoreTrajectory(gameID string, agentID string, paths map[int]string, context interface{}) error {
-	// create trajectory object
-	traj := Trajectory{
-		ID:      gameID + "_" + agentID,
-		Context: context,
-		GameID:  gameID,
-		AgentID: agentID,
-		Paths:   paths,
+func (s Store) StoreTrajectories(sessionID string, trajectories Trajectories) error {
+	// load session file
+	fp := s.GetSessionFilePath(sessionID)
+	var sess Session
+
+	err := ReadStructFromJSON(&sess, fp)
+	if err != nil {
+		return err
 	}
 
-	// save session to file and return
-	return WriteStructToJSON(traj, s.DataPath+"trajectories/"+traj.ID+".json")
+	// write free text response
+	sess.Trajectories = trajectories
+	// re-save session file
+	return WriteStructToJSON(sess, fp)
 }
 
 func (s Store) StoreFreeTextResponse(sessionID string, response string) error {

@@ -241,7 +241,7 @@ const App = () => {
     Object.keys(traj).forEach((k) => {
       traj[k] = traj[k].map((x) => x[1]).join(",");
     });
-    await api.storeTrajectory(session, traj, utils.getProlificMetadata());
+    await api.storeTrajectories(session, traj);
   };
 
   const uploadFinalScore = async () => {
