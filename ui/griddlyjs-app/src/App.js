@@ -1,4 +1,4 @@
-import React, { Profiler, useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import yaml from "js-yaml";
 
@@ -140,7 +140,7 @@ const App = () => {
         // in existing experiment_id and human_id if they exist
         api.createSession(
           // utils.getValueFromUrlOrLocalstorage("eid"),
-          "prolific-run-dec-31",
+          "prolific-run-jan-01",
           utils.getValueFromUrlOrLocalstorage("hid"),
           utils.getProlificMetadata(),
           onSession,

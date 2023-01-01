@@ -1,9 +1,10 @@
 **/.DS_Store
 **/dist/
 **/node_modules
+.vscode/
 
 data/
 remote_data/
 gdy-schema.json
-.vscode/
 tmp/
+scripts/misc

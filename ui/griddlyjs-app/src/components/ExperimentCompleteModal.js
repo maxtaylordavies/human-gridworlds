@@ -3,19 +3,11 @@ import { motion } from "framer-motion";
 
 import { Modal } from "./Modal";
 
+const PROLIFIC_CODE = "CAL3DWSD";
+
 const ExperimentCompleteModal = ({ visible, score, submitResponse }) => {
   const [screenIdx, setScreenIdx] = useState(0);
   const [response, setResponse] = useState("");
-
-  const determineProlificCode = () => {
-    if (score < 250) {
-      return "CAL3DWSD";
-    }
-    if (score < 300) {
-      return "CNER7Y6B";
-    }
-    return "CMNUR18D";
-  };
 
   const onSubmitClicked = () => {
     submitResponse(response);
@@ -23,7 +15,7 @@ const ExperimentCompleteModal = ({ visible, score, submitResponse }) => {
   };
 
   const onCopyCodeClicked = async () => {
-    await navigator.clipboard.writeText(determineProlificCode());
+    await navigator.clipboard.writeText(PROLIFIC_CODE);
   };
 
   const content = [
@@ -55,7 +47,7 @@ const ExperimentCompleteModal = ({ visible, score, submitResponse }) => {
         <>
           <p>
             Thanks for participating! Your final score was {score}. Your
-            completion code for Prolific is <b>{determineProlificCode()}</b>
+            completion code for Prolific is <b>{PROLIFIC_CODE}</b>
           </p>
         </>
       ),

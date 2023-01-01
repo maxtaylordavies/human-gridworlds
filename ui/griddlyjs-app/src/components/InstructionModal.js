@@ -160,8 +160,8 @@ const InstructionModal = ({
               movement.
             </p>
             <p>
-              Your goal is to get the highest score you can.{" "}
-              <b>High scores will earn a bonus payment</b>, so do your best!
+              Your goal is to get the highest score you can. You will earn a
+              bonus payment for every point above 300, so do your best!
             </p>
           </>
         ),
