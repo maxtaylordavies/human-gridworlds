@@ -5,7 +5,7 @@
 
 data/
 remote_data/
-figures/
+results/
 gdy-schema.json
 tmp/
 scripts/misc

@@ -1,13 +1,17 @@
 import collections
+import csv
 import json
 from os import path, listdir
 
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-
 import seaborn as sns
+from sklearn.linear_model import LogisticRegression, LinearRegression
 
+# ------------------------------------------------------------
+# CONSTANTS
+# ------------------------------------------------------------
 AGENT_TRAJECTORIES = [
     {
         0: "1,1,1,1,1,1,1,1,1,1,1,1",
@@ -44,6 +48,9 @@ SESSION_DIR = path.join(DATA_DIR, "sessions")
 TRAJECTORY_DIR = path.join(DATA_DIR, "trajectories")
 
 
+# ------------------------------------------------------------
+# HELPER FUNCTIONS
+# ------------------------------------------------------------
 def logValue(msg, val):
     print(f"{msg}: {val}")
 
@@ -52,6 +59,13 @@ def loadJSON(fp):
     with open(fp) as f:
         data = json.load(f)
     return data
+
+
+def writeDictToCSV(data, fp):
+    with open(fp, "w") as f:
+        writer = csv.DictWriter(f, fieldnames=data.keys())
+        writer.writeheader()
+        writer.writerow(data)
 
 
 def convertPathToCoords(path, startPos=(0, 0)):
@@ -129,7 +143,7 @@ def computeSimilarityData(sessions, simType="cont"):
     # populate data dict
     for s in sessions:
         dataDict["id"].append(s["id"])
-        dataDict["group"].append(f"group {int(s['utility']['goals'][1] == 50) + 1}")
+        dataDict["group"].append(int(s["utility"]["goals"][1] == 50) + 1)
         for l in levels:
             for a in [0, 1]:
                 dataDict[f"level_{l + 1}_agent_{a + 1}"].append(
@@ -140,7 +154,28 @@ def computeSimilarityData(sessions, simType="cont"):
     return pd.DataFrame(data=dataDict)
 
 
-def plotSimilarityForLevels(data, levels, outFolder=".", outFormat="pdf"):
+def trainTestSplit(x, y):
+    return {"xtrain": x, "ytrain": y, "xtest": x, "ytest": y}
+
+
+def logisticRegression(data):
+    model = LogisticRegression(random_state=0, solver="newton-cg").fit(
+        data["xtrain"], data["ytrain"]
+    )
+    return model.score(data["xtest"], data["ytest"])
+
+
+def linearRegression(data):
+    model = LinearRegression().fit(data["xtrain"], data["ytrain"])
+    return model.score(data["xtest"], data["ytest"])
+
+
+# ------------------------------------------------------------
+# VISUALISATION FUNCTIONS
+# ------------------------------------------------------------
+def plotSimilarityForLevels(
+    data, levels, interactive=False, outputDir=".", outFormat="pdf"
+):
     sns.set_context("paper")
     sns.set_theme()
 
@@ -170,7 +205,7 @@ def plotSimilarityForLevels(data, levels, outFolder=".", outFormat="pdf"):
             ax=axs[i],
         )
         g.set(
-            xlabel="",
+            xlabel="group",
             ylim=[0, 1],
             ylabel=("mean trajectory similarity" if i == 0 else ""),
             title=f"Level {level}",
@@ -179,9 +214,12 @@ def plotSimilarityForLevels(data, levels, outFolder=".", outFormat="pdf"):
             g.legend_.remove()
 
     fig.tight_layout()
-    plt.savefig(
-        path.join(outFolder, f"barplot_levels_{levels[0]}-{levels[-1]}.{outFormat}")
-    )
+    if interactive:
+        plt.show()
+    else:
+        plt.savefig(
+            path.join(outputDir, f"barplot_levels_{levels[0]}-{levels[-1]}.{outFormat}")
+        )
 
 
 def plotTrajectories(trajectories, gridSize, startPos):
@@ -198,7 +236,9 @@ def plotTrajectories(trajectories, gridSize, startPos):
     return grid
 
 
-def visualiseTrajectoriesForLevels(levels, sessions, similarityData):
+def visualiseTrajectoriesForLevels(
+    levels, sessions, similarityData, interactive=False, outputDir=".", outFormat="pdf"
+):
     fig, axs = plt.subplots(ncols=len(levels))
 
     for i, level in enumerate(levels):
@@ -218,7 +258,7 @@ def visualiseTrajectoriesForLevels(levels, sessions, similarityData):
         group1Trajectories, group2Trajectories = [], []
         for j, s in enumerate(sessions):
             traj = s["trajectories"][str(level - 1)]
-            if similarityData.loc[j]["group"] == "group 1":
+            if similarityData.loc[j]["group"] == 1:
                 group1Trajectories.append(traj)
             else:
                 group2Trajectories.append(traj)
@@ -242,15 +282,58 @@ def visualiseTrajectoriesForLevels(levels, sessions, similarityData):
         axs[i].set_axis_off()
 
     fig.set_tight_layout(True)
-    plt.show()
+    if interactive:
+        plt.show()
+    else:
+        plt.savefig(
+            path.join(
+                outputDir, f"trajectories_levels_{levels[0]}-{levels[-1]}.{outFormat}"
+            )
+        )
+
+
+# ------------------------------------------------------------
+# ANALYSIS FUNCTIONS
+# ------------------------------------------------------------
+def doRegressionAnalysis(data, levels):
+    logisticScores, linearScores = {}, {}
+
+    # define independent variable
+    x = data.group.to_numpy().reshape(-1, 1)
+
+    for lvl in levels:
+        # define dependent variables for logistic and linear regression
+        cols = [f"level_{lvl}_agent_{i}" for i in [1, 2]]
+        raw = data[cols]
+        yBin = (raw.idxmax(axis=1) == cols[1]).to_numpy().astype(int) + 1
+        yCont = (raw[cols[1]] - raw[cols[0]]).to_numpy()
+
+        # perform logistic regression
+        logisticScores[lvl] = logisticRegression(trainTestSplit(x, yBin))
+
+        # perform linear regression
+        linearScores[lvl] = linearRegression(trainTestSplit(x, yCont))
+
+    return logisticScores, linearScores
 
 
 def main():
+    levels = list(range(1, 8))  # 1 to 7
+    outputDir = "../../results"
+
     sessions = loadSessions()
     similarityData = computeSimilarityData(sessions)
 
-    # plotSimilarityForLevels(data, [1, 2, 3, 4, 5, 6, 7], outFormat="png")
-    visualiseTrajectoriesForLevels([1, 2, 3, 4, 5, 6, 7], sessions, similarityData)
+    # visualisation
+    plotSimilarityForLevels(similarityData, levels, outputDir=outputDir)
+    visualiseTrajectoriesForLevels(
+        levels, sessions, similarityData, outputDir=outputDir
+    )
+
+    # regression analysis
+    logisticScores, linearScores = doRegressionAnalysis(similarityData, levels)
+    writeDictToCSV(logisticScores, path.join(outputDir, "logistic_regression.csv"))
+    writeDictToCSV(linearScores, path.join(outputDir, "linear_regression.csv"))
 
 
 if __name__ == "__main__":
