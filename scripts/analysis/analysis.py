@@ -6,6 +6,7 @@ from os import path, listdir
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+from scipy.stats import chisquare, chi2
 import seaborn as sns
 from sklearn.linear_model import LogisticRegression, LinearRegression
 
@@ -133,22 +134,37 @@ def computeSimilarityData(sessions, simType="cont"):
     """
     levels = list(range(7))
     simFunc = simCont if simType == "cont" else simBin
+    other = lambda g: 2 if g == 1 else 1
 
     # initialise data dict
-    cols = ["id", "group"] + [
-        f"level_{l + 1}_agent_{a + 1}" for l in levels for a in [0, 1]
-    ]
+    cols = ["id", "group"]
+    for l in levels:
+        cols += [
+            f"level_{l + 1}_agent_1",
+            f"level_{l + 1}_agent_2",
+            f"level_{l + 1}_aligned",
+            f"level_{l + 1}_misaligned",
+        ]
     dataDict = {col: [] for col in cols}
 
     # populate data dict
     for s in sessions:
         dataDict["id"].append(s["id"])
-        dataDict["group"].append(int(s["utility"]["goals"][1] == 50) + 1)
+
+        group = int(s["utility"]["goals"][1] == 50) + 1
+        dataDict["group"].append(group)
+
         for l in levels:
             for a in [0, 1]:
                 dataDict[f"level_{l + 1}_agent_{a + 1}"].append(
                     simFunc(AGENT_TRAJECTORIES[a][l], s["trajectories"][str(l)])
                 )
+            dataDict[f"level_{l + 1}_aligned"].append(
+                dataDict[f"level_{l + 1}_agent_{group}"][-1]
+            )
+            dataDict[f"level_{l + 1}_misaligned"].append(
+                dataDict[f"level_{l + 1}_agent_{other(group)}"][-1]
+            )
 
     # convert to dataframe and return
     return pd.DataFrame(data=dataDict)
@@ -179,6 +195,7 @@ def plotSimilarityForLevels(
     sns.set_context("paper")
     sns.set_theme()
 
+    # first variant - split groups
     fig, axs = plt.subplots(ncols=len(levels), sharey=True, figsize=(20, 4))
     for i, level in enumerate(levels):
         melted = data.rename(
@@ -218,7 +235,51 @@ def plotSimilarityForLevels(
         plt.show()
     else:
         plt.savefig(
-            path.join(outputDir, f"barplot_levels_{levels[0]}-{levels[-1]}.{outFormat}")
+            path.join(
+                outputDir, f"barplot_split_levels_{levels[0]}-{levels[-1]}.{outFormat}"
+            )
+        )
+
+    # second variant - combined groups
+    fig, axs = plt.subplots(ncols=len(levels), sharey=True, figsize=(15, 4))
+    for i, level in enumerate(levels):
+        melted = data.rename(
+            columns={
+                f"level_{level}_aligned": "aligned",
+                f"level_{level}_misaligned": "misaligned",
+            }
+        ).melt(
+            value_vars=["aligned", "misaligned"],
+            var_name="agent",
+            value_name="similarity",
+        )
+        g = sns.barplot(
+            data=melted,
+            x="agent",
+            y="similarity",
+            errorbar="se",
+            errcolor="grey",
+            errwidth=1.4,
+            capsize=0.04,
+            palette=sns.color_palette("husl", 10),
+            ax=axs[i],
+        )
+        g.set(
+            xlabel="",
+            ylim=[0, 1],
+            ylabel=("mean trajectory similarity" if i == 0 else ""),
+            title=f"Level {level}",
+        )
+
+    fig.tight_layout()
+    if interactive:
+        plt.show()
+    else:
+        plt.savefig(
+            path.join(
+                outputDir,
+                f"barplot_combined_levels_{levels[0]}-{levels[-1]}.{outFormat}",
+            )
         )
 
 
@@ -317,6 +378,36 @@ def doRegressionAnalysis(data, levels):
     return logisticScores, linearScores
 
 
+def doChiSquareAnalysis(data, levels):
+    chisqVals, pVals = [], []
+
+    for level in levels:
+        expected, observed = np.zeros((2, 2)), np.zeros((2, 2))
+
+        cols = [f"level_{level}_agent_{i}" for i in [1, 2]]
+        x = data["group"].to_numpy().astype(int)
+        y = (data[cols].idxmax(axis=1) == cols[1]).to_numpy().astype(int) + 1
+
+        groupTotals = collections.Counter(x)
+        expected[:, 0] = groupTotals[1] / 2
+        expected[:, 1] = groupTotals[2] / 2
+
+        for i in range(len(x)):
+            r = (y[i] == 1) - 1
+            c = (x[i] == 1) - 1
+            observed[r, c] += 1
+
+        chisq, _ = chisquare(observed, expected)
+        chisq = np.sum(chisq)
+
+        chisqVals.append(chisq)
+        pVals.append(1 - chi2.cdf(chisq, 1))
+    
+    print(chisqVals)
+    print(pVals)
+
+
+
 def main():
     levels = list(range(1, 8))  # 1 to 7
     outputDir = "../../results"
@@ -334,6 +425,9 @@ def main():
     logisticScores, linearScores = doRegressionAnalysis(similarityData, levels)
     writeDictToCSV(logisticScores, path.join(outputDir, "logistic_regression.csv"))
     writeDictToCSV(linearScores, path.join(outputDir, "linear_regression.csv"))
+
+    # chi square test
+    doChiSquareAnalysis(similarityData, levels)
 
 
 if __name__ == "__main__":
