@@ -78,7 +78,7 @@ def convertPathToCoords(path, startPos=(0, 0)):
     return coords
 
 
-def distanceBetweenPaths(path1, path2, type="avg", norm=True):
+def distanceBetweenPaths(path1, path2, type="avg"):
     # convert path strings to lists of positions
     coords1, coords2 = convertPathToCoords(path1), convertPathToCoords(path2)
 
@@ -94,8 +94,7 @@ def distanceBetweenPaths(path1, path2, type="avg", norm=True):
     distances = [dist(coords1[i], coords2[i]) for i in range(len(coords1))]
 
     operator = max if type == "max" else lambda x: sum(x) / len(x)
-    res = operator(distances)
-    return res / len(distances) if norm else res
+    return operator(distances)
 
 
 def computeDominantDirection(path):
@@ -105,9 +104,9 @@ def computeDominantDirection(path):
 
 def simCont(path1, path2):
     """
-    returns 1 / (d + 1), where d is the mean distance between the two paths
+    returns exp(-d), where d is the mean distance between the two paths
     """
-    return 1 / (distanceBetweenPaths(path1, path2, norm=False) + 1)
+    return np.exp(-distanceBetweenPaths(path1, path2))
 
 
 def simBin(path1, path2):
@@ -189,9 +188,7 @@ def linearRegression(data):
 # ------------------------------------------------------------
 # VISUALISATION FUNCTIONS
 # ------------------------------------------------------------
-def plotSimilarityForLevels(
-    data, levels, interactive=False, outputDir=".", outFormat="pdf"
-):
+def plotSimilarityData(data, levels, interactive=False, outputDir=".", outFormat="pdf"):
     sns.set_context("paper")
     sns.set_theme()
 
@@ -297,7 +294,7 @@ def plotTrajectories(trajectories, gridSize, startPos):
     return grid
 
 
-def visualiseTrajectoriesForLevels(
+def visualiseTrajectories(
     levels, sessions, similarityData, interactive=False, outputDir=".", outFormat="pdf"
 ):
     fig, axs = plt.subplots(ncols=len(levels))
@@ -381,10 +378,10 @@ def doRegressionAnalysis(data, levels):
 def doChiSquareAnalysis(data, levels):
     chisqVals, pVals = [], []
 
-    for level in levels:
+    for lvl in levels:
         expected, observed = np.zeros((2, 2)), np.zeros((2, 2))
 
-        cols = [f"level_{level}_agent_{i}" for i in [1, 2]]
+        cols = [f"level_{lvl}_agent_{i}" for i in [1, 2]]
         x = data["group"].to_numpy().astype(int)
         y = (data[cols].idxmax(axis=1) == cols[1]).to_numpy().astype(int) + 1
 
@@ -402,10 +399,8 @@ def doChiSquareAnalysis(data, levels):
 
         chisqVals.append(chisq)
         pVals.append(1 - chi2.cdf(chisq, 1))
-    
-    print(chisqVals)
-    print(pVals)
 
+    return chisqVals, pVals
 
 
 def main():
@@ -416,18 +411,27 @@ def main():
     similarityData = computeSimilarityData(sessions)
 
     # visualisation
-    plotSimilarityForLevels(similarityData, levels, outputDir=outputDir)
-    visualiseTrajectoriesForLevels(
-        levels, sessions, similarityData, outputDir=outputDir
-    )
+    plotSimilarityData(similarityData, levels, outputDir=outputDir)
+    visualiseTrajectories(levels, sessions, similarityData, outputDir=outputDir)
 
-    # regression analysis
+    # analysis
     logisticScores, linearScores = doRegressionAnalysis(similarityData, levels)
-    writeDictToCSV(logisticScores, path.join(outputDir, "logistic_regression.csv"))
-    writeDictToCSV(linearScores, path.join(outputDir, "linear_regression.csv"))
+    chiSqVals, pVals = doChiSquareAnalysis(similarityData, levels)
 
-    # chi square test
-    doChiSquareAnalysis(similarityData, levels)
+    with open(path.join(outputDir, "analysis.csv"), "w") as f:
+        fields = [
+            "level",
+            "log_regression_score",
+            "lin_regression_r_squared",
+            "chi_squared_val",
+            "p_val",
+        ]
+        data = [levels, logisticScores, linearScores, chiSqVals, pVals]
+        writer = csv.DictWriter(f, fieldnames=fields)
+        writer.writeheader()
+        writer.writerows(
+            [{fields[i]: data[i][l-1] for i in range(len(fields))} for l in levels]
+        )
 
 
 if __name__ == "__main__":
