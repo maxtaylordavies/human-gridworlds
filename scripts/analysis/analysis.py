@@ -354,7 +354,7 @@ def visualiseTrajectories(
 # ANALYSIS FUNCTIONS
 # ------------------------------------------------------------
 def doRegressionAnalysis(data, levels):
-    logisticScores, linearScores = {}, {}
+    logisticScores, linearScores = [], []
 
     # define independent variable
     x = data.group.to_numpy().reshape(-1, 1)
@@ -367,10 +367,10 @@ def doRegressionAnalysis(data, levels):
         yCont = (raw[cols[1]] - raw[cols[0]]).to_numpy()
 
         # perform logistic regression
-        logisticScores[lvl] = logisticRegression(trainTestSplit(x, yBin))
+        logisticScores.append(logisticRegression(trainTestSplit(x, yBin)))
 
         # perform linear regression
-        linearScores[lvl] = linearRegression(trainTestSplit(x, yCont))
+        linearScores.append(linearRegression(trainTestSplit(x, yCont)))
 
     return logisticScores, linearScores
 
