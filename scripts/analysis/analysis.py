@@ -1,6 +1,7 @@
 import collections
 import csv
 import json
+from math import floor, ceil
 from os import path, listdir
 
 import pandas as pd
@@ -177,12 +178,12 @@ def logisticRegression(data):
     model = LogisticRegression(random_state=0, solver="newton-cg").fit(
         data["xtrain"], data["ytrain"]
     )
-    return model.score(data["xtest"], data["ytest"])
+    return model.coef_, model.score(data["xtest"], data["ytest"])
 
 
 def linearRegression(data):
     model = LinearRegression().fit(data["xtrain"], data["ytrain"])
-    return model.score(data["xtest"], data["ytest"])
+    return model.coef_, model.score(data["xtest"], data["ytest"])
 
 
 # ------------------------------------------------------------
@@ -280,7 +281,7 @@ def plotSimilarityData(data, levels, interactive=False, outputDir=".", outFormat
         )
 
 
-def plotTrajectories(trajectories, gridSize, startPos):
+def plotTrajectories(trajectories, gridSize, paddedSize, startPos):
     nRows, nCols = gridSize
     grid = np.zeros((nRows, nCols, 3))
 
@@ -291,13 +292,19 @@ def plotTrajectories(trajectories, gridSize, startPos):
             if r < nRows and c < nCols:
                 grid[r, c] += (1 / len(trajectories)) * np.ones((3))
 
-    return grid
+    paddedRows, paddedCols = paddedSize
+    diffR, diffC = max((paddedRows - nRows), 0), max((paddedCols - nCols), 0)
+    rowsToAdd = (floor(diffR / 2), ceil(diffR / 2))
+    colsToAdd = (floor(diffC / 2), ceil(diffC / 2))
+
+    return np.pad(grid, (rowsToAdd, colsToAdd, (0, 0)))
 
 
 def visualiseTrajectories(
     levels, sessions, similarityData, interactive=False, outputDir=".", outFormat="pdf"
 ):
-    fig, axs = plt.subplots(ncols=len(levels))
+    fig, axs = plt.subplots(ncols=len(levels), figsize=(20, 3))
+    paddedSize = [max([gs[i] for gs in GRID_SIZES]) for i in [0, 1]]
 
     for i, level in enumerate(levels):
         grids, gridSize, startPos = (
@@ -308,7 +315,7 @@ def visualiseTrajectories(
 
         # visualise trajectory of demonstrator agents
         grids += [
-            plotTrajectories([agent[level - 1]], gridSize, startPos)
+            plotTrajectories([agent[level - 1]], gridSize, paddedSize, startPos)
             for agent in AGENT_TRAJECTORIES
         ]
 
@@ -322,11 +329,11 @@ def visualiseTrajectories(
                 group2Trajectories.append(traj)
 
         grids += [
-            plotTrajectories(group1Trajectories, gridSize, startPos),
-            plotTrajectories(group2Trajectories, gridSize, startPos),
+            plotTrajectories(group1Trajectories, gridSize, paddedSize, startPos),
+            plotTrajectories(group2Trajectories, gridSize, paddedSize, startPos),
         ]
 
-        nRows, nCols = gridSize
+        nRows, nCols = paddedSize
         margin = 2
         combinedGrid = np.ones(((nRows * 2) + margin, (nCols * 2) + margin, 3))
 
@@ -335,8 +342,8 @@ def visualiseTrajectories(
         combinedGrid[nRows + margin :, :nCols] = grids[2]
         combinedGrid[nRows + margin :, nCols + margin :] = grids[3]
 
-        axs[i].imshow(combinedGrid, cmap="gray")
-        axs[i].set_title(f"Level {level}")
+        axs[i].imshow(combinedGrid)
+        axs[i].set_title(f"Level {level}", fontdict={"fontsize": 16})
         axs[i].set_axis_off()
 
     fig.set_tight_layout(True)
@@ -354,7 +361,7 @@ def visualiseTrajectories(
 # ANALYSIS FUNCTIONS
 # ------------------------------------------------------------
 def doRegressionAnalysis(data, levels):
-    logisticScores, linearScores = [], []
+    logCoeffs, logScores, linCoeffs, linScores = [], [], [], []
 
     # define independent variable
     x = data.group.to_numpy().reshape(-1, 1)
@@ -367,12 +374,16 @@ def doRegressionAnalysis(data, levels):
         yCont = (raw[cols[1]] - raw[cols[0]]).to_numpy()
 
         # perform logistic regression
-        logisticScores.append(logisticRegression(trainTestSplit(x, yBin)))
+        coeffs, score = logisticRegression(trainTestSplit(x, yBin))
+        logCoeffs.append(coeffs[0][0])
+        logScores.append(score)
 
         # perform linear regression
-        linearScores.append(linearRegression(trainTestSplit(x, yCont)))
+        coeffs, score = linearRegression(trainTestSplit(x, yCont))
+        linCoeffs.append(coeffs[0])
+        linScores.append(score)
 
-    return logisticScores, linearScores
+    return logCoeffs, logScores, linCoeffs, linScores
 
 
 def doChiSquareAnalysis(data, levels):
@@ -412,25 +423,31 @@ def main():
 
     # visualisation
     plotSimilarityData(similarityData, levels, outputDir=outputDir)
-    visualiseTrajectories(levels, sessions, similarityData, outputDir=outputDir)
+    visualiseTrajectories(
+        levels, sessions, similarityData, outputDir=outputDir, outFormat="eps"
+    )
 
     # analysis
-    logisticScores, linearScores = doRegressionAnalysis(similarityData, levels)
+    logCoeffs, logScores, linCoeffs, linScores = doRegressionAnalysis(
+        similarityData, levels
+    )
     chiSqVals, pVals = doChiSquareAnalysis(similarityData, levels)
 
     with open(path.join(outputDir, "analysis.csv"), "w") as f:
         fields = [
             "level",
+            "log_regression_coeff",
             "log_regression_score",
+            "lin_regression_coeff",
             "lin_regression_r_squared",
             "chi_squared_val",
             "p_val",
         ]
-        data = [levels, logisticScores, linearScores, chiSqVals, pVals]
+        data = [levels, logCoeffs, logScores, linCoeffs, linScores, chiSqVals, pVals]
         writer = csv.DictWriter(f, fieldnames=fields)
         writer.writeheader()
         writer.writerows(
-            [{fields[i]: data[i][l-1] for i in range(len(fields))} for l in levels]
+            [{fields[i]: data[i][l - 1] for i in range(len(fields))} for l in levels]
         )
 
 
