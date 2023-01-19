@@ -1,14 +1,60 @@
 import collections
 import csv
 import json
+from math import floor, ceil
 from os import path, listdir
+
+import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+from scipy.stats import chisquare, chi2
+import seaborn as sns
+from sklearn.linear_model import LogisticRegression, LinearRegression
 
-MOVE_MAP = {"1": [-1, 0], "2": [0, 1], "3": [1, 0], "4": [0, -1]}
-DATA_DIR = "data"
+# ------------------------------------------------------------
+# CONSTANTS
+# ------------------------------------------------------------
+AGENT_TRAJECTORIES = [
+    {
+        0: "1,1,1,1,1,1,1,1,1,1,1,1",
+        1: "3,3,3,3,3,3,3,3,3,3,3,3",
+        2: "2,2,2,2,2,2,2,2,2,2,2,2",
+        3: "4,4,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2",
+        4: "4,4,3,3,3,3,3,3,3,3,2,2,2,2,2,2,2",
+        5: "1,1,1,1,1,1,1,1,1,1,1,1",
+        6: "3,3,3,3,3,3,3,3,3,3,3,3",
+    },
+    {
+        0: "2,2,2,2,2,2,2,2,2,2,2,2",
+        1: "1,1,1,1,1,1,1,1,1,1,1,1",
+        2: "3,3,3,3,3,3,3,3,3,3,3,3",
+        3: "4,4,3,3,3,3,3,3,3,3,2,2,2,2,2,2,2",
+        4: "4,4,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2",
+        5: "3,3,3,3,3,3,3,3,3,3,3,3",
+        6: "1,1,1,1,1,1,1,1,1,1,1,1",
+    },
+]
+GRID_SIZES = [
+    (14, 25),
+    (14, 25),
+    (14, 25),
+    (15, 19),
+    (15, 19),
+    (14, 25),
+    (14, 25),
+]
+START_POSITIONS = [(12, 12), (12, 12), (12, 12), (5, 9), (5, 9), (6, 12), (6, 12)]
+MOVE_MAP = {"1": [0, -1], "2": [-1, 0], "3": [0, 1], "4": [1, 0]}
+DATA_DIR = "../../data"
 SESSION_DIR = path.join(DATA_DIR, "sessions")
 TRAJECTORY_DIR = path.join(DATA_DIR, "trajectories")
+
+
+# ------------------------------------------------------------
+# HELPER FUNCTIONS
+# ------------------------------------------------------------
+def logValue(msg, val):
+    print(f"{msg}: {val}")
 
 
 def loadJSON(fp):
@@ -17,16 +63,23 @@ def loadJSON(fp):
     return data
 
 
-def convertPathToCoords(path):
-    coords = [[0, 0]]
+def writeDictToCSV(data, fp):
+    with open(fp, "w") as f:
+        writer = csv.DictWriter(f, fieldnames=data.keys())
+        writer.writeheader()
+        writer.writerow(data)
+
+
+def convertPathToCoords(path, startPos=(0, 0)):
+    coords = [startPos]
     for move in path.split(","):
         coords.append(
-            [coords[-1][0] + MOVE_MAP[move][0], coords[-1][1] + MOVE_MAP[move][1]]
+            (coords[-1][0] + MOVE_MAP[move][0], coords[-1][1] + MOVE_MAP[move][1])
         )
     return coords
 
 
-def distanceBetweenPaths(path1, path2, type="avg", norm=True):
+def distanceBetweenPaths(path1, path2, type="avg"):
     # convert path strings to lists of positions
     coords1, coords2 = convertPathToCoords(path1), convertPathToCoords(path2)
 
@@ -42,8 +95,7 @@ def distanceBetweenPaths(path1, path2, type="avg", norm=True):
     distances = [dist(coords1[i], coords2[i]) for i in range(len(coords1))]
 
     operator = max if type == "max" else lambda x: sum(x) / len(x)
-    res = operator(distances)
-    return res / len(distances) if norm else res
+    return operator(distances)
 
 
 def computeDominantDirection(path):
@@ -51,112 +103,352 @@ def computeDominantDirection(path):
     return max(counts, key=counts.get)
 
 
-def similarity1(path1, path2):
+def simCont(path1, path2):
     """
-    returns 1 / (d + 1), where d is the mean distance between the two paths
+    returns exp(-d), where d is the mean distance between the two paths
     """
-    return 1 / (distanceBetweenPaths(path1, path2, norm=False) + 1)
+    return np.exp(-distanceBetweenPaths(path1, path2))
 
 
-def similarity2(path1, path2):
+def simBin(path1, path2):
     """
     returns 1 if path1 and path2 have the same dominant direction, otherwise 0
     """
     return int(computeDominantDirection(path1) == computeDominantDirection(path2))
 
 
-# def similarity3(path1, path2):
-#     """
-#     returns 1 - (d / l), where d is the mean distance between the two paths and l is the (longer) path length
-#     """
-#     return 1 - distanceBetweenPaths(path1, path2)
+def loadSessions(experimentIDs=[]):
+    experimentFilter = (
+        lambda s: s["experimentId"] in experimentIDs if experimentIDs else True
+    )
 
-
-# def similarity4(path1, path2):
-#     """
-#     returns 1 / (d + 1), where d is the maximum distance between the two paths
-#     """
-#     return 1 / (distanceBetweenPaths(path1, path2, type="max") + 1)
-
-
-def analyseData(levels):
-    results = []
-
-    # load agent trajectories
-    agentTrajectories = [
-        loadJSON("data/trajectories/multijewel_a-0001.json")["paths"],
-        loadJSON("data/trajectories/multijewel_a-0002.json")["paths"],
-    ]
-
-    # generate results
+    # load sessions and return
     filepaths = [fp for fp in listdir(SESSION_DIR) if fp.endswith(".json")]
-    for fp in filepaths:
-        # load session data and record ids
-        sess, row = loadJSON(path.join(SESSION_DIR, fp)), {}
-        row["session_id"], row["human_id"] = sess["id"], sess["humanId"]
+    sessions = [loadJSON(path.join(SESSION_DIR, fp)) for fp in filepaths]
+    return [s for s in sessions if experimentFilter(s)]
 
-        # try to load human trajectory. if it's not stored, skip to next session
-        try:
-            humanTrajectory = loadJSON(
-                path.join(TRAJECTORY_DIR, f"multijewel_{sess['humanId']}.json")
-            )["paths"]
-        except:
-            continue
 
-        # record which agent the player shared their goal with
-        row["correct_model"] = (
-            sess["utility"]["goals"].index(max(sess["utility"]["goals"])) + 1
-        )  # 1 if goal matches agent 1, 2 if it matches agent 2
+def computeSimilarityData(sessions, simType="cont"):
+    """
+    creates a DataFrame of similarity data from list of session objects
+    """
+    levels = list(range(7))
+    simFunc = simCont if simType == "cont" else simBin
+    other = lambda g: 2 if g == 1 else 1
 
-        # record both continuous and binary similarity measures between the player's trajectory and both agents
+    # initialise data dict
+    cols = ["id", "group"]
+    for l in levels:
+        cols += [
+            f"level_{l + 1}_agent_1",
+            f"level_{l + 1}_agent_2",
+            f"level_{l + 1}_aligned",
+            f"level_{l + 1}_misaligned",
+        ]
+    dataDict = {col: [] for col in cols}
+
+    # populate data dict
+    for s in sessions:
+        dataDict["id"].append(s["id"])
+
+        group = int(s["utility"]["goals"][1] == 50) + 1
+        dataDict["group"].append(group)
+
         for l in levels:
-            for i in [0, 1]:
-                row[f"continuous_sim_level_{l}_agent_{i+1}"] = similarity1(
-                    humanTrajectory[l], agentTrajectories[i][l]
+            for a in [0, 1]:
+                dataDict[f"level_{l + 1}_agent_{a + 1}"].append(
+                    simFunc(AGENT_TRAJECTORIES[a][l], s["trajectories"][str(l)])
                 )
-                row[f"binary_sim_level_{l}_agent_{i+1}"] = similarity2(
-                    humanTrajectory[l], agentTrajectories[i][l]
-                )
+            dataDict[f"level_{l + 1}_aligned"].append(
+                dataDict[f"level_{l + 1}_agent_{group}"][-1]
+            )
+            dataDict[f"level_{l + 1}_misaligned"].append(
+                dataDict[f"level_{l + 1}_agent_{other(group)}"][-1]
+            )
 
-        results.append(row)
-
-    return results
-
-
-def saveResults(results):
-    keys = results[0].keys()
-    with open("tmp/results.csv", "w") as f:
-        w = csv.DictWriter(f, keys)
-        w.writeheader()
-        w.writerows(results)
+    # convert to dataframe and return
+    return pd.DataFrame(data=dataDict)
 
 
-def averageVar(results, key):
-    vals = [row[key] for row in results]
-    return sum(vals) / len(vals)
+def trainTestSplit(x, y):
+    return {"xtrain": x, "ytrain": y, "xtest": x, "ytest": y}
+
+
+def logisticRegression(data):
+    model = LogisticRegression(random_state=0, solver="newton-cg").fit(
+        data["xtrain"], data["ytrain"]
+    )
+    return model.coef_, model.score(data["xtest"], data["ytest"])
+
+
+def linearRegression(data):
+    model = LinearRegression().fit(data["xtrain"], data["ytrain"])
+    return model.coef_, model.score(data["xtest"], data["ytest"])
+
+
+# ------------------------------------------------------------
+# VISUALISATION FUNCTIONS
+# ------------------------------------------------------------
+def plotSimilarityData(data, levels, interactive=False, outputDir=".", outFormat="pdf"):
+    sns.set_context("paper")
+    sns.set_theme()
+
+    # first variant - split groups
+    fig, axs = plt.subplots(ncols=len(levels), sharey=True, figsize=(20, 4))
+    for i, level in enumerate(levels):
+        melted = data.rename(
+            columns={
+                f"level_{level}_agent_1": "agent 1",
+                f"level_{level}_agent_2": "agent 2",
+            }
+        ).melt(
+            id_vars=["group"],
+            value_vars=["agent 1", "agent 2"],
+            var_name="",
+            value_name="similarity",
+        )
+        g = sns.barplot(
+            data=melted,
+            x="group",
+            y="similarity",
+            hue="",
+            errorbar="se",
+            errcolor="grey",
+            errwidth=1.4,
+            capsize=0.04,
+            palette=sns.color_palette("husl", 10),
+            ax=axs[i],
+        )
+        g.set(
+            xlabel="group",
+            ylim=[0, 1],
+            ylabel=("mean trajectory similarity" if i == 0 else ""),
+            title=f"Level {level}",
+        )
+        if i < len(levels) - 1:
+            g.legend_.remove()
+
+    fig.tight_layout()
+    if interactive:
+        plt.show()
+    else:
+        plt.savefig(
+            path.join(
+                outputDir, f"barplot_split_levels_{levels[0]}-{levels[-1]}.{outFormat}"
+            )
+        )
+
+    # second variant - combined groups
+    fig, axs = plt.subplots(ncols=len(levels), sharey=True, figsize=(15, 4))
+    for i, level in enumerate(levels):
+        melted = data.rename(
+            columns={
+                f"level_{level}_aligned": "aligned",
+                f"level_{level}_misaligned": "misaligned",
+            }
+        ).melt(
+            value_vars=["aligned", "misaligned"],
+            var_name="agent",
+            value_name="similarity",
+        )
+        g = sns.barplot(
+            data=melted,
+            x="agent",
+            y="similarity",
+            errorbar="se",
+            errcolor="grey",
+            errwidth=1.4,
+            capsize=0.04,
+            palette=sns.color_palette("husl", 10),
+            ax=axs[i],
+        )
+        g.set(
+            xlabel="",
+            ylim=[0, 1],
+            ylabel=("mean trajectory similarity" if i == 0 else ""),
+            title=f"Level {level}",
+        )
+
+    fig.tight_layout()
+    if interactive:
+        plt.show()
+    else:
+        plt.savefig(
+            path.join(
+                outputDir,
+                f"barplot_combined_levels_{levels[0]}-{levels[-1]}.{outFormat}",
+            )
+        )
+
+
+def plotTrajectories(trajectories, gridSize, paddedSize, startPos):
+    nRows, nCols = gridSize
+    grid = np.zeros((nRows, nCols, 3))
+
+    for traj in trajectories:
+        coords = convertPathToCoords(traj, startPos)
+        grid[coords[0]] = np.array([0, 1, 0])
+        for (r, c) in coords[1:]:
+            if r < nRows and c < nCols:
+                grid[r, c] += (1 / len(trajectories)) * np.ones((3))
+
+    paddedRows, paddedCols = paddedSize
+    diffR, diffC = max((paddedRows - nRows), 0), max((paddedCols - nCols), 0)
+    rowsToAdd = (floor(diffR / 2), ceil(diffR / 2))
+    colsToAdd = (floor(diffC / 2), ceil(diffC / 2))
+
+    return np.pad(grid, (rowsToAdd, colsToAdd, (0, 0)))
+
+
+def visualiseTrajectories(
+    levels, sessions, similarityData, interactive=False, outputDir=".", outFormat="pdf"
+):
+    fig, axs = plt.subplots(ncols=len(levels), figsize=(20, 3))
+    paddedSize = [max([gs[i] for gs in GRID_SIZES]) for i in [0, 1]]
+
+    for i, level in enumerate(levels):
+        grids, gridSize, startPos = (
+            [],
+            GRID_SIZES[level - 1],
+            START_POSITIONS[level - 1],
+        )
+
+        # visualise trajectory of demonstrator agents
+        grids += [
+            plotTrajectories([agent[level - 1]], gridSize, paddedSize, startPos)
+            for agent in AGENT_TRAJECTORIES
+        ]
+
+        # visualise trajectory of participants
+        group1Trajectories, group2Trajectories = [], []
+        for j, s in enumerate(sessions):
+            traj = s["trajectories"][str(level - 1)]
+            if similarityData.loc[j]["group"] == 1:
+                group1Trajectories.append(traj)
+            else:
+                group2Trajectories.append(traj)
+
+        grids += [
+            plotTrajectories(group1Trajectories, gridSize, paddedSize, startPos),
+            plotTrajectories(group2Trajectories, gridSize, paddedSize, startPos),
+        ]
+
+        nRows, nCols = paddedSize
+        margin = 2
+        combinedGrid = np.ones(((nRows * 2) + margin, (nCols * 2) + margin, 3))
+
+        combinedGrid[0:nRows, 0:nCols] = grids[0]
+        combinedGrid[0:nRows, nCols + margin :] = grids[1]
+        combinedGrid[nRows + margin :, :nCols] = grids[2]
+        combinedGrid[nRows + margin :, nCols + margin :] = grids[3]
+
+        axs[i].imshow(combinedGrid)
+        axs[i].set_title(f"Level {level}", fontdict={"fontsize": 16})
+        axs[i].set_axis_off()
+
+    fig.set_tight_layout(True)
+    if interactive:
+        plt.show()
+    else:
+        plt.savefig(
+            path.join(
+                outputDir, f"trajectories_levels_{levels[0]}-{levels[-1]}.{outFormat}"
+            )
+        )
+
+
+# ------------------------------------------------------------
+# ANALYSIS FUNCTIONS
+# ------------------------------------------------------------
+def doRegressionAnalysis(data, levels):
+    logCoeffs, logScores, linCoeffs, linScores = [], [], [], []
+
+    # define independent variable
+    x = data.group.to_numpy().reshape(-1, 1)
+
+    for lvl in levels:
+        # define dependent variables for logistic and linear regression
+        cols = [f"level_{lvl}_agent_{i}" for i in [1, 2]]
+        raw = data[cols]
+        yBin = (raw.idxmax(axis=1) == cols[1]).to_numpy().astype(int) + 1
+        yCont = (raw[cols[1]] - raw[cols[0]]).to_numpy()
+
+        # perform logistic regression
+        coeffs, score = logisticRegression(trainTestSplit(x, yBin))
+        logCoeffs.append(coeffs[0][0])
+        logScores.append(score)
+
+        # perform linear regression
+        coeffs, score = linearRegression(trainTestSplit(x, yCont))
+        linCoeffs.append(coeffs[0])
+        linScores.append(score)
+
+    return logCoeffs, logScores, linCoeffs, linScores
+
+
+def doChiSquareAnalysis(data, levels):
+    chisqVals, pVals = [], []
+
+    for lvl in levels:
+        expected, observed = np.zeros((2, 2)), np.zeros((2, 2))
+
+        cols = [f"level_{lvl}_agent_{i}" for i in [1, 2]]
+        x = data["group"].to_numpy().astype(int)
+        y = (data[cols].idxmax(axis=1) == cols[1]).to_numpy().astype(int) + 1
+
+        groupTotals = collections.Counter(x)
+        expected[:, 0] = groupTotals[1] / 2
+        expected[:, 1] = groupTotals[2] / 2
+
+        for i in range(len(x)):
+            r = (y[i] == 1) - 1
+            c = (x[i] == 1) - 1
+            observed[r, c] += 1
+
+        chisq, _ = chisquare(observed, expected)
+        chisq = np.sum(chisq)
+
+        chisqVals.append(chisq)
+        pVals.append(1 - chi2.cdf(chisq, 1))
+
+    return chisqVals, pVals
 
 
 def main():
-    # levels = [str(i) for i in range(3, 7)]
-    levels = ["3", "4"]
-    results = analyseData(levels)
+    levels = list(range(1, 8))  # 1 to 7
+    outputDir = "../../results"
 
-    saveResults(results)
+    sessions = loadSessions()
+    similarityData = computeSimilarityData(sessions)
 
-    heatmap = np.zeros((2, 2 * len(levels)))
-    for model in [1, 2]:
-        rows = [r for r in results if r["correct_model"] == model]
-        for i, l in enumerate(levels):
-            heatmap[model - 1, (i * 2)] = averageVar(
-                rows, f"continuous_sim_level_{l}_agent_1"
-            )
-            heatmap[model - 1, (i * 2) + 1] = averageVar(
-                rows, f"continuous_sim_level_{l}_agent_2"
-            )
+    # visualisation
+    plotSimilarityData(similarityData, levels, outputDir=outputDir)
+    visualiseTrajectories(
+        levels, sessions, similarityData, outputDir=outputDir, outFormat="eps"
+    )
 
-    plt.imshow(heatmap)
-    plt.colorbar()
-    plt.show()
+    # analysis
+    logCoeffs, logScores, linCoeffs, linScores = doRegressionAnalysis(
+        similarityData, levels
+    )
+    chiSqVals, pVals = doChiSquareAnalysis(similarityData, levels)
+
+    with open(path.join(outputDir, "analysis.csv"), "w") as f:
+        fields = [
+            "level",
+            "log_regression_coeff",
+            "log_regression_score",
+            "lin_regression_coeff",
+            "lin_regression_r_squared",
+            "chi_squared_val",
+            "p_val",
+        ]
+        data = [levels, logCoeffs, logScores, linCoeffs, linScores, chiSqVals, pVals]
+        writer = csv.DictWriter(f, fieldnames=fields)
+        writer.writeheader()
+        writer.writerows(
+            [{fields[i]: data[i][l - 1] for i in range(len(fields))} for l in levels]
+        )
 
 
 if __name__ == "__main__":

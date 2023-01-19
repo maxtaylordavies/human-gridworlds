@@ -2,9 +2,11 @@
 **/dist/
 **/node_modules
 .vscode/
+*.pyc
 
 data/
 remote_data/
+results/
 gdy-schema.json
 tmp/
 scripts/misc
