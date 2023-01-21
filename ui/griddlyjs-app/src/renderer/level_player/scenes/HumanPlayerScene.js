@@ -170,10 +170,6 @@ class HumanPlayerScene extends Phaser.Scene {
           object,
         };
       } else {
-        // if (object.name === "player") {
-        //   object.location = { x: 12, y: 8 };
-        // }
-
         const sprite = this.grenderer.addObject(
           object.name,
           objectTemplateName,
