@@ -27,6 +27,7 @@ class Player extends Component {
       this.game.scene.remove("LoadingScene");
       this.game.scene.start("HumanPlayerScene", {
         gdy: this.props.gdy,
+        levelIdx: this.props.levelIdx,
         avatarPath: this.props.avatarPath,
         occlusionWindow: this.props.occlusionWindow,
         rendererConfig: this.props.rendererConfig,
@@ -55,6 +56,7 @@ class Player extends Component {
       ) {
         this.game.scene.getScene("HumanPlayerScene").scene.restart({
           gdy: this.props.gdy,
+          levelIdx: this.props.levelIdx,
           avatarPath: this.props.avatarPath,
           occlusionWindow: this.props.occlusionWindow,
           rendererConfig: this.props.rendererConfig,

@@ -19,23 +19,23 @@ class HumanPlayerScene extends Phaser.Scene {
 
   init = (data) => {
     try {
-      // Functions to interact with the environment
       this.griddlyjs = data.griddlyjs;
 
-      // Data about the environment
+      this.gridHeight = this.griddlyjs.getHeight();
+      this.gridWidth = this.griddlyjs.getWidth();
+
       this.gdy = data.gdy;
-      this.gdy.Objects[0].Observers.Sprite2D[0].Image = data.avatarPath;
+      this.levelIdx = data.levelIdx;
+      this.avatarPath = data.avatarPath;
+      this.trajectoryString = data.trajectoryString;
+
+      this.setPlayerPosAndImage();
 
       this.onTrajectoryStep = data.onTrajectoryStep;
       this.onReward = data.onReward;
       this.onLevelComplete = data.onLevelComplete;
       this.onPlaybackStart = data.onPlaybackStart;
       this.onPlaybackEnd = data.onPlaybackEnd;
-
-      this.trajectoryString = data.trajectoryString;
-
-      this.gridHeight = this.griddlyjs.getHeight();
-      this.gridWidth = this.griddlyjs.getWidth();
 
       this.occlusionWindow = data.occlusionWindow;
       this.occlusionPositions = [];
@@ -92,6 +92,51 @@ class HumanPlayerScene extends Phaser.Scene {
     console.warn(message, error);
   };
 
+  setPlayerPosAndImage = () => {
+    let rows;
+
+    // if this is the first time this function is being called for
+    // this level, we need to store the original location so we can
+    // recover it when the demonstration phase is over
+    if (this.playerPos === undefined) {
+      rows = this.gdy.Environment.Levels[this.levelIdx].split("\n");
+      rows.forEach((row, i) => {
+        const j = row.indexOf("p");
+        if (j !== -1) {
+          this.playerPos = { y: i, x: j / (row.length / this.gridWidth) };
+        }
+      });
+    }
+
+    // if this.trajectoryString is a non-empty string, then we're in
+    // demonstration phase rather than interactive phase
+    const pos = this.trajectoryString
+      ? this.gdy.Environment.DemonstratorStartPositions[this.levelIdx]
+      : this.playerPos;
+
+    // update the position
+    rows = this.gdy.Environment.Levels[this.levelIdx]
+      .replace("p", ".")
+      .split("\n");
+
+    const tmp = rows[pos.y].split("");
+    tmp[pos.x * (tmp.length / this.gridWidth)] = "p";
+    rows[pos.y] = tmp.join("");
+
+    const levelStr = rows.join("\n");
+    this.griddlyjs.reset(levelStr);
+    this.gdy.Environment.Levels[this.levelIdx] = levelStr;
+
+    // if this is the last time this function is being called
+    // for this level, then set this.playerPos back to undefined
+    if (this.playerPos && !this.trajectoryString) {
+      this.playerPos = undefined;
+    }
+
+    // update the avatar image
+    this.gdy.Objects[0].Observers.Sprite2D[0].Image = this.avatarPath;
+  };
+
   updateState = (state) => {
     state = this.computeOcclusions(state);
 
@@ -125,6 +170,10 @@ class HumanPlayerScene extends Phaser.Scene {
           object,
         };
       } else {
+        // if (object.name === "player") {
+        //   object.location = { x: 12, y: 8 };
+        // }
+
         const sprite = this.grenderer.addObject(
           object.name,
           objectTemplateName,

@@ -297,6 +297,7 @@ const App = () => {
           <Player
             gdyHash={gameState.gdyHash}
             gdy={gameState.gdy}
+            levelIdx={levelCount}
             avatarPath={
               session.agentAvatars[
                 session.agentIds[playbackState.pathsShown]
