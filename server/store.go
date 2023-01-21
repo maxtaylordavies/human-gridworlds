@@ -109,7 +109,7 @@ func (s Store) GetLevelPaths(gameID string, agentIDs []string, levels []int) Set
 			continue
 		}
 
-		// if we successfully loaded the agent's trajectory file, then add the agentID to set.AgentIDs
+		// add the agentID to set.AgentIDs
 		set.AgentIDs = append(set.AgentIDs, aid)
 
 		// now we iterate through the requested levels
