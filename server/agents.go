@@ -20,4 +20,5 @@ var AgentTrajectories = map[string]Trajectories{
 		5: "3,3,3,3,3,3,3,3,3,3,3,3",
 		6: "1,1,1,1,1,1,1,1,1,1,1,1",
 	},
+	"a-0003": {},
 }

@@ -257,11 +257,20 @@ const App = () => {
   };
 
   const onPlaybackEnd = () => {
-    let count = playbackState.pathsShown + 1;
-    if (count >= playbackState.pathsToShow.length) {
+    let i = playbackState.pathsShown + 1;
+
+    while (i < playbackState.pathsToShow.length) {
+      if (playbackState.pathsToShow[i]) {
+        break;
+      }
+      i += 1;
+    }
+
+    if (i >= playbackState.pathsToShow.length) {
       setGameState({ ...gameState, playing: true });
     }
-    setPlaybackState({ ...playbackState, pathsShown: count });
+
+    setPlaybackState({ ...playbackState, pathsShown: i });
   };
 
   const isReady = () => {
