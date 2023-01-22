@@ -194,9 +194,9 @@ const App = () => {
 
   // load the map for the current level
   const loadLevel = async () => {
-    const levelString =
-      gameState.gdy.Environment.Levels[session.levels[levelCount]];
-    griddlyjs.reset(levelString);
+    griddlyjs.reset(
+      gameState.gdy.Environment.Levels[session.levels[levelCount]]
+    );
   };
 
   const updatePathsToShow = () => {
@@ -306,7 +306,7 @@ const App = () => {
           <Player
             gdyHash={gameState.gdyHash}
             gdy={gameState.gdy}
-            levelIdx={levelCount}
+            levelIdx={session.levels[levelCount]}
             avatarPath={
               session.agentAvatars[
                 session.agentIds[playbackState.pathsShown]

@@ -124,6 +124,7 @@ class HumanPlayerScene extends Phaser.Scene {
     rows[pos.y] = tmp.join("");
 
     const levelStr = rows.join("\n");
+
     this.griddlyjs.reset(levelStr);
     this.gdy.Environment.Levels[this.levelIdx] = levelStr;
 
@@ -391,21 +392,21 @@ class HumanPlayerScene extends Phaser.Scene {
     };
 
     this.trajectoryActionIdx = 0;
-    this.resetLevel();
+    // this.resetLevel();
     this.onPlaybackStart();
   };
 
   endPlayback = () => {
     this.trajectoryActionIdx = 0;
     this.isRunningTrajectory = false;
-    this.resetLevel();
+    // this.resetLevel();
     // this.trajectoriesPlayedBack = 0;
     this.onPlaybackEnd();
   };
 
   resetLevel = (seed = 100) => {
     this.griddlyjs.seed(seed);
-    this.griddlyjs.reset();
+    // this.griddlyjs.reset();
     this.currentState = this.griddlyjs.getState();
   };
 
@@ -459,7 +460,7 @@ class HumanPlayerScene extends Phaser.Scene {
   computeOcclusions = (state) => {
     let players = state.objects.filter((obj) => obj.name === "player");
     if (players.length === 0) {
-      return;
+      return state;
     }
 
     // remove existing fog
@@ -490,7 +491,7 @@ class HumanPlayerScene extends Phaser.Scene {
 
     if (stepResult.terminated) {
       this.onLevelComplete();
-      this.resetLevel();
+      // this.resetLevel();
     }
   };
 
@@ -550,8 +551,6 @@ class HumanPlayerScene extends Phaser.Scene {
       this.mapping = this.setupKeyboardMapping();
       this.grenderer.init(this.gridWidth, this.gridHeight);
       this.updateState(this.griddlyjs.getState());
-      // this.createModals();
-      // this.updateModals();
     }
   };
 
@@ -578,8 +577,6 @@ class HumanPlayerScene extends Phaser.Scene {
           this.stateHash = this.currentState.hash;
           this.updateState(this.currentState);
         }
-
-        // this.updateModals();
       }
     }
   };
