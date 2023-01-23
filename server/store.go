@@ -21,7 +21,6 @@ type Session struct {
 	AgentIDs         []string          `json:"agentIds"`
 	AgentAvatars     map[string]string `json:"agentAvatars"`
 	Levels           []int             `json:"levels"`
-	OcclusionWindows []int             `json:"occlusionWindows"`
 	Utility          Utility           `json:"utility"`
 	Context          interface{}       `json:"context"`
 	Trajectories     Trajectories      `json:"trajectories"`
@@ -54,13 +53,21 @@ func (s Store) CreateSession(experimentID string, humanID string, isTest bool, c
 		humanID = GenerateID("h-")
 	}
 
-	// choose random order for agent ids
-	agentIds := SampleFromSliceString(AgentIDs, 4)
+	// select levels depending on random assignment to either experiment 1 or experiment 2
+	experimentGroup, levels := BinaryChoice(1, 2), []int{0, 1, 2}
+	if experimentGroup == 1 {
+		levels = append(append(levels, SampleFromSliceInt([]int{3, 4}, 2)...), SampleFromSliceInt([]int{5, 6}, 2)...)
+	} else {
+		levels = append(append(levels, SampleFromSliceInt([]int{7, 8}, 2)...), SampleFromSliceInt([]int{9, 10}, 2)...)
+	}
 
-	// set goal values. first set (A,B) randomly to either (50,20) or (20,50)
-	// then pairs (D,E), (F,G) and (H,I) are the same as (A,B). C is always 5.
-	ABValues := SampleFromSliceInt([]int{50, 20}, 2)
-	goalValues := append(append(append(append(ABValues, 5), ABValues...), ABValues...), ABValues...)
+	// choose random order for agent ids
+	agentIds := AgentIDs
+
+	// set goal values. first set (A,B) randomly to either (25,10) or (10,25)
+	// then pairs (D,E) and (F,G) are the same as (A,B). C is always 5.
+	ABValues := SampleFromSliceInt([]int{25, 10}, 2)
+	goalValues := append(append(append(ABValues, 5), ABValues...), ABValues...)
 
 	// create session
 	sess = Session{
@@ -77,8 +84,7 @@ func (s Store) CreateSession(experimentID string, humanID string, isTest bool, c
 			"a-0003": "custom/agent3.png",
 			"a-0004": "custom/agent4.png",
 		},
-		Levels:           []int{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10},
-		OcclusionWindows: []int{-1, -1, -1, 5, 5, -1, -1, -1, -1, -1, -1},
+		Levels: levels,
 		Utility: Utility{
 			Terrains: []int{-1},
 			Goals:    goalValues,

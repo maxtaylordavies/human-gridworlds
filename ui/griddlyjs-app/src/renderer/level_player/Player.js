@@ -29,7 +29,6 @@ class Player extends Component {
         gdy: this.props.gdy,
         levelIdx: this.props.levelIdx,
         avatarPath: this.props.avatarPath,
-        occlusionWindow: this.props.occlusionWindow,
         rendererConfig: this.props.rendererConfig,
         rendererName: this.props.rendererName,
         griddlyjs: this.props.griddlyjs,
@@ -51,14 +50,12 @@ class Player extends Component {
         prevProps.gdyHash !== this.props.gdyHash ||
         prevProps.avatarPath !== this.props.avatarPath ||
         prevProps.trajectoryString !== this.props.trajectoryString ||
-        prevProps.occlusionWindow !== this.props.occlusionWindow ||
         prevProps.beforePlaybackMs !== this.props.beforePlaybackMs
       ) {
         this.game.scene.getScene("HumanPlayerScene").scene.restart({
           gdy: this.props.gdy,
           levelIdx: this.props.levelIdx,
           avatarPath: this.props.avatarPath,
-          occlusionWindow: this.props.occlusionWindow,
           rendererConfig: this.props.rendererConfig,
           rendererName: this.props.rendererName,
           griddlyjs: this.props.griddlyjs,

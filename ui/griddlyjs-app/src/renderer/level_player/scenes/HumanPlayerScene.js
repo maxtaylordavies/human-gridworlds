@@ -37,7 +37,8 @@ class HumanPlayerScene extends Phaser.Scene {
       this.onPlaybackStart = data.onPlaybackStart;
       this.onPlaybackEnd = data.onPlaybackEnd;
 
-      this.occlusionWindow = data.occlusionWindow;
+      this.occlusionWindow =
+        this.gdy.Environment.OcclusionWindows[this.levelIdx];
       this.occlusionPositions = [];
       if (this.occlusionWindow !== -1) {
         for (let x = 0; x < this.gridWidth; x++) {

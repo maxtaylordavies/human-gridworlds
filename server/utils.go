@@ -25,6 +25,14 @@ func SampleFromSliceString(s []string, n int) []string {
 	return res
 }
 
+func BinaryChoice(a int, b int) int {
+	r := rand.New(rand.NewSource(time.Now().Unix()))
+	if r.Float64() < 0.5 {
+		return a
+	}
+	return b
+}
+
 func SampleFromSliceInt(s []int, n int) []int {
 	r := rand.New(rand.NewSource(time.Now().Unix()))
 	perm, res := r.Perm(len(s)), []int{}

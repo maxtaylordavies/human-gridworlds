@@ -320,7 +320,6 @@ const App = () => {
                 session.agentIds[playbackState.currentPathIdx]
               ] || "sprite2d/player.png"
             }
-            occlusionWindow={session.occlusionWindows[levelCountRef.current]}
             griddlyjs={griddlyjs}
             rendererName={rendererState.rendererName}
             rendererConfig={rendererState.rendererConfig}
