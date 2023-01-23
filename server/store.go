@@ -53,16 +53,22 @@ func (s Store) CreateSession(experimentID string, humanID string, isTest bool, c
 		humanID = GenerateID("h-")
 	}
 
-	// select levels depending on random assignment to either experiment 1 or experiment 2
-	experimentGroup, levels := BinaryChoice(1, 2), []int{0, 1, 2}
+	// randomly assign to experiment 1 or 2
+	experimentGroup := BinaryChoice(1, 2)
+
+	// select levels depending on experiment group assignment
+	levels := []int{0, 1, 2}
 	if experimentGroup == 1 {
 		levels = append(append(levels, SampleFromSliceInt([]int{3, 4}, 2)...), SampleFromSliceInt([]int{5, 6}, 2)...)
 	} else {
 		levels = append(append(levels, SampleFromSliceInt([]int{7, 8}, 2)...), SampleFromSliceInt([]int{9, 10}, 2)...)
 	}
 
-	// choose random order for agent ids
-	agentIds := AgentIDs
+	// set agent ids based on experiment group assignment
+	agentIds := []string{"a-0001", "a-0002"}
+	if experimentGroup == 2 {
+		agentIds = append(agentIds, []string{"a-0003", "a-0004"}...)
+	}
 
 	// set goal values. first set (A,B) randomly to either (25,10) or (10,25)
 	// then pairs (D,E) and (F,G) are the same as (A,B). C is always 5.

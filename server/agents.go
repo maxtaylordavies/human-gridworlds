@@ -6,7 +6,6 @@ package main
 // 		3: right
 // 		4: down
 
-var AgentIDs = []string{"a-0001", "a-0002", "a-0003", "a-0004"}
 var AgentTrajectories = map[string]Trajectories{
 	"a-0001": {
 		0: "1,1,1,1,1,1,1,1,1,1,1,1",
