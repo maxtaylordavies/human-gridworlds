@@ -88,12 +88,14 @@ const InstructionModal = ({
         content: (
           <>
             <p>
-              Each level will contain a number of different coloured gems.{" "}
-              <b>To complete the level, you need to collect one of the gems.</b>{" "}
+              Each level will contain a number of different coloured items.{" "}
+              <b>
+                To complete the level, you need to collect one of the items.
+              </b>{" "}
             </p>
             <p>
-              Collecting any gem will complete the level, but each gem is worth
-              a different number of points:
+              Collecting any item will complete the level, but each item is
+              worth a different number of points:
             </p>
             <div className="instruction-modal-score-key">
               {session &&
@@ -102,7 +104,7 @@ const InstructionModal = ({
                   <div className="instruction-modal-score-key-item">
                     <img
                       src={`resources/images/${objectImages.goals[i]}`}
-                      height="60px"
+                      height="50px"
                     />
                     <span>{i <= 2 ? r : "?"}</span>
                   </div>
@@ -124,7 +126,7 @@ const InstructionModal = ({
             <p>
               <b>
                 You may want to copy what one of the aliens does - but be
-                careful, an alien might prefer a different gem to you.
+                careful, an alien might prefer a different item to you.
               </b>{" "}
             </p>
             <div className="instruction-modal-character-key">

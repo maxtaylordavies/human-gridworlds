@@ -58,10 +58,9 @@ func (s Store) CreateSession(experimentID string, humanID string, isTest bool, c
 	agentIds := SampleFromSliceString(AgentIDs, 4)
 
 	// set goal values. first set (A,B) randomly to either (50,20) or (20,50)
-	// then pairs (D,E) and (F,G) are the same as (A,B). C is always 5.
+	// then pairs (D,E), (F,G) and (H,I) are the same as (A,B). C is always 5.
 	ABValues := SampleFromSliceInt([]int{50, 20}, 2)
-	CValue := 5
-	goalValues := append(append(append(ABValues, CValue), ABValues...), ABValues...)
+	goalValues := append(append(append(append(ABValues, 5), ABValues...), ABValues...), ABValues...)
 
 	// create session
 	sess = Session{
