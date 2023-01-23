@@ -73,9 +73,10 @@ func (s Store) CreateSession(experimentID string, humanID string, isTest bool, c
 		HumanID:      humanID,
 		AgentIDs:     agentIds,
 		AgentAvatars: map[string]string{
-			"a-0001": "custom/redsquare.png",
-			"a-0002": "custom/bluecircle.png",
-			"a-0003": "custom/yellowtriangle.png",
+			"a-0001": "custom/agent1.png",
+			"a-0002": "custom/agent2.png",
+			"a-0003": "custom/agent3.png",
+			"a-0004": "custom/agent4.png",
 		},
 		Levels:           []int{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10},
 		OcclusionWindows: []int{-1, -1, -1, 5, 5, -1, -1, -1, -1, -1, -1},

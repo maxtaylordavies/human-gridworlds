@@ -88,15 +88,12 @@ const InstructionModal = ({
         content: (
           <>
             <p>
-              <b>
-                To complete each level, you need to collect one of the coloured
-                gems.
-              </b>{" "}
+              Each level will contain a number of different coloured gems.{" "}
+              <b>To complete the level, you need to collect one of the gems.</b>{" "}
             </p>
             <p>
-              Collecting any gem will complete the level, but each gem will earn
-              you a different number of points. The value of each gem is as
-              follows:
+              Collecting any gem will complete the level, but each gem is worth
+              a different number of points:
             </p>
             <div className="instruction-modal-score-key">
               {session &&
@@ -105,7 +102,7 @@ const InstructionModal = ({
                   <div className="instruction-modal-score-key-item">
                     <img
                       src={`resources/images/${objectImages.goals[i]}`}
-                      height="80px"
+                      height="60px"
                     />
                     <span>{i <= 2 ? r : "?"}</span>
                   </div>
