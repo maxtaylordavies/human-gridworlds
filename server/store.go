@@ -57,11 +57,11 @@ func (s Store) CreateSession(experimentID string, humanID string, isTest bool, c
 	// choose random agent ids
 	agentIds := SampleFromSliceString(AgentIDs, 2)
 
-	// choose random goal values
+	// set goal values. first set (A,B) randomly to either (50,20) or (20,50)
+	// then pairs (D,E) and (F,G) are the same as (A,B). C is always 5.
 	ABValues := SampleFromSliceInt([]int{50, 20}, 2)
-	DEValues := SampleFromSliceInt([]int{30, 40}, 2)
 	CValue := 5
-	goalValues := append(append(ABValues, CValue), DEValues...)
+	goalValues := append(append(append(ABValues, CValue), ABValues...), ABValues...)
 
 	// create session
 	sess = Session{
@@ -77,8 +77,8 @@ func (s Store) CreateSession(experimentID string, humanID string, isTest bool, c
 			"a-0002": "custom/bluecircle.png",
 			"a-0003": "custom/yellowtriangle.png",
 		},
-		Levels:           []int{0, 1, 2, 3, 4, 5, 6},
-		OcclusionWindows: []int{-1, -1, -1, 5, 5, -1, -1},
+		Levels:           []int{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10},
+		OcclusionWindows: []int{-1, -1, -1, 5, 5, -1, -1, -1, -1, -1, -1},
 		Utility: Utility{
 			Terrains: []int{-1},
 			Goals:    goalValues,
