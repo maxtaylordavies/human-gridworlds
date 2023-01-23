@@ -54,8 +54,8 @@ func (s Store) CreateSession(experimentID string, humanID string, isTest bool, c
 		humanID = GenerateID("h-")
 	}
 
-	// choose random agent ids
-	agentIds := SampleFromSliceString(AgentIDs, 2)
+	// choose random order for agent ids
+	agentIds := SampleFromSliceString(AgentIDs, 4)
 
 	// set goal values. first set (A,B) randomly to either (50,20) or (20,50)
 	// then pairs (D,E) and (F,G) are the same as (A,B). C is always 5.

@@ -117,9 +117,9 @@ const InstructionModal = ({
         content: (
           <>
             <p>
-              As well as your human character, there are two aliens in the game.
-              At each level, they will take turns to complete it. You should
-              watch what they do, and then complete the level yourself.
+              As well as your human character, there are four aliens in the
+              game. At each level, they will take turns to complete it. You
+              should watch what they do, and then complete the level yourself.
             </p>
             <p>
               <b>

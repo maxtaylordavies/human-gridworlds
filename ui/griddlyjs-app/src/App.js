@@ -27,7 +27,7 @@ const App = () => {
   const [agentPaths, setAgentPaths] = useState(null);
   const [playbackState, setPlaybackState] = useState({
     pathsToShow: null,
-    pathsShown: -1,
+    currentPathIdx: -1,
   });
   const [trajectories, setTrajectories] = useState({});
   const [gameState, setGameState] = useState({
@@ -90,18 +90,24 @@ const App = () => {
   useEffect(() => {
     // if we've run through all the levels specified in the session,
     // then finish the experiment
-    if (session && levelCount >= session.levels.length) {
+    if (session && levelCountRef.current >= session.levels.length) {
       setFinished(true);
       // otherwise, load the next level
     } else if (gameState.gdy) {
       loadLevel();
       updatePathsToShow();
     }
-  }, [levelCount]);
+  }, [levelCountRef.current]);
 
   useEffect(() => {
     updatePathsToShow();
   }, [session, agentPaths]);
+
+  useEffect(() => {
+    if (playbackState.pathsToShow?.length > 0) {
+      updateCurrentPathIdx();
+    }
+  }, [playbackState.pathsToShow]);
 
   useEffect(() => {
     const onFinished = async () => {
@@ -195,7 +201,7 @@ const App = () => {
   // load the map for the current level
   const loadLevel = async () => {
     griddlyjs.reset(
-      gameState.gdy.Environment.Levels[session.levels[levelCount]]
+      gameState.gdy.Environment.Levels[session.levels[levelCountRef.current]]
     );
   };
 
@@ -203,11 +209,30 @@ const App = () => {
     if (session && agentPaths) {
       if (session.levels && agentPaths.paths) {
         setPlaybackState({
-          pathsToShow: agentPaths.paths[session.levels[levelCount]] || [],
-          pathsShown: 0,
+          ...playbackState,
+          pathsToShow:
+            agentPaths.paths[session.levels[levelCountRef.current]] || [],
         });
       }
     }
+  };
+
+  const updateCurrentPathIdx = () => {
+    let i = playbackState.currentPathIdx + 1;
+
+    while (i < playbackState.pathsToShow.length) {
+      if (playbackState.pathsToShow[i]) {
+        break;
+      }
+      i += 1;
+    }
+
+    if (i >= playbackState.pathsToShow.length) {
+      i = -1;
+      setGameState({ ...gameState, playing: true });
+    }
+
+    setPlaybackState({ ...playbackState, currentPathIdx: i });
   };
 
   const loadRenderers = (gdy) => {
@@ -256,23 +281,6 @@ const App = () => {
     setGameState({ ...gameState, playing: false });
   };
 
-  const onPlaybackEnd = () => {
-    let i = playbackState.pathsShown + 1;
-
-    while (i < playbackState.pathsToShow.length) {
-      if (playbackState.pathsToShow[i]) {
-        break;
-      }
-      i += 1;
-    }
-
-    if (i >= playbackState.pathsToShow.length) {
-      setGameState({ ...gameState, playing: true });
-    }
-
-    setPlaybackState({ ...playbackState, pathsShown: i });
-  };
-
   const isReady = () => {
     return (
       session !== null &&
@@ -292,27 +300,27 @@ const App = () => {
           animate={{ opacity: finished ? 0.1 : 1 }}
           transition={{ duration: 0.4 }}
         >
-          <ItemValues session={session} objectImages={objectImages} />
+          {/* <ItemValues session={session} objectImages={objectImages} /> */}
           <InfoBar
             avatarPath={
               session.agentAvatars[
-                session.agentIds[playbackState.pathsShown]
+                session.agentIds[playbackState.currentPathIdx]
               ] || ""
             }
-            level={levelCount}
+            level={levelCountRef.current}
             numLevels={session.levels.length}
             score={gameState.score}
           />
           <Player
             gdyHash={gameState.gdyHash}
             gdy={gameState.gdy}
-            levelIdx={session.levels[levelCount]}
+            levelIdx={session.levels[levelCountRef.current]}
             avatarPath={
               session.agentAvatars[
-                session.agentIds[playbackState.pathsShown]
+                session.agentIds[playbackState.currentPathIdx]
               ] || "sprite2d/player.png"
             }
-            occlusionWindow={session.occlusionWindows[levelCount]}
+            occlusionWindow={session.occlusionWindows[levelCountRef.current]}
             griddlyjs={griddlyjs}
             rendererName={rendererState.rendererName}
             rendererConfig={rendererState.rendererConfig}
@@ -331,15 +339,15 @@ const App = () => {
               setlevelCount((prevCount) => prevCount + 1);
             }}
             trajectoryString={
-              playbackState.pathsShown < playbackState.pathsToShow.length
-                ? playbackState.pathsToShow[playbackState.pathsShown]
+              playbackState.currentPathIdx < playbackState.pathsToShow.length
+                ? playbackState.pathsToShow[playbackState.currentPathIdx]
                 : ""
             }
             onPlaybackStart={onPlaybackStart}
-            onPlaybackEnd={onPlaybackEnd}
+            onPlaybackEnd={updateCurrentPathIdx}
             beforePlaybackMs={
               INTER_AGENT_INTERVAL_MS +
-              (playbackState.pathsShown === 0 ? INTER_LEVEL_INTERVAL_MS : 0)
+              (playbackState.currentPathIdx === 0 ? INTER_LEVEL_INTERVAL_MS : 0)
             }
           />
         </motion.div>
@@ -353,20 +361,30 @@ const App = () => {
         objectImages={objectImages}
       />
       <LevelPopup
-        level={levelCount + 1}
-        ready={!(waiting || finished || levelCount >= session.levels.length)}
+        level={levelCountRef.current + 1}
+        ready={
+          !(
+            waiting ||
+            finished ||
+            levelCountRef.current >= session.levels.length
+          )
+        }
         duration={INTER_LEVEL_INTERVAL_MS}
         delay={250}
       />
       <AgentTurnPopup
         agentImage={
-          session.agentAvatars[session.agentIds[playbackState.pathsShown]] || ""
+          session.agentAvatars[
+            session.agentIds[playbackState.currentPathIdx]
+          ] || ""
         }
         ready={!(waiting || finished)}
-        delay={playbackState.pathsShown === 0 ? INTER_LEVEL_INTERVAL_MS : 250}
+        delay={
+          playbackState.currentPathIdx === 0 ? INTER_LEVEL_INTERVAL_MS : 250
+        }
         duration={
           INTER_AGENT_INTERVAL_MS +
-          (playbackState.pathsShown === 0 ? INTER_LEVEL_INTERVAL_MS : 0)
+          (playbackState.currentPathIdx === 0 ? INTER_LEVEL_INTERVAL_MS : 0)
         }
       />
       <ExperimentCompleteModal
