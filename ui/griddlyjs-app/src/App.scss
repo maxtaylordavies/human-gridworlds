@@ -149,12 +149,31 @@
 }
 
 .level-popup {
+  min-width: 300px;
   z-index: 30;
   background: white;
-  color: black;
-  font-size: 34px;
-  padding: 10px 25px;
+  padding: 4px 15px;
   border-radius: 10px;
+  text-align: left;
+
+  .level-popup-title {
+    font-size: 26px;
+    margin-bottom: 25px;
+    color: black;
+  }
+
+  span {
+    font-size: 18px;
+    font-weight: bold;
+    color: #404040;
+  }
+
+  .level-popup-icon-container {
+    background-color: lightgrey;
+    margin-bottom: 10px;
+    padding: 10px;
+    border-radius: 10px;
+  }
 }
 
 .agent-turn-popup {

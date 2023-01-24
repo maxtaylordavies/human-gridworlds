@@ -42,10 +42,7 @@ const App = () => {
     rendererName: "",
     rendererConfig: {},
   });
-  const [objectImages, setObjectImages] = useState({
-    terrains: [],
-    goals: [],
-  });
+  const [goalImages, setGoalImages] = useState([]);
   const [finished, setFinished] = useState(false);
 
   // create refs for state values that will be updated inside callback functions
@@ -73,16 +70,11 @@ const App = () => {
       return;
     }
 
-    let tmp = gameState.gdy.Objects.filter((obj) => obj.Name !== "player").map(
-      (obj) => ({
-        name: obj.Name,
-        path: obj.Observers.Sprite2D[0].Image,
-      })
+    setGoalImages(
+      gameState.gdy.Objects.filter((obj) => obj.Name.includes("goal")).map(
+        (obj) => obj.Observers.Sprite2D[0].Image
+      )
     );
-    setObjectImages({
-      terrains: tmp.filter((x) => !x.name.includes("goal")).map((x) => x.path),
-      goals: tmp.filter((x) => x.name.includes("goal")).map((x) => x.path),
-    });
 
     loadLevel();
   }, [gameState.gdy]);
@@ -300,7 +292,7 @@ const App = () => {
           animate={{ opacity: finished ? 0.1 : 1 }}
           transition={{ duration: 0.4 }}
         >
-          {/* <ItemValues session={session} objectImages={objectImages} /> */}
+          {/* <ItemValues session={session} goalImages={goalImages} /> */}
           <InfoBar
             avatarPath={
               session.agentAvatars[
@@ -357,10 +349,14 @@ const App = () => {
           setWaiting(false);
         }}
         session={session}
-        objectImages={objectImages}
+        goalImages={goalImages}
       />
       <LevelPopup
-        level={levelCountRef.current + 1}
+        session={session}
+        gdy={gameState.gdy}
+        goalImages={goalImages}
+        paths={playbackState.pathsToShow}
+        levelIdx={levelCountRef.current}
         ready={
           !(
             waiting ||

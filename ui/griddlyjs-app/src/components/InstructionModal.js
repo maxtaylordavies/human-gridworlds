@@ -3,12 +3,7 @@ import { motion } from "framer-motion";
 
 import { Modal } from "./Modal";
 
-const InstructionModal = ({
-  visible,
-  onStartClicked,
-  session,
-  objectImages,
-}) => {
+const InstructionModal = ({ visible, onStartClicked, session, goalImages }) => {
   const [stage, setStage] = useState("Consent");
   const [screenIdx, setScreenIdx] = useState(0);
 
@@ -99,11 +94,11 @@ const InstructionModal = ({
             </p>
             <div className="instruction-modal-score-key">
               {session &&
-                objectImages &&
+                goalImages &&
                 session.utility.goals.map((r, i) => (
                   <div className="instruction-modal-score-key-item">
                     <img
-                      src={`resources/images/${objectImages.goals[i]}`}
+                      src={`resources/images/${goalImages[i]}`}
                       height="50px"
                     />
                     <span>{i <= 2 ? r : "?"}</span>
