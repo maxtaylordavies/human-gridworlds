@@ -371,7 +371,7 @@ const App = () => {
         duration={INTER_LEVEL_INTERVAL_MS}
         delay={250}
       />
-      <AgentTurnPopup
+      {/* <AgentTurnPopup
         agentImage={
           session.agentAvatars[
             session.agentIds[playbackState.currentPathIdx]
@@ -385,7 +385,7 @@ const App = () => {
           INTER_AGENT_INTERVAL_MS +
           (playbackState.currentPathIdx === 0 ? INTER_LEVEL_INTERVAL_MS : 0)
         }
-      />
+      /> */}
       <ExperimentCompleteModal
         visible={finished}
         score={gameState.score}
