@@ -337,8 +337,12 @@ const App = () => {
             onPlaybackStart={onPlaybackStart}
             onPlaybackEnd={updateCurrentPathIdx}
             beforePlaybackMs={
+              // if first agent, wait for level popup to finish
               INTER_AGENT_INTERVAL_MS +
-              (playbackState.currentPathIdx === 0 ? INTER_LEVEL_INTERVAL_MS : 0)
+              (playbackState.currentPathIdx ===
+              playbackState.pathsToShow.findIndex((p) => p !== "")
+                ? INTER_LEVEL_INTERVAL_MS
+                : 0)
             }
           />
         </motion.div>

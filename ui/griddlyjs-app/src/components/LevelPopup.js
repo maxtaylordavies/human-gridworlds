@@ -45,6 +45,7 @@ const LevelPopup = ({
   );
 
   return (
+    ready &&
     levelIdx !== -1 && (
       <Modal open={open} className="level-popup">
         <div className="level-popup-title">Level {lvl + 1}</div>
