@@ -14,9 +14,12 @@ func GenerateID(prefix string) string {
 	return fmt.Sprintf("%s%s", prefix, uuid.NewString()[:8])
 }
 
+func rng() *rand.Rand {
+	return rand.New(rand.NewSource(time.Now().UnixNano()))
+}
+
 func SampleFromSliceString(s []string, n int) []string {
-	r := rand.New(rand.NewSource(time.Now().Unix()))
-	perm, res := r.Perm(len(s)), []string{}
+	perm, res := rng().Perm(len(s)), []string{}
 
 	for i := 0; i < n; i++ {
 		res = append(res, s[perm[i]])
@@ -26,16 +29,14 @@ func SampleFromSliceString(s []string, n int) []string {
 }
 
 func BinaryChoice(a int, b int) int {
-	r := rand.New(rand.NewSource(time.Now().Unix()))
-	if r.Float64() < 0.5 {
+	if rng().Float64() < 0.5 {
 		return a
 	}
 	return b
 }
 
 func SampleFromSliceInt(s []int, n int) []int {
-	r := rand.New(rand.NewSource(time.Now().Unix()))
-	perm, res := r.Perm(len(s)), []int{}
+	perm, res := rng().Perm(len(s)), []int{}
 
 	for i := 0; i < n; i++ {
 		res = append(res, s[perm[i]])
@@ -50,8 +51,7 @@ func SampleFromRange(low int, high int, n int) []int {
 		return all
 	}
 
-	r := rand.New(rand.NewSource(time.Now().Unix()))
-	perm, res := r.Perm(len(all)), []int{}
+	perm, res := rng().Perm(len(all)), []int{}
 
 	for i := 0; i < n; i++ {
 		res = append(res, all[perm[i]])

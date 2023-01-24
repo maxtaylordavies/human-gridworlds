@@ -57,6 +57,8 @@ func (s Store) CreateSession(experimentID string, humanID string, isTest bool, c
 	experimentGroup := BinaryChoice(1, 2)
 
 	// select levels depending on experiment group assignment
+	//     experiment 1: [0,1,2] + [3,4]/[4,3] + [5,6]/[6,5]
+	//     experiment 2: [0,1,2] + [7,8]/[8,7] + [9,10]/[10,9]
 	levels := []int{0, 1, 2}
 	if experimentGroup == 1 {
 		levels = append(append(levels, SampleFromSliceInt([]int{3, 4}, 2)...), SampleFromSliceInt([]int{5, 6}, 2)...)
@@ -65,9 +67,11 @@ func (s Store) CreateSession(experimentID string, humanID string, isTest bool, c
 	}
 
 	// set agent ids based on experiment group assignment
-	agentIds := []string{"a-0001", "a-0002"}
+	//     experiment 1: [a-0001, a-0002]/[a-0002, a-0001]
+	//     experiment 2: [a-0001, a-0002]/[a-0002, a-0001] + [a-0003, a-0004]/[a-0004, a-0003]
+	agentIds := SampleFromSliceString([]string{"a-0001", "a-0002"}, 2)
 	if experimentGroup == 2 {
-		agentIds = append(agentIds, []string{"a-0003", "a-0004"}...)
+		agentIds = append(agentIds, SampleFromSliceString([]string{"a-0003", "a-0004"}, 2)...)
 	}
 
 	// set goal values. first set (A,B) randomly to either (25,10) or (10,25)
