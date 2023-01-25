@@ -1,3 +1,3 @@
-export const INTER_STEP_INTERVAL_MS = 50;
-export const INTER_LEVEL_INTERVAL_MS = 5000;
+export const INTER_STEP_INTERVAL_MS = 400;
+export const INTER_LEVEL_INTERVAL_MS = 4000;
 export const INTER_AGENT_INTERVAL_MS = 500;
