@@ -85,8 +85,8 @@ const InstructionModal = ({ visible, onStartClicked, session, goalImages }) => {
           <>
             <p>This experiment involves playing a simple 2D navigation game.</p>
             <img
-              src="resources/images/sprite2d/player.png"
-              height="60px"
+              src="resources/images/custom/levelpic1.jpg"
+              height="250px"
               style={{ marginBottom: "1rem" }}
             />
             <p>
@@ -151,8 +151,10 @@ const InstructionModal = ({ visible, onStartClicked, session, goalImages }) => {
               <b>
                 You should pay close attention to what each of the aliens does.
               </b>{" "}
-              You may want to copy one of them - but be careful, because
-              different aliens might prefer different gems.
+              You may want to copy one of them - but be careful, because{" "}
+              <b>
+                not all aliens are like you - some might prefer different gems!
+              </b>
             </p>
           </>
         ),
@@ -167,10 +169,18 @@ const InstructionModal = ({ visible, onStartClicked, session, goalImages }) => {
           <>
             <p>
               Some levels may be partly hidden by darkness, so that you can only
-              see a small part of the environment at once. The aliens have
-              special eyesight that allows them to see through the darkness, so
-              they can always see where they are going.
+              see a small part of the environment at once.
             </p>
+            <p>
+              The aliens are unaffected by this, since they have eyesight that
+              allows them to see in the dark.{" "}
+              <b>This means that they always know where they are going.</b>
+            </p>
+            <img
+              src="resources/images/custom/levelpic2.jpg"
+              height="250px"
+              style={{ marginBottom: "1rem" }}
+            />
           </>
         ),
         buttonLabel: "Next",
@@ -186,6 +196,12 @@ const InstructionModal = ({ visible, onStartClicked, session, goalImages }) => {
             <p>
               <b>Your goal is to get the highest score you can.</b> High scores
               will earn a bonus payment, so do your best!
+            </p>
+            <p>
+              <i>
+                Note: if at any point your arrow keys stop working, click on the
+                game screen to refocus.
+              </i>
             </p>
           </>
         ),

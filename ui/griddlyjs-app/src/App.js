@@ -141,7 +141,7 @@ const App = () => {
         // in existing experiment_id and human_id if they exist
         api.createSession(
           // utils.getValueFromUrlOrLocalstorage("eid"),
-          "prolific-run-jan-01",
+          "25-jan-run-1",
           utils.getValueFromUrlOrLocalstorage("hid"),
           utils.getProlificMetadata(),
           onSession,

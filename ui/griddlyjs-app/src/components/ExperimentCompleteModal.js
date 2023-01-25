@@ -30,15 +30,16 @@ const ExperimentCompleteModal = ({ visible, score, submitResponse }) => {
             </b>{" "}
           </p>
           <p>
-            If you copied either of the aliens, how did you decide which to
-            copy? If you didn't copy, why not?
+            If you copied any of the aliens, how did you decide which to copy?
+            Did your approach stay the same over all the levels? If you didn't
+            copy, why not?
           </p>
-          <p>minimum length 50 characters</p>
+          <p>minimum length 80 characters</p>
           <textarea rows="5" onChange={(e) => setResponse(e.target.value)} />
         </>
       ),
       buttonLabel: "Submit",
-      buttonDisabled: () => response.length < 50,
+      buttonDisabled: () => response.length < 80,
       onClick: onSubmitClicked,
     },
     {
