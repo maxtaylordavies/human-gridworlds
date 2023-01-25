@@ -1,26 +1,25 @@
 import React from "react";
 import ScorePopup from "./ScorePopup";
 
-const InfoBar = (props) => {
+const InfoBar = ({ session, avatarPath, level, score }) => {
+  const numLevels = session.levels.length;
+
   return (
     <div className="info-bar">
       <div className="info-bar-playing">
-        {props.avatarPath ? (
+        {avatarPath ? (
           <span>
-            <img src={`resources/images/${props.avatarPath}`} />
+            <img src={`resources/images/${avatarPath}`} />
             's turn
           </span>
         ) : (
           "Your turn"
         )}
       </div>
-      <ScorePopup score={props.score} />
+      <ScorePopup session={session} score={score} />
       <div className="info-bar-stats">
-        {InfoBarItem(
-          "level",
-          `${Math.min(props.level + 1, props.numLevels)}/${props.numLevels}`
-        )}
-        {InfoBarItem("score", props.score)}
+        {InfoBarItem("level", `${Math.min(level + 1, numLevels)}/${numLevels}`)}
+        {InfoBarItem("score", score)}
       </div>
     </div>
   );

@@ -81,7 +81,6 @@ const App = () => {
   }, [gameState.gdy]);
 
   useEffect(() => {
-    console.log("level changed!");
     setPlaybackState((prev) => ({ ...prev, waiting: true }));
 
     // if we've run through all the levels specified in the session,
@@ -118,10 +117,6 @@ const App = () => {
       onFinished();
     }
   }, [finished]);
-
-  useEffect(() => {
-    console.log(`waiting: ${playbackState.waiting}`);
-  }, [playbackState.waiting]);
 
   // initialise griddly, create a session on the server, and
   // then store the session in local state
@@ -302,13 +297,13 @@ const App = () => {
         >
           {/* <ItemValues session={session} goalImages={goalImages} /> */}
           <InfoBar
+            session={session}
             avatarPath={
               session.agentAvatars[
                 session.agentIds[playbackState.currentPathIdx]
               ] || ""
             }
             level={levelCountRef.current}
-            numLevels={session.levels.length}
             score={gameState.score}
           />
           <Player

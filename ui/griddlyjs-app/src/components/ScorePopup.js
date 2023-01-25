@@ -4,10 +4,20 @@ import { motion, AnimatePresence } from "framer-motion";
 
 const emoji = { high: "🎉", medium: "😐", low: "🤦‍♂️" };
 
-const ScorePopup = ({ score }) => {
+const ScorePopup = ({ score, session }) => {
   const [open, setOpen] = useState(false);
   const [prevScore, setprevScore] = useState(score);
   const [scoreDelta, setScoreDelta] = useState(0);
+  const [bounds, setBounds] = useState({ min: 0, max: 0 });
+
+  useEffect(() => {
+    if (session) {
+      setBounds({
+        min: Math.min(...session.utility.goals),
+        max: Math.max(...session.utility.goals),
+      });
+    }
+  }, [session]);
 
   useEffect(() => {
     let delta = score - prevScore;
@@ -22,7 +32,12 @@ const ScorePopup = ({ score }) => {
     }
   }, [scoreDelta]);
 
-  const bracket = scoreDelta > 30 ? "high" : scoreDelta < 10 ? "low" : "medium";
+  const bracket =
+    scoreDelta === bounds.max
+      ? "high"
+      : scoreDelta === bounds.min
+      ? "low"
+      : "medium";
 
   return (
     <AnimatePresence>
