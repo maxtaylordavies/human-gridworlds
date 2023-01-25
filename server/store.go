@@ -21,7 +21,6 @@ type Session struct {
 	AgentIDs         []string          `json:"agentIds"`
 	AgentAvatars     map[string]string `json:"agentAvatars"`
 	Levels           []int             `json:"levels"`
-	OcclusionWindows []int             `json:"occlusionWindows"`
 	Utility          Utility           `json:"utility"`
 	Context          interface{}       `json:"context"`
 	Trajectories     Trajectories      `json:"trajectories"`
@@ -54,14 +53,31 @@ func (s Store) CreateSession(experimentID string, humanID string, isTest bool, c
 		humanID = GenerateID("h-")
 	}
 
-	// choose random agent ids
-	agentIds := SampleFromSliceString(AgentIDs, 2)
+	// randomly assign to experiment 1 or 2
+	experimentGroup := BinaryChoice(1, 2)
 
-	// choose random goal values
-	ABValues := SampleFromSliceInt([]int{50, 20}, 2)
-	DEValues := SampleFromSliceInt([]int{30, 40}, 2)
-	CValue := 5
-	goalValues := append(append(ABValues, CValue), DEValues...)
+	// select levels depending on experiment group assignment
+	//     experiment 1: [0,1,2] + [3,4]/[4,3] + [5,6]/[6,5]
+	//     experiment 2: [0,1,2] + [7,8]/[8,7] + [9,10]/[10,9]
+	levels := []int{0, 1, 2}
+	if experimentGroup == 1 {
+		levels = append(append(levels, SampleFromSliceInt([]int{3, 4}, 2)...), SampleFromSliceInt([]int{5, 6}, 2)...)
+	} else {
+		levels = append(append(levels, SampleFromSliceInt([]int{7, 8}, 2)...), SampleFromSliceInt([]int{9, 10}, 2)...)
+	}
+
+	// set agent ids based on experiment group assignment
+	//     experiment 1: [a-0001, a-0002]/[a-0002, a-0001]
+	//     experiment 2: [a-0001, a-0002]/[a-0002, a-0001] + [a-0003, a-0004]/[a-0004, a-0003]
+	agentIds := SampleFromSliceString([]string{"a-0001", "a-0002"}, 2)
+	if experimentGroup == 2 {
+		agentIds = append(agentIds, SampleFromSliceString([]string{"a-0003", "a-0004"}, 2)...)
+	}
+
+	// set goal values. first set (A,B) randomly to either (25,10) or (10,25)
+	// then pairs (D,E) and (F,G) are the same as (A,B). C is always 5.
+	ABValues := SampleFromSliceInt([]int{25, 10}, 2)
+	goalValues := append(append(append(ABValues, 5), ABValues...), ABValues...)
 
 	// create session
 	sess = Session{
@@ -73,12 +89,12 @@ func (s Store) CreateSession(experimentID string, humanID string, isTest bool, c
 		HumanID:      humanID,
 		AgentIDs:     agentIds,
 		AgentAvatars: map[string]string{
-			"a-0001": "custom/redsquare.png",
-			"a-0002": "custom/bluecircle.png",
-			"a-0003": "custom/yellowtriangle.png",
+			"a-0001": "custom/agent1.png",
+			"a-0002": "custom/agent2.png",
+			"a-0003": "custom/agent3.png",
+			"a-0004": "custom/agent4.png",
 		},
-		Levels:           []int{0, 1, 2, 3, 4, 5, 6},
-		OcclusionWindows: []int{-1, -1, -1, 5, 5, -1, -1},
+		Levels: levels,
 		Utility: Utility{
 			Terrains: []int{-1},
 			Goals:    goalValues,

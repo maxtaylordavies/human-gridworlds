@@ -70,6 +70,14 @@
     line-height: 24px;
     font-weight: 500;
 
+    b {
+      line-height: 26px;
+      color: white;
+      background-color: black;
+      padding: 2px 5px;
+      font-weight: 600;
+    }
+
     a {
       color: blue;
       text-decoration: underline;
@@ -77,6 +85,12 @@
 
     ul {
       margin-top: 1em;
+    }
+
+    .please-read {
+      background-color: red;
+      color: white;
+      padding: 10px;
     }
   }
 
@@ -128,11 +142,11 @@
   flex-direction: column;
   align-items: center;
   color: grey;
-  font-size: 22px;
-  font-weight: bold;
+  font-size: 20px;
+  font-weight: 500;
 
   span {
-    margin-top: -7px;
+    margin-top: -3px;
   }
 }
 
@@ -149,12 +163,46 @@
 }
 
 .level-popup {
+  min-width: 300px;
   z-index: 30;
   background: white;
-  color: black;
-  font-size: 34px;
-  padding: 10px 25px;
+  padding: 4px 15px;
   border-radius: 10px;
+  text-align: left;
+
+  .level-popup-title {
+    font-size: 26px;
+    margin-bottom: 25px;
+    color: black;
+  }
+
+  span {
+    font-size: 18px;
+    font-weight: bold;
+    color: #404040;
+  }
+
+  .level-popup-icon-container {
+    display: flex;
+    flex-direction: row;
+    background-color: lightgrey;
+    margin-bottom: 10px;
+    padding: 10px;
+    border-radius: 10px;
+
+    .level-popup-gem {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+
+      span {
+        font-size: 16px;
+        font-weight: normal;
+        color: black;
+        margin-top: -5px
+      }
+    }
+  }
 }
 
 .agent-turn-popup {

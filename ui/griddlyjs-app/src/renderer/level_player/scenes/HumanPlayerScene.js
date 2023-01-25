@@ -28,6 +28,7 @@ class HumanPlayerScene extends Phaser.Scene {
       this.levelIdx = data.levelIdx;
       this.avatarPath = data.avatarPath;
       this.trajectoryString = data.trajectoryString;
+      this.waitToBeginPlayback = data.waitToBeginPlayback;
 
       this.setPlayerPosAndImage();
 
@@ -37,7 +38,8 @@ class HumanPlayerScene extends Phaser.Scene {
       this.onPlaybackStart = data.onPlaybackStart;
       this.onPlaybackEnd = data.onPlaybackEnd;
 
-      this.occlusionWindow = data.occlusionWindow;
+      this.occlusionWindow =
+        this.gdy.Environment.OcclusionWindows[this.levelIdx];
       this.occlusionPositions = [];
       if (this.occlusionWindow !== -1) {
         for (let x = 0; x < this.gridWidth; x++) {
@@ -77,7 +79,7 @@ class HumanPlayerScene extends Phaser.Scene {
       objects: {},
     };
 
-    if (this.trajectoryString) {
+    if (this.trajectoryString && !this.waitToBeginPlayback) {
       setTimeout(() => {
         this.beginPlayback();
       }, this.beforePlaybackMs);

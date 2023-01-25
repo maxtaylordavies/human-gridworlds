@@ -1,16 +1,13 @@
 import React from "react";
 
-const ItemValues = ({ session, objectImages }) => {
+const ItemValues = ({ session, goalImages }) => {
   return (
     <div className="item-values-container">
       {session &&
-        objectImages &&
+        goalImages &&
         session.utility.goals.map((r, i) => (
           <div className="item-values-element">
-            <img
-              src={`resources/images/${objectImages.goals[i]}`}
-              height="40px"
-            />
+            <img src={`resources/images/${goalImages[i]}`} height="40px" />
             <span
               style={
                 r === 50

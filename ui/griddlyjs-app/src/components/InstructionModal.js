@@ -3,14 +3,11 @@ import { motion } from "framer-motion";
 
 import { Modal } from "./Modal";
 
-const InstructionModal = ({
-  visible,
-  onStartClicked,
-  session,
-  objectImages,
-}) => {
+const InstructionModal = ({ visible, onStartClicked, session, goalImages }) => {
   const [stage, setStage] = useState("Consent");
   const [screenIdx, setScreenIdx] = useState(0);
+
+  const expGroup = session?.agentIds.length === 2 ? 1 : 2;
 
   const content = {
     Consent: [
@@ -69,10 +66,27 @@ const InstructionModal = ({
       {
         content: (
           <>
-            <p>This experiment involves playing a simple game.</p>
+            <p>
+              You will now read through some instructions on how to complete the
+              experiment.{" "}
+            </p>
+            <p className="please-read">
+              Please read these instructions very carefully and make sure you
+              understand them. You will not be able to access them again once
+              the experiment has started.
+            </p>
+          </>
+        ),
+        buttonLabel: "Next",
+        onClick: () => setScreenIdx((curr) => curr + 1),
+      },
+      {
+        content: (
+          <>
+            <p>This experiment involves playing a simple 2D navigation game.</p>
             <img
-              src="resources/images/sprite2d/player.png"
-              height="60px"
+              src="resources/images/custom/levelpic1.jpg"
+              height="250px"
               style={{ marginBottom: "1rem" }}
             />
             <p>
@@ -87,25 +101,23 @@ const InstructionModal = ({
       {
         content: (
           <>
+            <p>You will play through a sequence of 7 levels.</p>
             <p>
-              <b>
-                To complete each level, you need to collect one of the coloured
-                gems.
-              </b>{" "}
+              Each level will contain a number of different coloured gems.{" "}
+              <b>To complete the level, you need to collect one of the gems.</b>{" "}
             </p>
             <p>
-              Collecting any gem will complete the level, but each gem will earn
-              you a different number of points. The value of each gem is as
-              follows:
+              Collecting any gem will complete the level, but each gem is worth
+              a different number of points:
             </p>
             <div className="instruction-modal-score-key">
               {session &&
-                objectImages &&
+                goalImages &&
                 session.utility.goals.map((r, i) => (
                   <div className="instruction-modal-score-key-item">
                     <img
-                      src={`resources/images/${objectImages.goals[i]}`}
-                      height="80px"
+                      src={`resources/images/${goalImages[i]}`}
+                      height="50px"
                     />
                     <span>{i <= 2 ? r : "?"}</span>
                   </div>
@@ -120,15 +132,10 @@ const InstructionModal = ({
         content: (
           <>
             <p>
-              As well as your human character, there are two aliens in the game.
-              At each level, they will take turns to complete it. You should
-              watch what they do, and then complete the level yourself.
-            </p>
-            <p>
-              <b>
-                You may want to copy what one of the aliens does - but be
-                careful, an alien might prefer a different gem to you.
-              </b>{" "}
+              As well as your human character, there are{" "}
+              {session.agentIds.length} aliens in the game. At each level, some
+              or all of the aliens will take turns to complete it - it will then
+              be your turn to complete the level yourself.
             </p>
             <div className="instruction-modal-character-key">
               {session &&
@@ -141,11 +148,39 @@ const InstructionModal = ({
                 ))}
             </div>
             <p>
-              Some levels may be partly hidden by darkness, so that you can only
-              see a small part of the environment at once. The aliens have
-              special eyesight that allows them to see through the darkness, so
-              they can always see where they are going.
+              <b>
+                You should pay close attention to what each of the aliens does.
+              </b>{" "}
+              You may want to copy one of them - but be careful, because{" "}
+              <b>
+                not all aliens are like you - some might prefer different gems!
+              </b>
             </p>
+          </>
+        ),
+        buttonLabel: "Next",
+        onClick: () =>
+          setScreenIdx(
+            (curr) => curr + expGroup // skip the next screen if doing experiment 2
+          ),
+      },
+      {
+        content: (
+          <>
+            <p>
+              Some levels may be partly hidden by darkness, so that you can only
+              see a small part of the environment at once.
+            </p>
+            <p>
+              The aliens are unaffected by this, since they have eyesight that
+              allows them to see in the dark.{" "}
+              <b>This means that they always know where they are going.</b>
+            </p>
+            <img
+              src="resources/images/custom/levelpic2.jpg"
+              height="250px"
+              style={{ marginBottom: "1rem" }}
+            />
           </>
         ),
         buttonLabel: "Next",
@@ -155,13 +190,18 @@ const InstructionModal = ({
         content: (
           <>
             <p>
-              You start the game with 100 points. Every step you take will{" "}
-              <b>cost 1 point</b>, so you should try to minimise unnecessary
-              movement.
+              You start the game with 100 points. Every step you take will cost
+              1 point, so you should try to minimise unnecessary movement.
             </p>
             <p>
-              Your goal is to get the highest score you can. You will earn a
-              bonus payment for every point above 300, so do your best!
+              <b>Your goal is to get the highest score you can.</b> High scores
+              will earn a bonus payment, so do your best!
+            </p>
+            <p>
+              <i>
+                Note: if at any point your arrow keys stop working, click on the
+                game screen to refocus.
+              </i>
             </p>
           </>
         ),
@@ -185,7 +225,10 @@ const InstructionModal = ({
               onClick={() => {
                 screenIdx === 0
                   ? setStage("Consent")
-                  : setScreenIdx((curr) => curr - 1);
+                  : setScreenIdx(
+                      (curr) =>
+                        curr - (expGroup === 2 && screenIdx === 5 ? 2 : 1)
+                    );
               }}
               whileHover={{ scale: 1.04 }}
               whileTap={{ scale: 0.96 }}
