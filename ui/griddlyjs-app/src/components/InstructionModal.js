@@ -7,6 +7,8 @@ const InstructionModal = ({ visible, onStartClicked, session, goalImages }) => {
   const [stage, setStage] = useState("Consent");
   const [screenIdx, setScreenIdx] = useState(0);
 
+  const expGroup = session?.agentIds.length === 2 ? 1 : 2;
+
   const content = {
     Consent: [
       {
@@ -64,7 +66,24 @@ const InstructionModal = ({ visible, onStartClicked, session, goalImages }) => {
       {
         content: (
           <>
-            <p>This experiment involves playing a simple game.</p>
+            <p>
+              You will now read through some instructions on how to complete the
+              experiment.{" "}
+            </p>
+            <p className="please-read">
+              Please read these instructions very carefully and make sure you
+              understand them. You will not be able to access them again once
+              the experiment has started.
+            </p>
+          </>
+        ),
+        buttonLabel: "Next",
+        onClick: () => setScreenIdx((curr) => curr + 1),
+      },
+      {
+        content: (
+          <>
+            <p>This experiment involves playing a simple 2D navigation game.</p>
             <img
               src="resources/images/sprite2d/player.png"
               height="60px"
@@ -82,15 +101,14 @@ const InstructionModal = ({ visible, onStartClicked, session, goalImages }) => {
       {
         content: (
           <>
+            <p>You will play through a sequence of 7 levels.</p>
             <p>
-              Each level will contain a number of different coloured items.{" "}
-              <b>
-                To complete the level, you need to collect one of the items.
-              </b>{" "}
+              Each level will contain a number of different coloured gems.{" "}
+              <b>To complete the level, you need to collect one of the gems.</b>{" "}
             </p>
             <p>
-              Collecting any item will complete the level, but each item is
-              worth a different number of points:
+              Collecting any gem will complete the level, but each gem is worth
+              a different number of points:
             </p>
             <div className="instruction-modal-score-key">
               {session &&
@@ -114,15 +132,10 @@ const InstructionModal = ({ visible, onStartClicked, session, goalImages }) => {
         content: (
           <>
             <p>
-              As well as your human character, there are four aliens in the
-              game. At each level, they will take turns to complete it. You
-              should watch what they do, and then complete the level yourself.
-            </p>
-            <p>
-              <b>
-                You may want to copy what one of the aliens does - but be
-                careful, an alien might prefer a different item to you.
-              </b>{" "}
+              As well as your human character, there are{" "}
+              {session.agentIds.length} aliens in the game. At each level, some
+              or all of the aliens will take turns to complete it - it will then
+              be your turn to complete the level yourself.
             </p>
             <div className="instruction-modal-character-key">
               {session &&
@@ -134,6 +147,24 @@ const InstructionModal = ({ visible, onStartClicked, session, goalImages }) => {
                   />
                 ))}
             </div>
+            <p>
+              <b>
+                You should pay close attention to what each of the aliens does.
+              </b>{" "}
+              You may want to copy one of them - but be careful, because
+              different aliens might prefer different gems.
+            </p>
+          </>
+        ),
+        buttonLabel: "Next",
+        onClick: () =>
+          setScreenIdx(
+            (curr) => curr + expGroup // skip the next screen if doing experiment 2
+          ),
+      },
+      {
+        content: (
+          <>
             <p>
               Some levels may be partly hidden by darkness, so that you can only
               see a small part of the environment at once. The aliens have
@@ -149,13 +180,12 @@ const InstructionModal = ({ visible, onStartClicked, session, goalImages }) => {
         content: (
           <>
             <p>
-              You start the game with 100 points. Every step you take will{" "}
-              <b>cost 1 point</b>, so you should try to minimise unnecessary
-              movement.
+              You start the game with 100 points. Every step you take will cost
+              1 point, so you should try to minimise unnecessary movement.
             </p>
             <p>
-              Your goal is to get the highest score you can. You will earn a
-              bonus payment for every point above 300, so do your best!
+              <b>Your goal is to get the highest score you can.</b> High scores
+              will earn a bonus payment, so do your best!
             </p>
           </>
         ),
@@ -179,7 +209,10 @@ const InstructionModal = ({ visible, onStartClicked, session, goalImages }) => {
               onClick={() => {
                 screenIdx === 0
                   ? setStage("Consent")
-                  : setScreenIdx((curr) => curr - 1);
+                  : setScreenIdx(
+                      (curr) =>
+                        curr - (expGroup === 2 && screenIdx === 5 ? 2 : 1)
+                    );
               }}
               whileHover={{ scale: 1.04 }}
               whileTap={{ scale: 0.96 }}

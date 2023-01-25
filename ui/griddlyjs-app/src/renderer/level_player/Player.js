@@ -36,6 +36,7 @@ class Player extends Component {
         onReward: this.props.onReward,
         onLevelComplete: this.props.onLevelComplete,
         trajectoryString: this.props.trajectoryString,
+        waitToBeginPlayback: this.props.waitToBeginPlayback,
         onPlaybackStart: this.props.onPlaybackStart,
         onPlaybackEnd: this.props.onPlaybackEnd,
         beforePlaybackMs: this.props.beforePlaybackMs,
@@ -50,6 +51,7 @@ class Player extends Component {
         prevProps.gdyHash !== this.props.gdyHash ||
         prevProps.avatarPath !== this.props.avatarPath ||
         prevProps.trajectoryString !== this.props.trajectoryString ||
+        prevProps.waitToBeginPlayback !== this.props.waitToBeginPlayback ||
         prevProps.beforePlaybackMs !== this.props.beforePlaybackMs
       ) {
         this.game.scene.getScene("HumanPlayerScene").scene.restart({
@@ -63,6 +65,7 @@ class Player extends Component {
           onReward: this.props.onReward,
           onLevelComplete: this.props.onLevelComplete,
           trajectoryString: this.props.trajectoryString,
+          waitToBeginPlayback: this.props.waitToBeginPlayback,
           onPlaybackStart: this.props.onPlaybackStart,
           onPlaybackEnd: this.props.onPlaybackEnd,
           beforePlaybackMs: this.props.beforePlaybackMs,
@@ -74,6 +77,7 @@ class Player extends Component {
   render() {
     return (
       <div
+        tabIndex={0}
         ref={(divElement) => {
           this.divElement = divElement;
         }}

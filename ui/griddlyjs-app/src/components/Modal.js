@@ -1,7 +1,15 @@
 import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
-export const Modal = ({ key, open, children, styleProps, className, ref }) => {
+export const Modal = ({
+  key,
+  open,
+  children,
+  styleProps,
+  className,
+  ref,
+  onKeyDown,
+}) => {
   return (
     <AnimatePresence>
       {open && (
@@ -14,6 +22,8 @@ export const Modal = ({ key, open, children, styleProps, className, ref }) => {
           transition={{ duration: 0.2 }}
           style={{ styleProps }}
           ref={ref}
+          onKeyDown={onKeyDown}
+          tabIndex={-1}
         >
           {children}
         </motion.div>

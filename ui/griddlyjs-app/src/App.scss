@@ -70,6 +70,14 @@
     line-height: 24px;
     font-weight: 500;
 
+    b {
+      line-height: 26px;
+      color: white;
+      background-color: black;
+      padding: 2px 5px;
+      font-weight: 600;
+    }
+
     a {
       color: blue;
       text-decoration: underline;
@@ -77,6 +85,12 @@
 
     ul {
       margin-top: 1em;
+    }
+
+    .please-read {
+      background-color: red;
+      color: white;
+      padding: 10px;
     }
   }
 
@@ -169,10 +183,25 @@
   }
 
   .level-popup-icon-container {
+    display: flex;
+    flex-direction: row;
     background-color: lightgrey;
     margin-bottom: 10px;
     padding: 10px;
     border-radius: 10px;
+
+    .level-popup-gem {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+
+      span {
+        font-size: 16px;
+        font-weight: normal;
+        color: black;
+        margin-top: -5px
+      }
+    }
   }
 }
 

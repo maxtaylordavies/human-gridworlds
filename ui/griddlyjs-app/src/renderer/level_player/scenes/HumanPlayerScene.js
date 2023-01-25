@@ -28,6 +28,7 @@ class HumanPlayerScene extends Phaser.Scene {
       this.levelIdx = data.levelIdx;
       this.avatarPath = data.avatarPath;
       this.trajectoryString = data.trajectoryString;
+      this.waitToBeginPlayback = data.waitToBeginPlayback;
 
       this.setPlayerPosAndImage();
 
@@ -78,7 +79,7 @@ class HumanPlayerScene extends Phaser.Scene {
       objects: {},
     };
 
-    if (this.trajectoryString) {
+    if (this.trajectoryString && !this.waitToBeginPlayback) {
       setTimeout(() => {
         this.beginPlayback();
       }, this.beforePlaybackMs);

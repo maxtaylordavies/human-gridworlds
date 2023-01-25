@@ -28,6 +28,7 @@ const App = () => {
   const [playbackState, setPlaybackState] = useState({
     pathsToShow: null,
     currentPathIdx: -1,
+    waiting: true,
   });
   const [trajectories, setTrajectories] = useState({});
   const [gameState, setGameState] = useState({
@@ -80,6 +81,9 @@ const App = () => {
   }, [gameState.gdy]);
 
   useEffect(() => {
+    console.log("level changed!");
+    setPlaybackState((prev) => ({ ...prev, waiting: true }));
+
     // if we've run through all the levels specified in the session,
     // then finish the experiment
     if (session && levelCountRef.current >= session.levels.length) {
@@ -114,6 +118,10 @@ const App = () => {
       onFinished();
     }
   }, [finished]);
+
+  useEffect(() => {
+    console.log(`waiting: ${playbackState.waiting}`);
+  }, [playbackState.waiting]);
 
   // initialise griddly, create a session on the server, and
   // then store the session in local state
@@ -200,11 +208,11 @@ const App = () => {
   const updatePathsToShow = () => {
     if (session && agentPaths) {
       if (session.levels && agentPaths.paths) {
-        setPlaybackState({
-          ...playbackState,
+        setPlaybackState((prev) => ({
+          ...prev,
           pathsToShow:
             agentPaths.paths[session.levels[levelCountRef.current]] || [],
-        });
+        }));
       }
     }
   };
@@ -224,7 +232,7 @@ const App = () => {
       setGameState({ ...gameState, playing: true });
     }
 
-    setPlaybackState({ ...playbackState, currentPathIdx: i });
+    setPlaybackState((prev) => ({ ...prev, currentPathIdx: i }));
   };
 
   const loadRenderers = (gdy) => {
@@ -334,16 +342,18 @@ const App = () => {
                 ? playbackState.pathsToShow[playbackState.currentPathIdx]
                 : ""
             }
+            waitToBeginPlayback={playbackState.waiting}
             onPlaybackStart={onPlaybackStart}
             onPlaybackEnd={updateCurrentPathIdx}
-            beforePlaybackMs={
-              // if first agent, wait for level popup to finish
-              INTER_AGENT_INTERVAL_MS +
-              (playbackState.currentPathIdx ===
-              playbackState.pathsToShow.findIndex((p) => p !== "")
-                ? INTER_LEVEL_INTERVAL_MS
-                : 0)
-            }
+            // beforePlaybackMs={
+            //   // if first agent, wait for level popup to finish
+            //   INTER_AGENT_INTERVAL_MS +
+            //   (playbackState.currentPathIdx ===
+            //   playbackState.pathsToShow.findIndex((p) => p !== "")
+            //     ? INTER_LEVEL_INTERVAL_MS
+            //     : 0)
+            // }
+            beforePlaybackMs={INTER_AGENT_INTERVAL_MS}
           />
         </motion.div>
       )}
@@ -370,6 +380,9 @@ const App = () => {
         }
         duration={INTER_LEVEL_INTERVAL_MS}
         delay={250}
+        onProceed={() =>
+          setPlaybackState((prev) => ({ ...prev, waiting: false }))
+        }
       />
       {/* <AgentTurnPopup
         agentImage={
