@@ -38,7 +38,9 @@ const LevelPopup = ({
     open &&
     levelIdx !== -1 && (
       <Modal open={open} className="level-popup">
-        <div className="level-popup-title">Level {lvl + 1}</div>
+        <div className="level-popup-title">
+          {lvl === 0 ? "Practice level" : `Level ${lvl}`}
+        </div>
         <div>
           <span>Aliens</span>
           <div className="level-popup-icon-container">

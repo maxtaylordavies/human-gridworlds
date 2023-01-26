@@ -322,12 +322,14 @@ const App = () => {
             width={800}
             onTrajectoryStep={onTrajectoryStep}
             onReward={(val) => {
-              setGameState((prev) => {
-                return {
-                  ...prev,
-                  score: prev.score + val,
-                };
-              });
+              if (levelCountRef.current > 0) {
+                setGameState((prev) => {
+                  return {
+                    ...prev,
+                    score: prev.score + val,
+                  };
+                });
+              }
             }}
             onLevelComplete={() => {
               setlevelCount((prevCount) => prevCount + 1);

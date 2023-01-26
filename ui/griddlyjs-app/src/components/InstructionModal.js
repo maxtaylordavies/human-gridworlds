@@ -123,6 +123,9 @@ const InstructionModal = ({ visible, onStartClicked, session, goalImages }) => {
                   </div>
                 ))}
             </div>
+            <p>
+              The value of each gem will remain the same throughout the game.{" "}
+            </p>
           </>
         ),
         buttonLabel: "Next",
@@ -150,39 +153,51 @@ const InstructionModal = ({ visible, onStartClicked, session, goalImages }) => {
             <p>
               <b>
                 You should pay close attention to what each of the aliens does.
-              </b>{" "}
-              You may want to copy one of them - but be careful, because{" "}
-              <b>
-                not all aliens are like you - some might prefer different gems!
+                In some levels, you may want to copy one the aliens - but be
+                careful, because not all aliens are like you - some might prefer
+                different gems!
               </b>
             </p>
           </>
         ),
         buttonLabel: "Next",
-        onClick: () =>
-          setScreenIdx(
-            (curr) => curr + expGroup // skip the next screen if doing experiment 2
-          ),
+        onClick: () => setScreenIdx((curr) => curr + 1),
       },
       {
-        content: (
-          <>
-            <p>
-              Some levels may be partly hidden by darkness, so that you can only
-              see a small part of the environment at once.
-            </p>
-            <p>
-              The aliens are unaffected by this, since they have eyesight that
-              allows them to see in the dark.{" "}
-              <b>This means that they always know where they are going.</b>
-            </p>
-            <img
-              src="resources/images/custom/levelpic2.jpg"
-              height="250px"
-              style={{ marginBottom: "1rem" }}
-            />
-          </>
-        ),
+        content:
+          expGroup === 1 ? (
+            <>
+              <p>
+                Some levels may be partly hidden by darkness, so that you can
+                only see a small part of the environment at once.
+              </p>
+              <p>
+                The aliens are unaffected by this, since they have eyesight that
+                allows them to see in the dark.{" "}
+                <b>This means that they always know where they are going.</b>
+              </p>
+              <img
+                src="resources/images/custom/levelpic2.jpg"
+                height="250px"
+                style={{ marginBottom: "1rem" }}
+              />
+            </>
+          ) : (
+            <>
+              <p>
+                In some levels, part of the world may be blocked off by water,
+                meaning that some of the gems are not accessible.{" "}
+              </p>
+              <p>
+                In these levels, you should just collect whichever gem you can.{" "}
+                <b>
+                  But you should still pay close attention to which gems the
+                  aliens collect,
+                </b>{" "}
+                as this information may help in other levels.
+              </p>
+            </>
+          ),
         buttonLabel: "Next",
         onClick: () => setScreenIdx((curr) => curr + 1),
       },
@@ -191,11 +206,12 @@ const InstructionModal = ({ visible, onStartClicked, session, goalImages }) => {
           <>
             <p>
               You start the game with 100 points. Every step you take will cost
-              1 point, so you should try to minimise unnecessary movement.
+              1 point. <b>Your goal is to get the highest score you can.</b>{" "}
+              High scores will earn a bonus payment, so do your best!
             </p>
             <p>
-              <b>Your goal is to get the highest score you can.</b> High scores
-              will earn a bonus payment, so do your best!
+              The first level will be a <b>practice level</b> - it will not
+              count towards your final score.
             </p>
             <p>
               <i>
@@ -225,10 +241,7 @@ const InstructionModal = ({ visible, onStartClicked, session, goalImages }) => {
               onClick={() => {
                 screenIdx === 0
                   ? setStage("Consent")
-                  : setScreenIdx(
-                      (curr) =>
-                        curr - (expGroup === 2 && screenIdx === 5 ? 2 : 1)
-                    );
+                  : setScreenIdx((curr) => curr - 1);
               }}
               whileHover={{ scale: 1.04 }}
               whileTap={{ scale: 0.96 }}

@@ -18,7 +18,12 @@ const InfoBar = ({ session, avatarPath, level, score }) => {
       </div>
       <ScorePopup session={session} score={score} />
       <div className="info-bar-stats">
-        {InfoBarItem("level", `${Math.min(level + 1, numLevels)}/${numLevels}`)}
+        {InfoBarItem(
+          "level",
+          level === 0
+            ? "practice"
+            : `${Math.min(level, numLevels)}/${numLevels}`
+        )}
         {InfoBarItem("score", score)}
       </div>
     </div>
@@ -28,7 +33,7 @@ const InfoBar = ({ session, avatarPath, level, score }) => {
 const InfoBarItem = (key, val) => {
   return (
     <div className="info-bar-stats-item">
-      <div className="info-bar-stats-item-key">{key}</div>
+      <div className="info-bar-stats-item-key">{key}:</div>
       <div className="info-bar-stats-item-val">{val}</div>
     </div>
   );
