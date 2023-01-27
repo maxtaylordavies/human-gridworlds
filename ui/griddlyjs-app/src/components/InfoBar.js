@@ -22,7 +22,7 @@ const InfoBar = ({ session, avatarPath, level, score }) => {
           "level",
           level === 0
             ? "practice"
-            : `${Math.min(level, numLevels)}/${numLevels}`
+            : `${Math.min(level, numLevels - 1)}/${numLevels - 1}`
         )}
         {InfoBarItem("score", score)}
       </div>

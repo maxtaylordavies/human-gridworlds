@@ -211,7 +211,9 @@ const InstructionModal = ({ visible, onStartClicked, session, goalImages }) => {
             </p>
             <p>
               The first level will be a <b>practice level</b> - it will not
-              count towards your final score.
+              count towards your final score. After the practice level, you will
+              be presented with a <b>very short quiz</b>, where you will have to
+              identify which gem each alien collected - so pay attention!
             </p>
             <p>
               <i>

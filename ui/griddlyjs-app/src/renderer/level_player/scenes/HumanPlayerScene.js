@@ -360,9 +360,9 @@ class HumanPlayerScene extends Phaser.Scene {
     });
 
     // When the mouse leaves the window we stop collecting keys
-    this.input.on(Phaser.Input.Events.POINTER_DOWN_OUTSIDE, () => {
-      this.input.keyboard.enabled = false;
-    });
+    // this.input.on(Phaser.Input.Events.POINTER_DOWN_OUTSIDE, () => {
+    //   this.input.keyboard.enabled = false;
+    // });
 
     // When we click back in the scene we collect keys
     this.input.on(Phaser.Input.Events.POINTER_DOWN, () => {

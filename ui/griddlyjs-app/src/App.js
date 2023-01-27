@@ -7,9 +7,8 @@ import Player from "./renderer/level_player/Player";
 import InfoBar from "./components/InfoBar";
 import InstructionModal from "./components/InstructionModal";
 import ExperimentCompleteModal from "./components/ExperimentCompleteModal";
-import AgentTurnPopup from "./components/AgentTurnPopup";
 import LevelPopup from "./components/LevelPopup";
-import ItemValues from "./components/ItemValues";
+import QuizModal from "./components/QuizModal";
 import { INTER_LEVEL_INTERVAL_MS, INTER_AGENT_INTERVAL_MS } from "./constants";
 import * as api from "./api";
 import * as utils from "./utils";
@@ -45,6 +44,7 @@ const App = () => {
   });
   const [goalImages, setGoalImages] = useState([]);
   const [finished, setFinished] = useState(false);
+  const [showQuiz, setShowQuiz] = useState(false);
 
   // create refs for state values that will be updated inside callback functions
   const levelCountRef = useRef();
@@ -105,6 +105,12 @@ const App = () => {
   }, [playbackState.pathsToShow]);
 
   useEffect(() => {
+    if (!showQuiz && !waiting) {
+      nextLevel();
+    }
+  }, [showQuiz]);
+
+  useEffect(() => {
     const onFinished = async () => {
       await uploadTrajectories();
       await uploadFinalScore();
@@ -141,7 +147,7 @@ const App = () => {
         // in existing experiment_id and human_id if they exist
         api.createSession(
           // utils.getValueFromUrlOrLocalstorage("eid"),
-          "25-jan-run-1",
+          "26-jan-run-2",
           utils.getValueFromUrlOrLocalstorage("hid"),
           utils.getProlificMetadata(),
           onSession,
@@ -276,6 +282,18 @@ const App = () => {
     setGameState({ ...gameState, playing: false });
   };
 
+  const nextLevel = () => {
+    setlevelCount((prevCount) => prevCount + 1);
+  };
+
+  const onLevelComplete = () => {
+    if (levelCountRef.current === 0) {
+      setShowQuiz(true);
+    } else {
+      nextLevel();
+    }
+  };
+
   const isReady = () => {
     return (
       session !== null &&
@@ -331,9 +349,7 @@ const App = () => {
                 });
               }
             }}
-            onLevelComplete={() => {
-              setlevelCount((prevCount) => prevCount + 1);
-            }}
+            onLevelComplete={onLevelComplete}
             trajectoryString={
               playbackState.currentPathIdx < playbackState.pathsToShow.length
                 ? playbackState.pathsToShow[playbackState.currentPathIdx]
@@ -381,6 +397,14 @@ const App = () => {
           setPlaybackState((prev) => ({ ...prev, waiting: false }))
         }
       />
+      <QuizModal
+        session={session}
+        visible={showQuiz}
+        goalImages={goalImages}
+        onFinished={() => {
+          setShowQuiz(false);
+        }}
+      />
       {/* <AgentTurnPopup
         agentImage={
           session.agentAvatars[
@@ -397,6 +421,7 @@ const App = () => {
         }
       /> */}
       <ExperimentCompleteModal
+        session={session}
         visible={finished}
         score={gameState.score}
         submitResponse={uploadFreeTextResponse}

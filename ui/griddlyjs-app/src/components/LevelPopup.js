@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { motion } from "framer-motion";
 
 import { Modal } from "./Modal";
 
@@ -26,11 +27,16 @@ const LevelPopup = ({
     setTimeout(() => {
       setLvl(levelIdx);
       setOpen(true);
-      setTimeout(() => {
-        setOpen(false);
-        onProceed();
-      }, duration);
+      // setTimeout(() => {
+      //   setOpen(false);
+      //   onProceed();
+      // }, duration);
     }, delay);
+  };
+
+  const onProceedClicked = () => {
+    setOpen(false);
+    onProceed();
   };
 
   return (
@@ -75,6 +81,17 @@ const LevelPopup = ({
                 );
               })}
           </div>
+        </div>
+        <div className="level-popup-button-row">
+          <motion.button
+            onClick={onProceedClicked}
+            className="level-popup-button"
+            whileHover={{ scale: 1.04 }}
+            whileTap={{ scale: 0.96 }}
+            transition={{ duration: 0.2 }}
+          >
+            Proceed
+          </motion.button>
         </div>
       </Modal>
     )

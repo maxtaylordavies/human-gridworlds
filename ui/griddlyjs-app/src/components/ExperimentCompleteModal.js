@@ -5,7 +5,12 @@ import { Modal } from "./Modal";
 
 const PROLIFIC_CODE = "CAL3DWSD";
 
-const ExperimentCompleteModal = ({ visible, score, submitResponse }) => {
+const ExperimentCompleteModal = ({
+  session,
+  visible,
+  score,
+  submitResponse,
+}) => {
   const [screenIdx, setScreenIdx] = useState(0);
   const [response, setResponse] = useState("");
 
@@ -18,6 +23,19 @@ const ExperimentCompleteModal = ({ visible, score, submitResponse }) => {
     await navigator.clipboard.writeText(PROLIFIC_CODE);
   };
 
+  const questions =
+    session.agentIds.length === 2
+      ? [
+          "In the early levels (1-2), did you learn anything about the red and blue aliens from watching them?",
+          "In the dark levels (3-4), how did you decide which way to go?",
+          "In the last two levels (5-6) where the gems were unknown, how did you decide which one to collect?",
+        ]
+      : [
+          "In the early levels (1-2), did you learn anything about the red and blue aliens from watching them?",
+          "What about the yellow and pink aliens in levels 3-4?",
+          "In the last two levels (5-6), how did you decide which gem to collect?",
+        ];
+
   const content = [
     {
       title: "Free text response",
@@ -25,21 +43,21 @@ const ExperimentCompleteModal = ({ visible, score, submitResponse }) => {
         <>
           <p>
             <b>
-              Please write a brief description of how you decided what actions
-              to take in the game.
+              Please write a brief description (minimum 100 characters) of how
+              you decided what actions to take in the game. Consider the
+              following questions:
             </b>{" "}
           </p>
-          <p>
-            If you copied any of the aliens, how did you decide which to copy?
-            Did your approach stay the same over all the levels? If you didn't
-            copy, why not?
-          </p>
-          <p>minimum length 80 characters</p>
+          <ul>
+            {questions.map((q, i) => (
+              <li key={i}>{q}</li>
+            ))}
+          </ul>
           <textarea rows="5" onChange={(e) => setResponse(e.target.value)} />
         </>
       ),
       buttonLabel: "Submit",
-      buttonDisabled: () => response.length < 80,
+      buttonDisabled: () => response.length < 100,
       onClick: onSubmitClicked,
     },
     {

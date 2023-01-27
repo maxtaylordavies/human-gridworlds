@@ -1,10 +1,15 @@
-import { React, Component } from "react";
+import React, { Component } from "react";
 import Phaser from "phaser";
 
 import HumanPlayerScene from "./scenes/HumanPlayerScene";
 import LoadingScene from "../LoadingScene";
 
 class Player extends Component {
+  constructor(props) {
+    super(props);
+    this.divElement = React.createRef();
+  }
+
   updateCanvasSize = () => {
     this.game.scale.resize(this.props.width, this.props.height);
   };
@@ -77,7 +82,6 @@ class Player extends Component {
   render() {
     return (
       <div
-        tabIndex={0}
         ref={(divElement) => {
           this.divElement = divElement;
         }}

@@ -50,7 +50,7 @@ const ScorePopup = ({ score, session }) => {
           exit={{ opacity: 0, top: 0 }}
           transition={{ duration: 0.4 }}
         >
-          +{scoreDelta} points {emoji[bracket]}
+          +{scoreDelta} points
         </motion.div>
       )}
     </AnimatePresence>
