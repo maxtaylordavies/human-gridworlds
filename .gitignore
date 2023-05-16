@@ -6,6 +6,7 @@
 
 data/
 remote_data/
+sessions_old/
 results/
 gdy-schema.json
 tmp/
