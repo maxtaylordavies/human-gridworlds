@@ -1,9 +1,8 @@
 package store
 
 type Level struct {
-	TemplateName  string `json:"templateName"`
-	ID            int    `json:"id"`
-	ObjectsHidden bool   `json:"objectsHidden"`
+	ID            int  `json:"id"`
+	ObjectsHidden bool `json:"objectsHidden"`
 }
 
 type Phase struct {

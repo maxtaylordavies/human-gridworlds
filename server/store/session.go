@@ -7,16 +7,17 @@ type Trajectories map[int]string // maps level index to recorded path
 type Conditions map[string]interface{}
 
 type Session struct {
-	ID            string       `json:"id"`
-	ExperimentID  string       `json:"experimentId"`
-	CreatedAt     int64        `json:"createdAt"` // unix timestamp
-	IsTest        bool         `json:"isTest"`
-	Phases        []Phase      `json:"phases"`
-	Conditions    Conditions   `json:"conditions"`
-	Context       interface{}  `json:"context"`
-	Trajectories  Trajectories `json:"trajectories"`
-	FinalScore    int          `json:"finalScore"`
-	TextResponses []string     `json:"textResponses"`
+	ID              string       `json:"id"`
+	ExperimentID    string       `json:"experimentId"`
+	CreatedAt       int64        `json:"createdAt"` // unix timestamp
+	IsTest          bool         `json:"isTest"`
+	GriddlySpecName string       `json:"griddlySpecName"`
+	Phases          []Phase      `json:"phases"`
+	Conditions      Conditions   `json:"conditions"`
+	Context         interface{}  `json:"context"`
+	Trajectories    Trajectories `json:"trajectories"`
+	FinalScore      int          `json:"finalScore"`
+	TextResponses   []string     `json:"textResponses"`
 }
 
 func CreateSession(experimentID string, isTest bool, context interface{}) Session {
@@ -30,12 +31,13 @@ func CreateSession(experimentID string, isTest bool, context interface{}) Sessio
 	}
 
 	return Session{
-		ID:           GenerateID("s-"),
-		ExperimentID: experimentID,
-		CreatedAt:    time.Now().Unix(),
-		IsTest:       isTest,
-		Phases:       []Phase{},
-		Conditions:   conditions,
-		Context:      context,
+		ID:              GenerateID("s-"),
+		ExperimentID:    experimentID,
+		CreatedAt:       time.Now().Unix(),
+		IsTest:          isTest,
+		GriddlySpecName: "journal",
+		Phases:          []Phase{},
+		Conditions:      conditions,
+		Context:         context,
 	}
 }
