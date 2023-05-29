@@ -44,8 +44,8 @@ export const createSession = async (
     .catch((e) => onError(e));
 };
 
-export const loadGameSpec = async (callback, onError) => {
-  get("game?id=multijewel")
+export const loadGameSpec = async (specName, callback, onError) => {
+  get(`game?id=${specName}`)
     .then((response) => {
       callback(yaml.load(response.data));
     })

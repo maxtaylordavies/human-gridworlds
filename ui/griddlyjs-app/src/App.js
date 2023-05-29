@@ -2,6 +2,11 @@ import React, { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import yaml from "js-yaml";
 
+import * as api from "./api";
+import * as utils from "./utils";
+import { useStore } from "./store";
+import { hashString } from "./hash";
+import { INTER_LEVEL_INTERVAL_MS, INTER_AGENT_INTERVAL_MS } from "./constants";
 import GriddlyJSCore from "./GriddlyJSCore";
 import Player from "./renderer/level_player/Player";
 import InfoBar from "./components/InfoBar";
@@ -9,46 +14,43 @@ import InstructionModal from "./components/InstructionModal";
 import ExperimentCompleteModal from "./components/ExperimentCompleteModal";
 import LevelPopup from "./components/LevelPopup";
 import QuizModal from "./components/QuizModal";
-import { INTER_LEVEL_INTERVAL_MS, INTER_AGENT_INTERVAL_MS } from "./constants";
-import * as api from "./api";
-import * as utils from "./utils";
-import { hashString } from "./hash";
 import "./App.scss";
 
 const App = () => {
   // create and initialise an instance of the GriddlyJS core
   const [griddlyjs, setGriddlyjs] = useState(new GriddlyJSCore());
 
-  // initialise a bunch of state
-  const [waiting, setWaiting] = useState(true);
-  const [session, setSession] = useState(null);
-  const [levelCount, setlevelCount] = useState(0);
-  const [agentPaths, setAgentPaths] = useState(null);
-  const [playbackState, setPlaybackState] = useState({
-    pathsToShow: null,
-    currentPathIdx: -1,
-    waiting: true,
-  });
-  const [trajectories, setTrajectories] = useState({});
-  const [gameState, setGameState] = useState({
-    gdy: null,
-    gdyHash: 0,
-    gdyString: "",
-    playing: false,
-    score: 100,
-  });
-  const [rendererState, setRendererState] = useState({
-    renderers: [],
-    rendererName: "",
-    rendererConfig: {},
-  });
-  const [goalImages, setGoalImages] = useState([]);
-  const [finished, setFinished] = useState(false);
-  const [showQuiz, setShowQuiz] = useState(false);
+  // get state from zustand store
+  const [appState, setAppState] = useStore((state) => [
+    state.appState,
+    state.setAppState,
+  ]);
+  const [sessionState, setSessionState] = useStore((state) => [
+    state.sessionState,
+    state.setSessionState,
+  ]);
+  const [gameState, setGameState] = useStore((state) => [
+    state.gameState,
+    state.setGameState,
+  ]);
+  const [playbackState, setPlaybackState] = useStore((state) => [
+    state.playbackState,
+    state.setPlaybackState,
+  ]);
+  const [rendererState, setRendererState] = useStore((state) => [
+    state.rendererState,
+    state.setRendererState,
+  ]);
+  const [trajectories, setTrajectories] = useStore((state) => [
+    state.trajectories,
+    state.setTrajectories,
+  ]);
 
   // create refs for state values that will be updated inside callback functions
+  const phaseIdxRef = useRef();
+  phaseIdxRef.current = sessionState.phaseIdx;
   const levelCountRef = useRef();
-  levelCountRef.current = levelCount;
+  levelCountRef.current = sessionState.levelCount;
   const trajectoriesRef = useRef();
   trajectoriesRef.current = trajectories;
 
@@ -57,12 +59,13 @@ const App = () => {
   }, []);
 
   useEffect(() => {
+    console.log("session: ", session);
     if (session) {
       // fetch data
       fetchData();
-
       // initialise trajectories
-      setTrajectories(session.levels.reduce((o, l) => ({ ...o, [l]: [] }), {}));
+      // setTrajectories(session.levels.reduce((o, l) => ({ ...o, [l]: [] }), {}));
+      setTrajectories({});
     }
   }, [session]);
 
@@ -71,11 +74,10 @@ const App = () => {
       return;
     }
 
-    setGoalImages(
-      gameState.gdy.Objects.filter((obj) => obj.Name.includes("goal")).map(
-        (obj) => obj.Observers.Sprite2D[0].Image
-      )
-    );
+    const goalImages = gameState.gdy.Objects.filter((obj) =>
+      obj.Name.includes("goal")
+    ).map((obj) => obj.Observers.Sprite2D[0].Image);
+    setGameState((prev) => ({ ...prev, goalImages }));
 
     loadLevel();
   }, [gameState.gdy]);
@@ -85,8 +87,11 @@ const App = () => {
 
     // if we've run through all the levels specified in the session,
     // then finish the experiment
-    if (session && levelCountRef.current >= session.levels.length) {
-      setFinished(true);
+    if (
+      sessionState.session &&
+      levelCountRef.current >= session.levels.length
+    ) {
+      setAppState((prev) => ({ ...prev, finished: true }));
       // otherwise, load the next level
     } else if (gameState.gdy) {
       loadLevel();
@@ -96,7 +101,7 @@ const App = () => {
 
   useEffect(() => {
     updatePathsToShow();
-  }, [session, agentPaths]);
+  }, [sessionState.session, sessionState.agentPaths]);
 
   useEffect(() => {
     if (playbackState.pathsToShow?.length > 0) {
@@ -105,10 +110,10 @@ const App = () => {
   }, [playbackState.pathsToShow]);
 
   useEffect(() => {
-    if (!showQuiz && !waiting) {
+    if (!appState.showQuiz && !appState.waiting) {
       nextLevel();
     }
-  }, [showQuiz]);
+  }, [appState.showQuiz]);
 
   useEffect(() => {
     const onFinished = async () => {
@@ -119,22 +124,23 @@ const App = () => {
 
     // if gameplay is finished, we can upload the trajectories and final score
     // and remove the session id from localstorage
-    if (finished) {
+    if (appState.finished) {
       onFinished();
     }
-  }, [finished]);
+  }, [appState.finished]);
 
   // initialise griddly, create a session on the server, and
   // then store the session in local state
   const performSetUp = async () => {
     const onSession = (sess) => {
-      setSession(sess);
+      setSessionState((prev) => ({ ...prev, session: sess }));
       utils.writeToLocalStorage("sid", sess.id);
-      utils.writeToLocalStorage("hid", sess.humanId);
       utils.writeToLocalStorage("eid", sess.experimentId);
     };
 
     await griddlyjs.init().then(() => {
+      console.log("griddlyjs initialised");
+
       // check for existing session_id in url or localstorage
       // if we find one, then get the corresponding session from
       // the server (rather than creating a new session)
@@ -146,8 +152,7 @@ const App = () => {
         // otherwise, we create a new session on the server, passing
         // in existing experiment_id and human_id if they exist
         api.createSession(
-          // utils.getValueFromUrlOrLocalstorage("eid"),
-          "may-test-1",
+          utils.getValueFromUrlOrLocalstorage("eid"),
           utils.getProlificMetadata(),
           onSession,
           console.error
@@ -158,27 +163,30 @@ const App = () => {
 
   // fetch the game spec file and the expert agents' trajectory data
   const fetchData = async () => {
-    api.loadGameSpec((gdy) => {
+    if (!sessionState.session) {
+      return;
+    }
+    api.loadGameSpec(sessionState.session.griddlySpecName, (gdy) => {
       loadGame(setRewards(gdy));
-      api.loadAgentPaths(session, (paths) => {
+      api.loadAgentPaths(sessionState.session, (paths) => {
         setAgentPaths(paths);
       });
     });
   };
 
   const setRewards = (gdy) => {
-    let u = session.utility["terrains"].concat(session.utility["goals"]);
-    let j = 0;
+    // let u = session.utility["terrains"].concat(session.utility["goals"]);
+    // let j = 0;
 
-    gdy.Actions[0].Behaviours = gdy.Actions[0].Behaviours.map((b) => {
-      let src = {
-        ...b.Src,
-        Commands: b.Src.Commands.map((cmd) =>
-          cmd.reward === undefined ? cmd : { reward: u[j++] }
-        ),
-      };
-      return { ...b, Src: src };
-    });
+    // gdy.Actions[0].Behaviours = gdy.Actions[0].Behaviours.map((b) => {
+    //   let src = {
+    //     ...b.Src,
+    //     Commands: b.Src.Commands.map((cmd) =>
+    //       cmd.reward === undefined ? cmd : { reward: u[j++] }
+    //     ),
+    //   };
+    //   return { ...b, Src: src };
+    // });
 
     return gdy;
   };
@@ -206,12 +214,14 @@ const App = () => {
   };
 
   const updatePathsToShow = () => {
-    if (session && agentPaths) {
-      if (session.levels && agentPaths.paths) {
+    if (sessionState.session && sessionState.agentPaths) {
+      if (sessionState.session.levels && sessionState.agentPaths.paths) {
         setPlaybackState((prev) => ({
           ...prev,
           pathsToShow:
-            agentPaths.paths[session.levels[levelCountRef.current]] || [],
+            sessionState.agentPaths.paths[
+              sessionState.session.levels[levelCountRef.current]
+            ] || [],
         }));
       }
     }
@@ -252,12 +262,12 @@ const App = () => {
   };
 
   const onTrajectoryStep = (step) => {
-    if (finished) {
+    if (appState.finished) {
       return;
     }
 
     let traj = { ...trajectoriesRef.current };
-    traj[session.levels[levelCountRef.current]].push(step);
+    traj[sessionState.session.levels[levelCountRef.current]].push(step);
     setTrajectories(traj);
   };
 
@@ -266,15 +276,15 @@ const App = () => {
     Object.keys(traj).forEach((k) => {
       traj[k] = traj[k].map((x) => x[1]).join(",");
     });
-    await api.storeTrajectories(session, traj);
+    await api.storeTrajectories(sessionState.session, traj);
   };
 
   const uploadFinalScore = async () => {
-    await api.storeFinalScore(session, gameState.score);
+    await api.storeFinalScore(sessionState.session, gameState.score);
   };
 
   const uploadFreeTextResponse = async (response) => {
-    await api.storeFreeTextResponse(session, response);
+    await api.storeFreeTextResponse(sessionState.session, response);
   };
 
   const onPlaybackStart = () => {
@@ -282,12 +292,15 @@ const App = () => {
   };
 
   const nextLevel = () => {
-    setlevelCount((prevCount) => prevCount + 1);
+    setSessionState((prev) => ({
+      ...prev,
+      levelCount: prev.levelCount + 1,
+    }));
   };
 
   const onLevelComplete = () => {
     if (levelCountRef.current === 0) {
-      setShowQuiz(true);
+      setAppState({ ...appState, showQuiz: true });
     } else {
       nextLevel();
     }
@@ -295,7 +308,7 @@ const App = () => {
 
   const isReady = () => {
     return (
-      session !== null &&
+      sessionState.session !== null &&
       playbackState.pathsToShow !== null &&
       gameState.gdy !== null
     );
@@ -305,7 +318,7 @@ const App = () => {
     <div>loading...</div>
   ) : (
     <div className="main-container">
-      {!waiting && (
+      {!appState.waiting && (
         <motion.div
           className="game-container"
           initial={{ opacity: 0 }}
@@ -314,10 +327,9 @@ const App = () => {
         >
           {/* <ItemValues session={session} goalImages={goalImages} /> */}
           <InfoBar
-            session={session}
             avatarPath={
-              session.agentAvatars[
-                session.agentIds[playbackState.currentPathIdx]
+              sessionState.session.agentAvatars[
+                sessionState.session.agentIds[playbackState.currentPathIdx]
               ] || ""
             }
             level={levelCountRef.current}
@@ -326,10 +338,10 @@ const App = () => {
           <Player
             gdyHash={gameState.gdyHash}
             gdy={gameState.gdy}
-            levelIdx={session.levels[levelCountRef.current]}
+            levelIdx={sessionState.session.levels[levelCountRef.current]}
             avatarPath={
-              session.agentAvatars[
-                session.agentIds[playbackState.currentPathIdx]
+              sessionState.session.agentAvatars[
+                sessionState.session.agentIds[playbackState.currentPathIdx]
               ] || "sprite2d/player.png"
             }
             griddlyjs={griddlyjs}
@@ -370,24 +382,24 @@ const App = () => {
         </motion.div>
       )}
       <InstructionModal
-        visible={waiting}
+        visible={appState.waiting}
         onStartClicked={() => {
           setWaiting(false);
         }}
-        session={session}
-        goalImages={goalImages}
+        session={sessionState.session}
+        goalImages={gameState.goalImages}
       />
       <LevelPopup
-        session={session}
+        session={sessionState.session}
         gdy={gameState.gdy}
-        goalImages={goalImages}
+        goalImages={gameState.goalImages}
         paths={playbackState.pathsToShow}
         levelIdx={levelCountRef.current}
         ready={
           !(
-            waiting ||
-            finished ||
-            levelCountRef.current >= session.levels.length
+            appState.waiting ||
+            appState.finished ||
+            levelCountRef.current >= sessionState.session.levels.length
           )
         }
         duration={INTER_LEVEL_INTERVAL_MS}
@@ -397,11 +409,11 @@ const App = () => {
         }
       />
       <QuizModal
-        session={session}
-        visible={showQuiz}
-        goalImages={goalImages}
+        session={sessionState.session}
+        visible={appState.showQuiz}
+        goalImages={gameState.goalImages}
         onFinished={() => {
-          setShowQuiz(false);
+          setAppState({ ...appState, showQuiz: false });
         }}
       />
       {/* <AgentTurnPopup
@@ -420,8 +432,8 @@ const App = () => {
         }
       /> */}
       <ExperimentCompleteModal
-        session={session}
-        visible={finished}
+        session={sessionState.session}
+        visible={appState.finished}
         score={gameState.score}
         submitResponse={uploadFreeTextResponse}
       />
