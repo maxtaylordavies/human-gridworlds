@@ -11,8 +11,8 @@ type Session struct {
 	ExperimentID  string       `json:"experimentId"`
 	CreatedAt     int64        `json:"createdAt"` // unix timestamp
 	IsTest        bool         `json:"isTest"`
+	Phases        []Phase      `json:"phases"`
 	Conditions    Conditions   `json:"conditions"`
-	Thetas        [][]int      `json:"thetas"`
 	Context       interface{}  `json:"context"`
 	Trajectories  Trajectories `json:"trajectories"`
 	FinalScore    int          `json:"finalScore"`
@@ -34,6 +34,7 @@ func CreateSession(experimentID string, isTest bool, context interface{}) Sessio
 		ExperimentID: experimentID,
 		CreatedAt:    time.Now().Unix(),
 		IsTest:       isTest,
+		Phases:       []Phase{},
 		Conditions:   conditions,
 		Context:      context,
 	}
