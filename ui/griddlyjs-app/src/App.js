@@ -147,8 +147,7 @@ const App = () => {
         // in existing experiment_id and human_id if they exist
         api.createSession(
           // utils.getValueFromUrlOrLocalstorage("eid"),
-          "26-jan-run-2",
-          utils.getValueFromUrlOrLocalstorage("hid"),
+          "may-test-1",
           utils.getProlificMetadata(),
           onSession,
           console.error
@@ -159,7 +158,7 @@ const App = () => {
 
   // fetch the game spec file and the expert agents' trajectory data
   const fetchData = async () => {
-    api.loadGameSpec(session, (gdy) => {
+    api.loadGameSpec((gdy) => {
       loadGame(setRewards(gdy));
       api.loadAgentPaths(session, (paths) => {
         setAgentPaths(paths);

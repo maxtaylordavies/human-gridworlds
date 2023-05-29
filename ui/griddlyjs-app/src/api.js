@@ -29,15 +29,13 @@ export const getSession = async (id, callback, onError) => {
 
 export const createSession = async (
   experimentId,
-  humanId,
   context,
   callback,
   onError
 ) => {
   post("session", {
     experimentId,
-    humanId,
-    isTest: false,
+    isTest: true,
     context,
   })
     .then((response) => {
@@ -46,8 +44,8 @@ export const createSession = async (
     .catch((e) => onError(e));
 };
 
-export const loadGameSpec = async (session, callback, onError) => {
-  get(`game?id=${session.gameId}`)
+export const loadGameSpec = async (callback, onError) => {
+  get("game?id=multijewel")
     .then((response) => {
       callback(yaml.load(response.data));
     })

@@ -1,4 +1,4 @@
-package main
+package store
 
 // key:
 // 		1: left
@@ -41,4 +41,10 @@ var AgentTrajectories = map[string]Trajectories{
 		9:  "3,3,3,3,3,3,3,3,3,3,3,3",
 		10: "1,1,1,1,1,1,1,1,1,1,1,1",
 	},
+}
+
+type Agent struct {
+	Name   string  `json:"name"`
+	Thetas [][]int `json:"thetas"`
+	Phi    int     `json:"phi"`
 }

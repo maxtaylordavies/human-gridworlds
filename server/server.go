@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 	"strconv"
@@ -9,11 +10,13 @@ import (
 	"time"
 
 	"github.com/gorilla/mux"
+
+	"human-gridworlds/store"
 )
 
 type Server struct {
 	Router *mux.Router
-	Store  Store
+	Store  store.Store
 	Port   string
 }
 
@@ -40,12 +43,13 @@ func respond(w http.ResponseWriter, data interface{}) {
 	json.NewEncoder(w).Encode(data)
 }
 
-func CreateServer() Server {
+func CreateServer(port int) Server {
 	s := Server{
-		Store: Store{
-			DataPath: "data/",
+		Store: store.Store{
+			DataPath:      "data/",
+			ResourcesPath: "resources/",
 		},
-		Port: ":8100",
+		Port: fmt.Sprintf(":%d", port),
 	}
 	s.registerRoutes()
 	return s
@@ -108,7 +112,7 @@ func (s *Server) registerRoutes() {
 				return
 			}
 
-			sess, err := s.Store.CreateSession(data.ExperimentID, data.HumanID, data.IsTest, data.Context)
+			sess, err := s.Store.CreateSession(data.ExperimentID, data.IsTest, data.Context)
 			if err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
@@ -125,8 +129,8 @@ func (s *Server) registerRoutes() {
 		}
 
 		var data struct {
-			SessionID    string       `json:"session_id"`
-			Trajectories Trajectories `json:"trajectories"`
+			SessionID    string             `json:"session_id"`
+			Trajectories store.Trajectories `json:"trajectories"`
 		}
 
 		err := decodePostRequest(r, &data)
