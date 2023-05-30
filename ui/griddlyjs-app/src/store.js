@@ -7,7 +7,7 @@ export const useStore = create((set) => ({
     showQuiz: false,
     finished: false,
   },
-  setAppState: (appState) => set({ appState }),
+  setAppState: (ast) => set(() => ({ appState: ast })),
 
   // session state
   sessionState: {
@@ -16,7 +16,10 @@ export const useStore = create((set) => ({
     levelCount: 0,
     agentPaths: null,
   },
-  setSessionState: (sessionState) => set({ sessionState }),
+  setSessionState: (sst) => {
+    console.log("setSessionState", sst);
+    set(() => ({ sessionState: sst }));
+  },
 
   // game state
   gameState: {
@@ -27,7 +30,7 @@ export const useStore = create((set) => ({
     playing: false,
     score: 100,
   },
-  setGameState: (gameState) => set({ gameState }),
+  setGameState: (gst) => set(() => ({ gameState: gst })),
 
   // playback and renderer state
   playbackState: {
@@ -35,15 +38,15 @@ export const useStore = create((set) => ({
     currentPathIdx: -1,
     waiting: true,
   },
-  setPlaybackState: (playbackState) => set({ playbackState }),
+  setPlaybackState: (pst) => set(() => ({ playbackState: pst })),
   rendererState: {
     renderers: [],
     rendererName: "",
     rendererConfig: {},
   },
-  setRendererState: (rendererState) => set({ rendererState }),
+  setRendererState: (rst) => set(() => ({ rendererState: rst })),
 
   // results state
   trajectories: {},
-  setTrajectories: (trajectories) => set({ trajectories }),
+  setTrajectories: (traj) => set(() => ({ trajectories: traj })),
 }));
