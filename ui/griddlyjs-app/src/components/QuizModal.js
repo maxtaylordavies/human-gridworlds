@@ -1,15 +1,22 @@
 import { React, useState, useEffect } from "react";
 import { motion } from "framer-motion";
 
+import { useStore } from "../store";
 import { Modal } from "./Modal";
 
-const QuizModal = ({ session, goalImages, visible, onFinished }) => {
+const QuizModal = () => {
+  const [appState, setAppState] = useStore((state) => [
+    state.appState,
+    state.setAppState,
+  ]);
+  const session = useStore((state) => state.sessionState.session);
+  const goalImages = useStore((state) => state.gameState.goalImages);
+
   const [expected, setExpected] = useState([-1, -1]);
   const [selected, setSelected] = useState([-1, -1]);
   const [showIfCorrect, setShowIfCorrect] = useState(false);
 
   useEffect(() => {
-    console.log(session.agentIds.slice(0, 2));
     if (session) {
       setExpected([
         session.agentIds.indexOf("a-0001"),
@@ -26,13 +33,13 @@ const QuizModal = ({ session, goalImages, visible, onFinished }) => {
       setShowIfCorrect(false);
       setSelected([-1, -1]);
       if (selected.every((s, i) => s === expected[i])) {
-        onFinished();
+        setAppState({ ...appState, showQuiz: false });
       }
     }, 1000);
   };
 
   return (
-    <Modal open={visible} className="quiz-modal">
+    <Modal open={appState.showQuiz} className="quiz-modal">
       <div className="quiz-modal-title">Quiz</div>
       <div className="quiz-modal-body">
         <div className="quiz-modal-text">

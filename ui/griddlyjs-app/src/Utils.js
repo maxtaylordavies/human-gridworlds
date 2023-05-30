@@ -102,3 +102,9 @@ export const findCompatibleRenderers = (observers, objects) => {
 
   return compatibleRenderers;
 };
+
+export const currentLevelId = (sessionState) => {
+  const phase = sessionState.session.phases[sessionState.phaseIdx];
+  const level = phase.levels[sessionState.levelIdx];
+  return level.id;
+};

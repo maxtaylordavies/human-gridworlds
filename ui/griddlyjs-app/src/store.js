@@ -3,7 +3,7 @@ import create from "zustand";
 export const useStore = create((set) => ({
   // general app state
   appState: {
-    waiting: true,
+    showInitialInstructions: true,
     showQuiz: false,
     finished: false,
   },
@@ -13,7 +13,7 @@ export const useStore = create((set) => ({
   sessionState: {
     session: null,
     phaseIdx: 0,
-    levelCount: 0,
+    levelIdx: 0,
     agentPaths: null,
   },
   setSessionState: (sst) => {

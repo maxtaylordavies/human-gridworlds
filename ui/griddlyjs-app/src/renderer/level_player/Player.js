@@ -8,10 +8,12 @@ class Player extends Component {
   constructor(props) {
     super(props);
     this.divElement = React.createRef();
+    this.width = 800;
+    this.height = 500;
   }
 
   updateCanvasSize = () => {
-    this.game.scale.resize(this.props.width, this.props.height);
+    this.game.scale.resize(this.width, this.height);
   };
 
   componentDidMount() {
@@ -32,10 +34,9 @@ class Player extends Component {
       this.game.scene.remove("LoadingScene");
       this.game.scene.start("HumanPlayerScene", {
         gdy: this.props.gdy,
-        levelIdx: this.props.levelIdx,
+        levelId: this.props.levelId,
         avatarPath: this.props.avatarPath,
-        rendererConfig: this.props.rendererConfig,
-        rendererName: this.props.rendererName,
+        rendererState: this.props.rendererState,
         griddlyjs: this.props.griddlyjs,
         onTrajectoryStep: this.props.onTrajectoryStep,
         onReward: this.props.onReward,
@@ -61,10 +62,9 @@ class Player extends Component {
       ) {
         this.game.scene.getScene("HumanPlayerScene").scene.restart({
           gdy: this.props.gdy,
-          levelIdx: this.props.levelIdx,
+          levelId: this.props.levelId,
           avatarPath: this.props.avatarPath,
-          rendererConfig: this.props.rendererConfig,
-          rendererName: this.props.rendererName,
+          rendererState: this.props.rendererState,
           griddlyjs: this.props.griddlyjs,
           onTrajectoryStep: this.props.onTrajectoryStep,
           onReward: this.props.onReward,

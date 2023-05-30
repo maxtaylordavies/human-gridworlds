@@ -1,9 +1,17 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 
+import { useStore } from "../store";
 import { Modal } from "./Modal";
 
-const InstructionModal = ({ visible, onStartClicked, session, goalImages }) => {
+const InstructionModal = () => {
+  const [appState, setAppState] = useStore((state) => [
+    state.appState,
+    state.setAppState,
+  ]);
+  const session = useStore((state) => state.sessionState.session);
+  const goalImages = useStore((state) => state.gameState.goalImages);
+
   const [stage, setStage] = useState("Consent");
   const [screenIdx, setScreenIdx] = useState(0);
 
@@ -224,13 +232,19 @@ const InstructionModal = ({ visible, onStartClicked, session, goalImages }) => {
           </>
         ),
         buttonLabel: "Start experiment",
-        onClick: onStartClicked,
+        onClick: () => {
+          setAppState({ ...appState, showInitialInstructions: false });
+        },
       },
     ],
   };
 
   return (
-    <Modal key="instruction-modal" className="instruction-modal" open={visible}>
+    <Modal
+      key="instruction-modal"
+      className="instruction-modal"
+      open={appState.showInitialInstructions}
+    >
       <div className="instruction-modal-title">{stage}</div>
       <div className="instruction-modal-body">
         <div className="instruction-modal-text">

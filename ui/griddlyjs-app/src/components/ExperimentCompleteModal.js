@@ -1,16 +1,16 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 
+import { useStore } from "../store";
 import { Modal } from "./Modal";
 
 const PROLIFIC_CODE = "CAL3DWSD";
 
-const ExperimentCompleteModal = ({
-  session,
-  visible,
-  score,
-  submitResponse,
-}) => {
+const ExperimentCompleteModal = ({ submitResponse }) => {
+  const show = useStore((state) => state.appState.finished);
+  const session = useStore((state) => state.sessionState.session);
+  const score = useStore((state) => state.gameState.score);
+
   const [screenIdx, setScreenIdx] = useState(0);
   const [response, setResponse] = useState("");
 
@@ -80,7 +80,7 @@ const ExperimentCompleteModal = ({
 
   return (
     <Modal
-      open={visible}
+      open={show}
       className="experiment-complete-modal"
       key="experiment-complete-modal"
     >

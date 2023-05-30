@@ -49,8 +49,8 @@ const App = () => {
   // create refs for state values that will be updated inside callback functions
   const phaseIdxRef = useRef();
   phaseIdxRef.current = sessionState.phaseIdx;
-  const levelCountRef = useRef();
-  levelCountRef.current = sessionState.levelCount;
+  const levelIdxRef = useRef();
+  levelIdxRef.current = sessionState.levelIdx;
   const trajectoriesRef = useRef();
   trajectoriesRef.current = trajectories;
 
@@ -89,7 +89,7 @@ const App = () => {
     // then finish the experiment
     if (
       sessionState.session &&
-      levelCountRef.current >= sessionState.session.levels.length
+      levelIdxRef.current >= sessionState.session.levels.length
     ) {
       setAppState({ ...appState, finished: true });
       // otherwise, load the next level
@@ -97,7 +97,7 @@ const App = () => {
       loadLevel();
       updatePathsToShow();
     }
-  }, [levelCountRef.current]);
+  }, [levelIdxRef.current]);
 
   useEffect(() => {
     updatePathsToShow();
@@ -110,7 +110,7 @@ const App = () => {
   }, [playbackState.pathsToShow]);
 
   useEffect(() => {
-    if (!appState.showQuiz && !appState.waiting) {
+    if (!appState.showQuiz && !appState.showInitialInstructions) {
       nextLevel();
     }
   }, [appState.showQuiz]);
@@ -211,7 +211,7 @@ const App = () => {
   const loadLevel = async () => {
     griddlyjs.reset(
       gameState.gdy.Environment.Levels[
-        sessionState.session.levels[levelCountRef.current]
+        sessionState.session.levels[levelIdxRef.current]
       ]
     );
   };
@@ -223,7 +223,7 @@ const App = () => {
           ...playbackState,
           pathsToShow:
             sessionState.agentPaths.paths[
-              sessionState.session.levels[levelCountRef.current]
+              sessionState.session.levels[levelIdxRef.current]
             ] || [],
         });
       }
@@ -270,7 +270,7 @@ const App = () => {
     }
 
     let traj = { ...trajectoriesRef.current };
-    traj[sessionState.session.levels[levelCountRef.current]].push(step);
+    traj[sessionState.session.levels[levelIdxRef.current]].push(step);
     setTrajectories(traj);
   };
 
@@ -297,12 +297,12 @@ const App = () => {
   const nextLevel = () => {
     setSessionState({
       ...sessionState,
-      levelCount: sessionState.levelCount + 1,
+      levelIdx: sessionState.levelIdx + 1,
     });
   };
 
   const onLevelComplete = () => {
-    if (levelCountRef.current === 0) {
+    if (levelIdxRef.current === 0) {
       setAppState({ ...appState, showQuiz: true });
     } else {
       nextLevel();
@@ -321,40 +321,28 @@ const App = () => {
     <div>loading...</div>
   ) : (
     <div className="main-container">
-      {!appState.waiting && (
+      {!appState.showInitialInstructions && (
         <motion.div
           className="game-container"
           initial={{ opacity: 0 }}
           animate={{ opacity: appState.finished ? 0.1 : 1 }}
           transition={{ duration: 0.4 }}
         >
-          {/* <ItemValues session={session} goalImages={goalImages} /> */}
-          <InfoBar
-            avatarPath={
-              sessionState.session.agentAvatars[
-                sessionState.session.agentIds[playbackState.currentPathIdx]
-              ] || ""
-            }
-            level={levelCountRef.current}
-            score={gameState.score}
-          />
+          <InfoBar />
           <Player
             gdyHash={gameState.gdyHash}
             gdy={gameState.gdy}
-            levelIdx={sessionState.session.levels[levelCountRef.current]}
+            levelId={utils.currentLevelId(sessionState)}
             avatarPath={
               sessionState.session.agentAvatars[
                 sessionState.session.agentIds[playbackState.currentPathIdx]
               ] || "sprite2d/player.png"
             }
             griddlyjs={griddlyjs}
-            rendererName={rendererState.rendererName}
-            rendererConfig={rendererState.rendererConfig}
-            height={500}
-            width={800}
+            rendererState={rendererState}
             onTrajectoryStep={onTrajectoryStep}
             onReward={(val) => {
-              if (levelCountRef.current > 0) {
+              if (levelIdxRef.current > 0) {
                 setGameState({
                   ...gameState,
                   score: gameState.score + val,
@@ -370,72 +358,14 @@ const App = () => {
             waitToBeginPlayback={playbackState.waiting}
             onPlaybackStart={onPlaybackStart}
             onPlaybackEnd={updateCurrentPathIdx}
-            // beforePlaybackMs={
-            //   // if first agent, wait for level popup to finish
-            //   INTER_AGENT_INTERVAL_MS +
-            //   (playbackState.currentPathIdx ===
-            //   playbackState.pathsToShow.findIndex((p) => p !== "")
-            //     ? INTER_LEVEL_INTERVAL_MS
-            //     : 0)
-            // }
             beforePlaybackMs={INTER_AGENT_INTERVAL_MS}
           />
         </motion.div>
       )}
-      <InstructionModal
-        visible={appState.waiting}
-        onStartClicked={() => {
-          setAppState({ ...appState, waiting: false });
-        }}
-        session={sessionState.session}
-        goalImages={gameState.goalImages}
-      />
-      <LevelPopup
-        session={sessionState.session}
-        gdy={gameState.gdy}
-        goalImages={gameState.goalImages}
-        paths={playbackState.pathsToShow}
-        levelIdx={levelCountRef.current}
-        ready={
-          !(
-            appState.waiting ||
-            appState.finished ||
-            levelCountRef.current >= sessionState.session.levels.length
-          )
-        }
-        duration={INTER_LEVEL_INTERVAL_MS}
-        delay={250}
-        onProceed={() => setPlaybackState({ ...playbackState, waiting: false })}
-      />
-      <QuizModal
-        session={sessionState.session}
-        visible={appState.showQuiz}
-        goalImages={gameState.goalImages}
-        onFinished={() => {
-          setAppState({ ...appState, showQuiz: false });
-        }}
-      />
-      {/* <AgentTurnPopup
-        agentImage={
-          session.agentAvatars[
-            session.agentIds[playbackState.currentPathIdx]
-          ] || ""
-        }
-        ready={!(waiting || finished)}
-        delay={
-          playbackState.currentPathIdx === 0 ? INTER_LEVEL_INTERVAL_MS : 250
-        }
-        duration={
-          INTER_AGENT_INTERVAL_MS +
-          (playbackState.currentPathIdx === 0 ? INTER_LEVEL_INTERVAL_MS : 0)
-        }
-      /> */}
-      <ExperimentCompleteModal
-        session={sessionState.session}
-        visible={appState.finished}
-        score={gameState.score}
-        submitResponse={uploadFreeTextResponse}
-      />
+      <InstructionModal />
+      <LevelPopup duration={INTER_LEVEL_INTERVAL_MS} delay={250} />
+      <QuizModal />
+      <ExperimentCompleteModal submitResponse={uploadFreeTextResponse} />
     </div>
   );
 };

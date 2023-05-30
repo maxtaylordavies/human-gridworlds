@@ -1,8 +1,17 @@
 import React from "react";
+
+import { useStore } from "../store";
 import ScorePopup from "./ScorePopup";
 
-const InfoBar = ({ session, avatarPath, level, score }) => {
-  const numLevels = session.levels.length;
+const InfoBar = () => {
+  const { session, phaseIdx, levelIdx } = useStore(
+    (state) => state.sessionState
+  );
+  const score = useStore((state) => state.gameState.score);
+  const pathIdx = useStore((state) => state.playbackState.currentPathIdx);
+
+  const numLevels = session.phases[phaseIdx].levels.length;
+  const avatarPath = session.agentAvatars[session.agentIds[pathIdx]] || "";
 
   return (
     <div className="info-bar">
@@ -16,13 +25,12 @@ const InfoBar = ({ session, avatarPath, level, score }) => {
           "Your turn"
         )}
       </div>
-      <ScorePopup session={session} score={score} />
+      <ScorePopup />
       <div className="info-bar-stats">
+        {InfoBarItem("phase", phaseIdx + 1)}
         {InfoBarItem(
           "level",
-          level === 0
-            ? "practice"
-            : `${Math.min(level, numLevels - 1)}/${numLevels - 1}`
+          `${Math.min(levelIdx, numLevels - 1)}/${numLevels - 1}`
         )}
         {InfoBarItem("score", score)}
       </div>

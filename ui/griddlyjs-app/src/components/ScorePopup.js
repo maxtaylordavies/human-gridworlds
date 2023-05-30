@@ -1,10 +1,14 @@
 import React, { useEffect, useState } from "react";
-
 import { motion, AnimatePresence } from "framer-motion";
 
-const emoji = { high: "🎉", medium: "😐", low: "🤦‍♂️" };
+import { useStore } from "../store";
 
-const ScorePopup = ({ score, session }) => {
+// const emoji = { high: "🎉", medium: "😐", low: "🤦‍♂️" };
+
+const ScorePopup = () => {
+  const session = useStore((state) => state.sessionState.session);
+  const score = useStore((state) => state.gameState.score);
+
   const [open, setOpen] = useState(false);
   const [prevScore, setprevScore] = useState(score);
   const [scoreDelta, setScoreDelta] = useState(0);
