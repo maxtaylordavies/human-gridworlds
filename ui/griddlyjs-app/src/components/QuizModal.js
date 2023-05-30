@@ -5,11 +5,11 @@ import { useStore } from "../store";
 import { Modal } from "./Modal";
 
 const QuizModal = () => {
-  const [appState, setAppState] = useStore((state) => [
-    state.appState,
-    state.setAppState,
+  const [uiState, setUIState] = useStore((state) => [
+    state.uiState,
+    state.setUIState,
   ]);
-  const session = useStore((state) => state.sessionState.session);
+  const session = useStore((state) => state.expState.session);
   const goalImages = useStore((state) => state.gameState.goalImages);
 
   const [expected, setExpected] = useState([-1, -1]);
@@ -33,13 +33,13 @@ const QuizModal = () => {
       setShowIfCorrect(false);
       setSelected([-1, -1]);
       if (selected.every((s, i) => s === expected[i])) {
-        setAppState({ ...appState, showQuiz: false });
+        setUIState({ ...uiState, showQuiz: false });
       }
     }, 1000);
   };
 
   return (
-    <Modal open={appState.showQuiz} className="quiz-modal">
+    <Modal open={uiState.showQuiz} className="quiz-modal">
       <div className="quiz-modal-title">Quiz</div>
       <div className="quiz-modal-body">
         <div className="quiz-modal-text">

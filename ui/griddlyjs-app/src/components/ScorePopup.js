@@ -6,7 +6,7 @@ import { useStore } from "../store";
 // const emoji = { high: "🎉", medium: "😐", low: "🤦‍♂️" };
 
 const ScorePopup = () => {
-  const session = useStore((state) => state.sessionState.session);
+  const session = useStore((state) => state.expState.session);
   const score = useStore((state) => state.gameState.score);
 
   const [open, setOpen] = useState(false);

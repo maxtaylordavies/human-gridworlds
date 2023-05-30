@@ -5,11 +5,11 @@ import { useStore } from "../store";
 import { Modal } from "./Modal";
 
 const InstructionModal = () => {
-  const [appState, setAppState] = useStore((state) => [
-    state.appState,
-    state.setAppState,
+  const [uiState, setUIState] = useStore((state) => [
+    state.uiState,
+    state.setUIState,
   ]);
-  const session = useStore((state) => state.sessionState.session);
+  const session = useStore((state) => state.expState.session);
   const goalImages = useStore((state) => state.gameState.goalImages);
 
   const [stage, setStage] = useState("Consent");
@@ -233,7 +233,7 @@ const InstructionModal = () => {
         ),
         buttonLabel: "Start experiment",
         onClick: () => {
-          setAppState({ ...appState, showInitialInstructions: false });
+          setUIState({ ...uiState, showInitialInstructions: false });
         },
       },
     ],
@@ -243,7 +243,7 @@ const InstructionModal = () => {
     <Modal
       key="instruction-modal"
       className="instruction-modal"
-      open={appState.showInitialInstructions}
+      open={uiState.showInitialInstructions}
     >
       <div className="instruction-modal-title">{stage}</div>
       <div className="instruction-modal-body">

@@ -7,8 +7,8 @@ import { Modal } from "./Modal";
 const PROLIFIC_CODE = "CAL3DWSD";
 
 const ExperimentCompleteModal = ({ submitResponse }) => {
-  const show = useStore((state) => state.appState.finished);
-  const session = useStore((state) => state.sessionState.session);
+  const show = useStore((state) => state.uiState.showFinishedScreen);
+  const session = useStore((state) => state.expState.session);
   const score = useStore((state) => state.gameState.score);
 
   const [screenIdx, setScreenIdx] = useState(0);

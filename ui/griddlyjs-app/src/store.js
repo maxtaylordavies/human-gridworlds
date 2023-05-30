@@ -1,32 +1,30 @@
 import create from "zustand";
 
 export const useStore = create((set) => ({
-  // general app state
-  appState: {
+  // general UI state
+  uiState: {
     showInitialInstructions: true,
+    showPhaseInstructions: false,
     showQuiz: false,
-    finished: false,
+    showLevelPopup: true,
+    showFinishedScreen: false,
   },
-  setAppState: (ast) => set(() => ({ appState: ast })),
+  setUIState: (uist) => set(() => ({ uiState: uist })),
 
   // session state
-  sessionState: {
+  expState: {
     session: null,
     phaseIdx: 0,
     levelIdx: 0,
     agentPaths: null,
   },
-  setSessionState: (sst) => {
-    console.log("setSessionState", sst);
-    set(() => ({ sessionState: sst }));
-  },
+  setExpState: (est) => set(() => ({ expState: est })),
 
   // game state
   gameState: {
     gdy: null,
     gdyHash: 0,
     gdyString: "",
-    goalImages: [],
     playing: false,
     score: 100,
   },
@@ -36,7 +34,6 @@ export const useStore = create((set) => ({
   playbackState: {
     pathsToShow: null,
     currentPathIdx: -1,
-    waiting: true,
   },
   setPlaybackState: (pst) => set(() => ({ playbackState: pst })),
   rendererState: {

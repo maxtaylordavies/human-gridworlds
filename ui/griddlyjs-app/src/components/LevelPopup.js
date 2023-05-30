@@ -6,60 +6,59 @@ import { Modal } from "./Modal";
 import * as utils from "../utils";
 
 const LevelPopup = ({ duration, delay }) => {
-  const { showInitialInstructions, finished } = useStore(
-    (state) => state.appState
-  );
-  const sessionState = useStore((state) => state.sessionState);
+  const [uiState, setUIState] = useStore((state) => [
+    state.uiState,
+    state.setUIState,
+  ]);
+  const expState = useStore((state) => state.expState);
   const { gdy, goalImages } = useStore((state) => state.gameState);
   const [playbackState, setPlaybackState] = useStore((state) => [
     state.playbackState,
     state.setPlaybackState,
   ]);
 
-  const [open, setOpen] = useState(false);
   const [lvl, setLvl] = useState(-1);
 
   useEffect(() => {
-    if (sessionState.levelIdx !== lvl && isReady()) {
+    if (expState.levelIdx !== lvl && isReady()) {
       update();
     }
-  }, [showInitialInstructions, finished, sessionState]);
+  }, [uiState, expState]);
 
   const isReady = () => {
     return !(
-      showInitialInstructions ||
-      finished ||
-      sessionState.levelIdx >=
-        sessionState.session.phases[sessionState.phaseIdx].levels.length
+      uiState.showInitialInstructions ||
+      uiState.showFinishedScreen ||
+      expState.levelIdx >=
+        expState.session.phases[expState.phaseIdx].levels.length
     );
   };
 
   const update = () => {
     setTimeout(() => {
-      setLvl(sessionState.levelIdx);
-      setOpen(true);
+      setLvl(expState.levelIdx);
+      setUIState({ ...uiState, showLevelPopup: true });
     }, delay);
   };
 
   const onProceedClicked = () => {
-    setOpen(false);
-    setPlaybackState({ ...playbackState, waiting: false });
+    setUIState({ ...uiState, showLevelPopup: false });
   };
 
   return (
     isReady() &&
-    open &&
-    sessionState.levelIdx !== -1 && (
-      <Modal open={open} className="level-popup">
+    uiState.showLevelPopup &&
+    expState.levelIdx !== -1 && (
+      <Modal open={uiState.showLevelPopup} className="level-popup">
         <div className="level-popup-title">
           {lvl === 0 ? "Practice level" : `Level ${lvl}`}
         </div>
         <div>
           <span>Aliens</span>
           <div className="level-popup-icon-container">
-            {sessionState.session.agentIds
+            {expState.session.agentIds
               .filter((agent, idx) => playbackState.pathsToShow[idx] !== "")
-              .map((agent) => sessionState.session.agentAvatars[agent])
+              .map((agent) => expState.session.agentAvatars[agent])
               .map((imgPath) => (
                 <img
                   src={`resources/images/${imgPath}`}
@@ -74,9 +73,9 @@ const LevelPopup = ({ duration, delay }) => {
           <div className="level-popup-icon-container">
             {goalImages
               .filter((gi) =>
-                gdy.Environment.Levels[
-                  utils.currentLevelId(sessionState)
-                ].includes(gi.replace(".png", "").slice(-1))
+                gdy.Environment.Levels[utils.currentLevelId(expState)].includes(
+                  gi.replace(".png", "").slice(-1)
+                )
               )
               .map((imgPath) => {
                 let idx = goalImages.indexOf(imgPath);
@@ -84,7 +83,7 @@ const LevelPopup = ({ duration, delay }) => {
                   <div className="level-popup-gem">
                     <img src={`resources/images/${imgPath}`} height="40px" />
                     <span>
-                      {idx <= 2 ? sessionState.session.utility.goals[idx] : "?"}
+                      {idx <= 2 ? expState.session.utility.goals[idx] : "?"}
                     </span>
                   </div>
                 );

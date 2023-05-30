@@ -4,9 +4,7 @@ import { useStore } from "../store";
 import ScorePopup from "./ScorePopup";
 
 const InfoBar = () => {
-  const { session, phaseIdx, levelIdx } = useStore(
-    (state) => state.sessionState
-  );
+  const { session, phaseIdx, levelIdx } = useStore((state) => state.expState);
   const score = useStore((state) => state.gameState.score);
   const pathIdx = useStore((state) => state.playbackState.currentPathIdx);
 
