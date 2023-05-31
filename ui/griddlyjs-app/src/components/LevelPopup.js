@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 
 import { useStore } from "../store";
-import { Modal } from "./Modal";
+import { Modal } from "./core/Modal";
 import * as utils from "../utils";
 
 const LevelPopup = ({ duration, delay }) => {

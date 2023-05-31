@@ -1,5 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
-import { motion } from "framer-motion";
+import React, { useEffect, useState } from "react";
 import yaml from "js-yaml";
 
 import * as api from "./api";
@@ -8,18 +7,15 @@ import { useStore } from "./store";
 import { hashString } from "./hash";
 import { INTER_LEVEL_INTERVAL_MS, INTER_AGENT_INTERVAL_MS } from "./constants";
 import GriddlyJSCore from "./GriddlyJSCore";
-import Player from "./renderer/level_player/Player";
-import InfoBar from "./components/InfoBar";
-import InstructionModal from "./components/InstructionModal";
+import PlayerContainer from "./components/PlayerContainer";
+import InitialInstructions from "./components/InitialInstructions";
+import PhaseInstructions from "./components/PhaseInstructions";
 import ExperimentCompleteModal from "./components/ExperimentCompleteModal";
 import LevelPopup from "./components/LevelPopup";
 import QuizModal from "./components/QuizModal";
 import "./App.scss";
 
 const App = () => {
-  // create and initialise an instance of the GriddlyJS core
-  const [griddlyjs, setGriddlyjs] = useState(new GriddlyJSCore());
-
   // get state from zustand store
   const [uiState, setUIState] = useStore((state) => [
     state.uiState,
@@ -46,20 +42,19 @@ const App = () => {
     state.setTrajectories,
   ]);
 
-  // create refs for state values that will be updated inside callback functions
-  const phaseIdxRef = useRef();
-  phaseIdxRef.current = expState.phaseIdx;
-  const levelIdxRef = useRef();
-  levelIdxRef.current = expState.levelIdx;
-  const trajectoriesRef = useRef();
-  trajectoriesRef.current = trajectories;
+  // create and initialise an instance of the GriddlyJS core
+  const [griddlyjs, setGriddlyjs] = useState(new GriddlyJSCore());
 
   useEffect(() => {
     performSetUp();
   }, []);
 
   useEffect(() => {
-    console.log("session: ", expState.session);
+    console.log("expState: ", expState);
+    console.log("uiState: ", uiState);
+  }, [expState, uiState]);
+
+  useEffect(() => {
     if (expState.session) {
       // fetch data
       fetchData();
@@ -70,48 +65,14 @@ const App = () => {
   }, [expState.session]);
 
   useEffect(() => {
-    if (!gameState.gdy) {
-      return;
-    }
-
-    const goalImages = gameState.gdy.Objects.filter((obj) =>
-      obj.Name.includes("goal")
-    ).map((obj) => obj.Observers.Sprite2D[0].Image);
-    setGameState({ ...gameState, goalImages });
-
-    loadLevel();
-  }, [gameState.gdy]);
-
-  useEffect(() => {
-    // if we've run through all the levels specified in the session,
-    // then finish the experiment
-    if (
-      expState.session &&
-      levelIdxRef.current >= expState.session.levels.length
-    ) {
-      setUIState({ ...uiState, showFinishedScreen: true });
-      // otherwise, load the next level
-    } else if (gameState.gdy) {
-      loadLevel();
-      updatePathsToShow();
-    }
-  }, [levelIdxRef.current]);
-
-  useEffect(() => {
     updatePathsToShow();
-  }, [expState.session, expState.agentPaths]);
+  }, [expState.session, expState.agentTrajectories]);
 
-  useEffect(() => {
-    if (playbackState.pathsToShow?.length > 0) {
-      updateCurrentPathIdx();
-    }
-  }, [playbackState.pathsToShow]);
-
-  useEffect(() => {
-    if (!uiState.showQuiz && !uiState.showInitialInstructions) {
-      nextLevel();
-    }
-  }, [uiState.showQuiz]);
+  // useEffect(() => {
+  //   if (!uiState.showQuiz && !uiState.showInitialInstructions) {
+  //     incrementLevelIdx();
+  //   }
+  // }, [uiState.showQuiz]);
 
   useEffect(() => {
     const onFinished = async () => {
@@ -167,9 +128,9 @@ const App = () => {
     }
     api.loadGameSpec(expState.session.griddlySpecName, (gdy) => {
       loadGame(setRewards(gdy));
-      api.loadAgentPaths(expState.session, (paths) => {
-        setExpState({ ...expState, agentPaths: paths });
-      });
+      // api.loadAgentPaths(expState.session, (paths) => {
+      //   setExpState({ ...expState, agentTrajectories: paths });
+      // });
     });
   };
 
@@ -193,6 +154,9 @@ const App = () => {
   // load the game spec into griddly
   const loadGame = async (gdy) => {
     const gdyString = yaml.dump(gdy, { noRefs: true });
+
+    console.log("gdyString: ", gdyString);
+
     griddlyjs.unloadGDY();
     griddlyjs.loadGDY(gdyString);
     loadRenderers(gdy);
@@ -203,47 +167,6 @@ const App = () => {
       gdyString,
       gdyHash: hashString(gdyString),
     });
-  };
-
-  // load the map for the current level
-  const loadLevel = async () => {
-    griddlyjs.reset(
-      gameState.gdy.Environment.Levels[
-        expState.session.levels[levelIdxRef.current]
-      ]
-    );
-  };
-
-  const updatePathsToShow = () => {
-    if (expState.session && expState.agentPaths) {
-      if (expState.session.levels && expState.agentPaths.paths) {
-        setPlaybackState({
-          ...playbackState,
-          pathsToShow:
-            expState.agentPaths.paths[
-              expState.session.levels[levelIdxRef.current]
-            ] || [],
-        });
-      }
-    }
-  };
-
-  const updateCurrentPathIdx = () => {
-    let i = playbackState.currentPathIdx + 1;
-
-    while (i < playbackState.pathsToShow.length) {
-      if (playbackState.pathsToShow[i]) {
-        break;
-      }
-      i += 1;
-    }
-
-    if (i >= playbackState.pathsToShow.length) {
-      i = -1;
-      setGameState({ ...gameState, playing: true });
-    }
-
-    setPlaybackState({ ...playbackState, currentPathIdx: i });
   };
 
   const loadRenderers = (gdy) => {
@@ -262,18 +185,22 @@ const App = () => {
     });
   };
 
-  const onTrajectoryStep = (step) => {
-    if (uiState.showFinishedScreen) {
-      return;
-    }
-
-    let traj = { ...trajectoriesRef.current };
-    traj[expState.session.levels[levelIdxRef.current]].push(step);
-    setTrajectories(traj);
+  const updatePathsToShow = () => {
+    // if (expState.session && expState.agentTrajectories) {
+    //   if (expState.session.levels && expState.agentTrajectories.paths) {
+    //     setPlaybackState({
+    //       ...playbackState,
+    //       pathsToShow:
+    //         expState.agentTrajectories.paths[
+    //           expState.session.levels[levelIdxRef.current]
+    //         ] || [],
+    //     });
+    //   }
+    // }
   };
 
   const uploadTrajectories = async () => {
-    let traj = { ...trajectoriesRef.current };
+    let traj = { ...trajectories };
     Object.keys(traj).forEach((k) => {
       traj[k] = traj[k].map((x) => x[1]).join(",");
     });
@@ -288,81 +215,25 @@ const App = () => {
     await api.storeFreeTextResponse(expState.session, response);
   };
 
-  const onPlaybackStart = () => {
-    setGameState({ ...gameState, playing: false });
-  };
-
-  const nextLevel = () => {
-    setExpState({
-      ...expState,
-      levelIdx: expState.levelIdx + 1,
-    });
-  };
-
-  const onLevelComplete = () => {
-    if (levelIdxRef.current === 0) {
-      setUIState({ ...uiState, showQuiz: true });
-    } else {
-      nextLevel();
-    }
-  };
-
-  const isReady = () => {
-    return (
-      expState.session !== null &&
-      playbackState.pathsToShow !== null &&
-      gameState.gdy !== null
+  const isLoading = () => {
+    return !(
+      expState.session &&
+      // playbackState.pathsToShow &&
+      gameState.gdy
     );
   };
 
-  return !isReady() ? (
+  return isLoading() ? (
     <div>loading...</div>
   ) : (
     <div className="main-container">
-      {!uiState.showInitialInstructions && (
-        <motion.div
-          className="game-container"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: uiState.showFinishedScreen ? 0.1 : 1 }}
-          transition={{ duration: 0.4 }}
-        >
-          <InfoBar />
-          <Player
-            gdyHash={gameState.gdyHash}
-            gdy={gameState.gdy}
-            levelId={utils.currentLevelId(expState)}
-            avatarPath={
-              expState.session.agentAvatars[
-                expState.session.agentIds[playbackState.currentPathIdx]
-              ] || "sprite2d/player.png"
-            }
-            griddlyjs={griddlyjs}
-            rendererState={rendererState}
-            onTrajectoryStep={onTrajectoryStep}
-            onReward={(val) => {
-              if (levelIdxRef.current > 0) {
-                setGameState({
-                  ...gameState,
-                  score: gameState.score + val,
-                });
-              }
-            }}
-            onLevelComplete={onLevelComplete}
-            trajectoryString={
-              playbackState.currentPathIdx < playbackState.pathsToShow.length
-                ? playbackState.pathsToShow[playbackState.currentPathIdx]
-                : ""
-            }
-            waitToBeginPlayback={uiState.showLevelPopup}
-            onPlaybackStart={onPlaybackStart}
-            onPlaybackEnd={updateCurrentPathIdx}
-            beforePlaybackMs={INTER_AGENT_INTERVAL_MS}
-          />
-        </motion.div>
+      {!(uiState.showInitialInstructions || uiState.showPhaseInstructions) && (
+        <PlayerContainer griddlyjs={griddlyjs} />
       )}
-      <InstructionModal />
+      <InitialInstructions />
+      <PhaseInstructions />
       <LevelPopup duration={INTER_LEVEL_INTERVAL_MS} delay={250} />
-      <QuizModal />
+      {/* <QuizModal /> */}
       <ExperimentCompleteModal submitResponse={uploadFreeTextResponse} />
     </div>
   );

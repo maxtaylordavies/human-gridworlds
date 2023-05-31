@@ -1,21 +1,25 @@
-import React, { useState } from "react";
-import { motion } from "framer-motion";
+import React from "react";
 
 import { useStore } from "../store";
-import { Modal } from "./Modal";
+import { MultiScreenModal } from "./core/MultiScreenModal";
 
-const InstructionModal = () => {
+const InitialInstructions = () => {
   const [uiState, setUIState] = useStore((state) => [
     state.uiState,
     state.setUIState,
   ]);
-  const session = useStore((state) => state.expState.session);
-  const goalImages = useStore((state) => state.gameState.goalImages);
+  const [expState, setExpState] = useStore((state) => [
+    state.expState,
+    state.setExpState,
+  ]);
 
-  const [stage, setStage] = useState("Consent");
-  const [screenIdx, setScreenIdx] = useState(0);
+  // const expGroup = session?.agentIds?.length === 2 ? 1 : 2;
+  const expGroup = 1;
 
-  const expGroup = session?.agentIds.length === 2 ? 1 : 2;
+  const finishInstructions = () => {
+    setUIState({ ...uiState, showInitialInstructions: false });
+    setExpState({ ...expState, phaseIdx: 0 });
+  };
 
   const content = {
     Consent: [
@@ -32,7 +36,6 @@ const InstructionModal = () => {
           </>
         ),
         buttonLabel: "Confirm",
-        onClick: () => setScreenIdx((curr) => curr + 1),
       },
       {
         content: (
@@ -64,10 +67,6 @@ const InstructionModal = () => {
           </>
         ),
         buttonLabel: "Give consent",
-        onClick: () => {
-          setStage("Instructions");
-          setScreenIdx(0);
-        },
       },
     ],
     Instructions: [
@@ -86,7 +85,6 @@ const InstructionModal = () => {
           </>
         ),
         buttonLabel: "Next",
-        onClick: () => setScreenIdx((curr) => curr + 1),
       },
       {
         content: (
@@ -104,7 +102,6 @@ const InstructionModal = () => {
           </>
         ),
         buttonLabel: "Next",
-        onClick: () => setScreenIdx((curr) => curr + 1),
       },
       {
         content: (
@@ -118,7 +115,7 @@ const InstructionModal = () => {
               Collecting any gem will complete the level, but each gem is worth
               a different number of points:
             </p>
-            <div className="instruction-modal-score-key">
+            {/* <div className="instruction-modal-score-key">
               {session &&
                 goalImages &&
                 session.utility.goals.map((r, i) => (
@@ -130,25 +127,24 @@ const InstructionModal = () => {
                     <span>{i <= 2 ? r : "?"}</span>
                   </div>
                 ))}
-            </div>
+            </div> */}
             <p>
               The value of each gem will remain the same throughout the game.{" "}
             </p>
           </>
         ),
         buttonLabel: "Next",
-        onClick: () => setScreenIdx((curr) => curr + 1),
       },
       {
         content: (
           <>
             <p>
-              As well as your human character, there are{" "}
-              {session.agentIds.length} aliens in the game. At each level, some
-              or all of the aliens will take turns to complete it - it will then
-              be your turn to complete the level yourself.
+              As well as your human character, there are a number of aliens in
+              the game. At each level, some or all of the aliens will take turns
+              to complete it - it will then be your turn to complete the level
+              yourself.
             </p>
-            <div className="instruction-modal-character-key">
+            {/* <div className="instruction-modal-character-key">
               {session &&
                 session.agentIds.map((id) => (
                   <img
@@ -157,7 +153,7 @@ const InstructionModal = () => {
                     style={{ marginRight: 10 }}
                   />
                 ))}
-            </div>
+            </div> */}
             <p>
               <b>
                 You should pay close attention to what each of the aliens does.
@@ -169,7 +165,6 @@ const InstructionModal = () => {
           </>
         ),
         buttonLabel: "Next",
-        onClick: () => setScreenIdx((curr) => curr + 1),
       },
       {
         content:
@@ -207,7 +202,6 @@ const InstructionModal = () => {
             </>
           ),
         buttonLabel: "Next",
-        onClick: () => setScreenIdx((curr) => curr + 1),
       },
       {
         content: (
@@ -232,59 +226,18 @@ const InstructionModal = () => {
           </>
         ),
         buttonLabel: "Start experiment",
-        onClick: () => {
-          setUIState({ ...uiState, showInitialInstructions: false });
-        },
       },
     ],
   };
 
   return (
-    <Modal
+    <MultiScreenModal
+      content={content}
+      visible={uiState.showInitialInstructions}
       key="instruction-modal"
-      className="instruction-modal"
-      open={uiState.showInitialInstructions}
-    >
-      <div className="instruction-modal-title">{stage}</div>
-      <div className="instruction-modal-body">
-        <div className="instruction-modal-text">
-          {content[stage][screenIdx].content}
-        </div>
-        <div className="instruction-modal-button-row">
-          {stage === "instructions" || screenIdx > 0 ? (
-            <motion.button
-              className="instruction-modal-button back"
-              onClick={() => {
-                screenIdx === 0
-                  ? setStage("Consent")
-                  : setScreenIdx((curr) => curr - 1);
-              }}
-              whileHover={{ scale: 1.04 }}
-              whileTap={{ scale: 0.96 }}
-              transition={{ duration: 0.2 }}
-            >
-              Back
-            </motion.button>
-          ) : (
-            <div />
-          )}
-          <motion.button
-            className={`instruction-modal-button ${
-              content[stage][screenIdx].buttonLabel === "Next"
-                ? "next"
-                : "start"
-            }`}
-            onClick={content[stage][screenIdx].onClick}
-            whileHover={{ scale: 1.04 }}
-            whileTap={{ scale: 0.96 }}
-            transition={{ duration: 0.2 }}
-          >
-            {content[stage][screenIdx].buttonLabel}
-          </motion.button>
-        </div>
-      </div>
-    </Modal>
+      onFinish={finishInstructions}
+    />
   );
 };
 
-export default InstructionModal;
+export default InitialInstructions;

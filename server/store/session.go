@@ -36,8 +36,10 @@ func CreateSession(experimentID string, isTest bool, context interface{}) Sessio
 		CreatedAt:       time.Now().Unix(),
 		IsTest:          isTest,
 		GriddlySpecName: "journal",
-		Phases:          []Phase{},
-		Conditions:      conditions,
-		Context:         context,
+		Phases: []Phase{
+			CreatePhase("exploration", []int{0, 1}, true, false),
+		},
+		Conditions: conditions,
+		Context:    context,
 	}
 }

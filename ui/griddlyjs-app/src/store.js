@@ -9,16 +9,44 @@ export const useStore = create((set) => ({
     showLevelPopup: true,
     showFinishedScreen: false,
   },
-  setUIState: (uist) => set(() => ({ uiState: uist })),
+  setUIState: (uist) =>
+    set((state) => {
+      // if showPhaseInstructions is being set to false, set levelIdx to 0
+      if (!uist.showPhaseInstructions && state.uiState.showPhaseInstructions) {
+        return { uiState: uist, expState: { ...state.expState, levelIdx: 0 } };
+      }
+      return { uiState: uist };
+    }),
 
-  // session state
+  // experiment/session state
   expState: {
-    session: null,
-    phaseIdx: 0,
-    levelIdx: 0,
-    agentPaths: null,
+    session: null, // session object
+    phaseIdx: -1, // index of phase we're in
+    levelIdx: -1, // index of level we're in (within the current phase)
+    agentTrajectories: null, // set of agent trajectories to show
   },
-  setExpState: (est) => set(() => ({ expState: est })),
+  setExpState: (est) =>
+    set((state) => {
+      // if levelIdx is being incremented, check if we're at the end of the
+      // current phase - if so, increment phaseIdx
+      if (est.levelIdx > state.expState.levelIdx) {
+        const phase = est.session.phases[est.phaseIdx];
+        if (est.levelIdx >= phase.levels.length - 1) {
+          est.phaseIdx += 1;
+        }
+      }
+
+      // if phaseIdx is being incremented, reset levelIdx to -1
+      // and set showPhaseInstructions to true
+      if (est.phaseIdx > state.expState.phaseIdx) {
+        return {
+          uiState: { ...state.uiState, showPhaseInstructions: true },
+          expState: { ...est, levelIdx: -1 },
+        };
+      }
+
+      return { expState: est };
+    }),
 
   // game state
   gameState: {

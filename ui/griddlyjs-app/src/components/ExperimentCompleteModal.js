@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { motion } from "framer-motion";
 
 import { useStore } from "../store";
-import { Modal } from "./Modal";
+import { Modal } from "./core/Modal";
 
 const PROLIFIC_CODE = "CAL3DWSD";
 
@@ -24,7 +24,7 @@ const ExperimentCompleteModal = ({ submitResponse }) => {
   };
 
   const questions =
-    session.agentIds.length === 2
+    2 === 2
       ? [
           "In the early levels (1-2), did you learn anything about the red and blue aliens from watching them?",
           "In the dark levels (3-4), how did you decide which way to go?",

@@ -2,7 +2,7 @@ import { React, useState, useEffect } from "react";
 import { motion } from "framer-motion";
 
 import { useStore } from "../store";
-import { Modal } from "./Modal";
+import { Modal } from "./core/Modal";
 
 const QuizModal = () => {
   const [uiState, setUIState] = useStore((state) => [

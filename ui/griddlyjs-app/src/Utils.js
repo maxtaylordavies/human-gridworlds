@@ -104,6 +104,15 @@ export const findCompatibleRenderers = (observers, objects) => {
 };
 
 export const currentLevelId = (expState) => {
+  if (
+    !expState ||
+    !expState.session ||
+    expState.phaseIdx < 0 ||
+    expState.levelIdx < 0
+  ) {
+    return null;
+  }
+
   const phase = expState.session.phases[expState.phaseIdx];
   const level = phase.levels[expState.levelIdx];
   return level.id;
