@@ -1,19 +1,30 @@
 import Phaser from "phaser";
 
-import Block2DRenderer from "../../Block2DRenderer";
-import Sprite2DRenderer from "../../Sprite2DRenderer";
-import { COLOR_LOADING_TEXT } from "../../ThemeConsts";
-import { INTER_STEP_INTERVAL_MS } from "../../../constants";
+import Block2DRenderer from "./Block2DRenderer";
+import Sprite2DRenderer from "./Sprite2DRenderer";
+import { COLOR_LOADING_TEXT } from "./ThemeConsts";
+import { INTER_STEP_INTERVAL_MS } from "../constants";
 
-class HumanPlayerScene extends Phaser.Scene {
+export class LoadingScene extends Phaser.Scene {
   constructor() {
-    super("HumanPlayerScene");
+    super("LoadingScene");
+  }
+
+  preload() {}
+
+  create() {}
+
+  update() {}
+}
+
+export class PlayerScene extends Phaser.Scene {
+  constructor() {
+    super("PlayerScene");
 
     this.stateHash = 0;
     this.loaded = false;
     this.defaultTileSize = 24;
     this.levelStringOrId = "";
-
     this.keyboardIntervals = new Map();
   }
 
@@ -25,10 +36,11 @@ class HumanPlayerScene extends Phaser.Scene {
       this.gridWidth = this.griddlyjs.getWidth();
 
       this.gdy = data.gdy;
-      this.levelIdx = data.levelIdx;
+      this.levelId = data.levelId;
       this.avatarPath = data.avatarPath;
       this.trajectoryString = data.trajectoryString;
       this.waitToBeginPlayback = data.waitToBeginPlayback;
+      this.beforePlaybackMs = data.beforePlaybackMs;
 
       this.setPlayerPosAndImage();
 
@@ -38,8 +50,9 @@ class HumanPlayerScene extends Phaser.Scene {
       this.onPlaybackStart = data.onPlaybackStart;
       this.onPlaybackEnd = data.onPlaybackEnd;
 
+      this.avatarObject = this.gdy.Environment.Player.AvatarObject;
       this.occlusionWindow =
-        this.gdy.Environment.OcclusionWindows[this.levelIdx];
+        this.gdy.Environment.OcclusionWindows[this.levelId];
       this.occlusionPositions = [];
       if (this.occlusionWindow !== -1) {
         for (let x = 0; x < this.gridWidth; x++) {
@@ -49,13 +62,8 @@ class HumanPlayerScene extends Phaser.Scene {
         }
       }
 
-      this.beforePlaybackMs = data.beforePlaybackMs;
-
-      this.rendererName = data.rendererName;
-      this.renderConfig = data.rendererConfig;
-
-      this.avatarObject = this.gdy.Environment.Player.AvatarObject;
-
+      this.rendererName = data.rendererState.rendererName;
+      this.renderConfig = data.rendererState.rendererConfig;
       if (this.renderConfig.Type === "BLOCK_2D") {
         this.grenderer = new Block2DRenderer(
           this,
@@ -101,7 +109,7 @@ class HumanPlayerScene extends Phaser.Scene {
     // this level, we need to store the original location so we can
     // recover it when the demonstration phase is over
     if (this.playerPos === undefined) {
-      rows = this.gdy.Environment.Levels[this.levelIdx].split("\n");
+      rows = this.gdy.Environment.Levels[this.levelId].split("\n");
       rows.forEach((row, i) => {
         const j = row.indexOf("p");
         if (j !== -1) {
@@ -113,11 +121,11 @@ class HumanPlayerScene extends Phaser.Scene {
     // if this.trajectoryString is a non-empty string, then we're in
     // demonstration phase rather than interactive phase
     const pos = this.trajectoryString
-      ? this.gdy.Environment.DemonstratorStartPositions[this.levelIdx]
+      ? this.gdy.Environment.DemonstratorStartPositions[this.levelId]
       : this.playerPos;
 
     // update the position
-    rows = this.gdy.Environment.Levels[this.levelIdx]
+    rows = this.gdy.Environment.Levels[this.levelId]
       .replace("p", ".")
       .split("\n");
 
@@ -128,7 +136,7 @@ class HumanPlayerScene extends Phaser.Scene {
     const levelStr = rows.join("\n");
 
     this.griddlyjs.reset(levelStr);
-    this.gdy.Environment.Levels[this.levelIdx] = levelStr;
+    this.gdy.Environment.Levels[this.levelId] = levelStr;
 
     // if this is the last time this function is being called
     // for this level, then set this.playerPos back to undefined
@@ -583,5 +591,3 @@ class HumanPlayerScene extends Phaser.Scene {
     }
   };
 }
-
-export default HumanPlayerScene;

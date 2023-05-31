@@ -1,8 +1,7 @@
 import React, { Component } from "react";
 import Phaser from "phaser";
 
-import HumanPlayerScene from "./scenes/HumanPlayerScene";
-import LoadingScene from "../LoadingScene";
+import { LoadingScene, PlayerScene } from "./Scene";
 
 class Player extends Component {
   constructor(props) {
@@ -24,7 +23,7 @@ class Player extends Component {
       scale: {
         expandParent: false,
       },
-      scene: [LoadingScene, HumanPlayerScene],
+      scene: [LoadingScene, PlayerScene],
     };
 
     this.game = new Phaser.Game(config);
@@ -32,7 +31,7 @@ class Player extends Component {
 
     if (this.props.griddlyjs && this.props.gdy) {
       this.game.scene.remove("LoadingScene");
-      this.game.scene.start("HumanPlayerScene", {
+      this.game.scene.start("PlayerScene", {
         gdy: this.props.gdy,
         levelId: this.props.levelId,
         avatarPath: this.props.avatarPath,
@@ -60,7 +59,7 @@ class Player extends Component {
         prevProps.waitToBeginPlayback !== this.props.waitToBeginPlayback ||
         prevProps.beforePlaybackMs !== this.props.beforePlaybackMs
       ) {
-        this.game.scene.getScene("HumanPlayerScene").scene.restart({
+        this.game.scene.getScene("PlayerScene").scene.restart({
           gdy: this.props.gdy,
           levelId: this.props.levelId,
           avatarPath: this.props.avatarPath,

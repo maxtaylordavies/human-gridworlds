@@ -11,10 +11,14 @@ export const useStore = create((set) => ({
   },
   setUIState: (uist) =>
     set((state) => {
+      console.log("setting uiState: ", uist);
+
       // if showPhaseInstructions is being set to false, set levelIdx to 0
       if (!uist.showPhaseInstructions && state.uiState.showPhaseInstructions) {
+        console.log("setting levelIdx to 0");
         return { uiState: uist, expState: { ...state.expState, levelIdx: 0 } };
       }
+      console.log("not setting levelIdx to 0");
       return { uiState: uist };
     }),
 

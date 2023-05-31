@@ -14,14 +14,14 @@ const ScorePopup = () => {
   const [scoreDelta, setScoreDelta] = useState(0);
   const [bounds, setBounds] = useState({ min: 0, max: 0 });
 
-  useEffect(() => {
-    if (session) {
-      setBounds({
-        min: Math.min(...session.utility.goals),
-        max: Math.max(...session.utility.goals),
-      });
-    }
-  }, [session]);
+  // useEffect(() => {
+  //   if (session) {
+  //     setBounds({
+  //       min: Math.min(...session.utility.goals),
+  //       max: Math.max(...session.utility.goals),
+  //     });
+  //   }
+  // }, [session]);
 
   useEffect(() => {
     let delta = score - prevScore;

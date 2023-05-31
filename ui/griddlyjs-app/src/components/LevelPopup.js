@@ -53,43 +53,47 @@ const LevelPopup = ({ duration, delay }) => {
         <div className="level-popup-title">
           {lvl === 0 ? "Practice level" : `Level ${lvl}`}
         </div>
-        <div>
-          <span>Aliens</span>
-          <div className="level-popup-icon-container">
-            {expState.session.agentIds
-              .filter((agent, idx) => playbackState.pathsToShow[idx] !== "")
-              .map((agent) => expState.session.agentAvatars[agent])
-              .map((imgPath) => (
-                <img
-                  src={`resources/images/${imgPath}`}
-                  height="40px"
-                  style={{ marginRight: 10 }}
-                />
-              ))}
+        {expState.session.agentIds && (
+          <div>
+            <span>Aliens</span>
+            <div className="level-popup-icon-container">
+              {expState.session.agentIds
+                .filter((agent, idx) => playbackState.pathsToShow[idx] !== "")
+                .map((agent) => expState.session.agentAvatars[agent])
+                .map((imgPath) => (
+                  <img
+                    src={`resources/images/${imgPath}`}
+                    height="40px"
+                    style={{ marginRight: 10 }}
+                  />
+                ))}
+            </div>
           </div>
-        </div>
-        <div>
-          <span>Gems</span>
-          <div className="level-popup-icon-container">
-            {goalImages
-              .filter((gi) =>
-                gdy.Environment.Levels[utils.currentLevelId(expState)].includes(
-                  gi.replace(".png", "").slice(-1)
+        )}
+        {goalImages && (
+          <div>
+            <span>Gems</span>
+            <div className="level-popup-icon-container">
+              {goalImages
+                .filter((gi) =>
+                  gdy.Environment.Levels[
+                    utils.currentLevelId(expState)
+                  ].includes(gi.replace(".png", "").slice(-1))
                 )
-              )
-              .map((imgPath) => {
-                let idx = goalImages.indexOf(imgPath);
-                return (
-                  <div className="level-popup-gem">
-                    <img src={`resources/images/${imgPath}`} height="40px" />
-                    <span>
-                      {idx <= 2 ? expState.session.utility.goals[idx] : "?"}
-                    </span>
-                  </div>
-                );
-              })}
+                .map((imgPath) => {
+                  let idx = goalImages.indexOf(imgPath);
+                  return (
+                    <div className="level-popup-gem">
+                      <img src={`resources/images/${imgPath}`} height="40px" />
+                      <span>
+                        {idx <= 2 ? expState.session.utility.goals[idx] : "?"}
+                      </span>
+                    </div>
+                  );
+                })}
+            </div>
           </div>
-        </div>
+        )}
         <div className="level-popup-button-row">
           <motion.button
             onClick={onProceedClicked}

@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { useStore } from "../store";
 import * as utils from "../utils";
 import { INTER_LEVEL_INTERVAL_MS, INTER_AGENT_INTERVAL_MS } from "../constants";
-import Player from "../renderer/level_player/Player";
+import Player from "../renderer/Player";
 import InfoBar from "./InfoBar";
 
 const PlayerContainer = ({ griddlyjs }) => {

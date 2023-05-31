@@ -9,7 +9,8 @@ const InfoBar = () => {
   const pathIdx = useStore((state) => state.playbackState.currentPathIdx);
 
   const numLevels = session.phases[phaseIdx].levels.length;
-  const avatarPath = session.agentAvatars[session.agentIds[pathIdx]] || "";
+  // const avatarPath = session.agentAvatars[session.agentIds[pathIdx]] || "";
+  const avatarPath = "";
 
   return (
     <div className="info-bar">
