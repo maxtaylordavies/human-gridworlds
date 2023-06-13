@@ -113,7 +113,7 @@ Objects:
     MapCharacter: p
     Observers:
       Sprite2D:
-        - Image: sprite2d/player.png
+        - Image: custom/avi-grey.png
   - Name: ocean
     MapCharacter: o
     Observers:
@@ -152,22 +152,22 @@ Objects:
     MapCharacter: A
     Observers:
       Sprite2D:
-        - Image: oryx/oryx_fantasy/ore-2.png
+        - Image: custom/circle-yellow.png
   - Name: goalB
     MapCharacter: B
     Observers:
       Sprite2D:
-        - Image: oryx/oryx_fantasy/ore-6.png
+        - Image: custom/circle-green.png
   - Name: goalC
     MapCharacter: C
     Observers:
       Sprite2D:
-        - Image: oryx/oryx_fantasy/ore-3.png
+        - Image: custom/triangle-yellow.png
   - Name: goalD
     MapCharacter: D
     Observers:
       Sprite2D:
-        - Image: oryx/oryx_fantasy/ore-4.png
+        - Image: custom/triangle-green.png
   - Name: fog
     MapCharacter: F
     Z: 10
