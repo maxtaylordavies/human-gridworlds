@@ -7,7 +7,7 @@ Environment:
   Observers:
     Sprite2D:
       TileSize: 60
-      BackgroundTile: sprite2d/grass.png
+      BackgroundTile: custom/tile.png
     Block2D:
       TileSize: 60
   Player:
@@ -36,17 +36,21 @@ Environment:
           - 1
   Levels:
     - |
-      A   .   .   .   .   
-      .   .   .   .   .   
-      .   .   p   .   .   
-      .   .   .   .   .   
-      .   .   .   .   B 
+      A   .   .   .   .   .   .   
+      .   .   .   .   .   .   .   
+      .   .   .   .   .   .   .   
+      .   .   .   p   .   .   .   
+      .   .   .   .   .   .   .   
+      .   .   .   .   .   .   .   
+      .   .   .   .   .   .   B
     - |
-      B   .   .   .   .   
-      .   .   .   .   .   
-      .   .   p   .   .   
-      .   .   .   .   .   
-      .   .   .   .   A 
+      B   .   .   .   .   .   .   
+      .   .   .   .   .   .   .   
+      .   .   .   .   .   .   .   
+      .   .   .   p   .   .   .   
+      .   .   .   .   .   .   .   
+      .   .   .   .   .   .   .   
+      .   .   .   .   .   .   A
 Actions:
   - Name: move
     Behaviours:

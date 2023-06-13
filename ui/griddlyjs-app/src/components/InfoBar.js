@@ -8,10 +8,6 @@ const InfoBar = () => {
   const score = useStore((state) => state.gameState.score);
   const [prevScore, setprevScore] = useState(score);
   const [scoreDelta, setScoreDelta] = useState(0);
-  const pathIdx = useStore((state) => state.playbackState.currentPathIdx);
-
-  // const avatarPath = session.agentAvatars[session.agentIds[pathIdx]] || "";
-  const avatarPath = "";
 
   useEffect(() => {
     setScoreDelta(score - prevScore);
@@ -23,14 +19,14 @@ const InfoBar = () => {
   return (
     <div className="info-bar">
       <div className="info-bar-playing">
-        {avatarPath ? (
+        {/* {avatarPath ? (
           <span>
             <img src={`resources/images/${avatarPath}`} />
             's turn
           </span>
         ) : (
           "Your turn"
-        )}
+        )} */}
       </div>
       <ScorePopup scoreDelta={scoreDelta} clearDelta={() => setScoreDelta(0)} />
       <div className="info-bar-stats">
@@ -40,7 +36,7 @@ const InfoBar = () => {
           `${levelIdx + 1}/${session.phases[phaseIdx].levels.length}`
         )}
         {InfoBarItem("score", score, {
-          color: scoreDelta > 0 ? "green" : scoreDelta < 0 ? "red" : "",
+          color: scoreDelta > 0 ? "#00C14D" : scoreDelta < 0 ? "#FF0000" : "",
           fontWeight: scoreDelta === 0 ? "" : "bold",
           minWidth: 96,
         })}
