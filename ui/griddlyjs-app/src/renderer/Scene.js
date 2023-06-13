@@ -25,7 +25,7 @@ export class PlayerScene extends Phaser.Scene {
     this.loaded = false;
     this.defaultTileSize = 48;
     this.levelStringOrId = "";
-    this.keyboardIntervals = new Map();
+    this.keyActionBuffer = new Map();
   }
 
   init = (data) => {
@@ -261,40 +261,14 @@ export class PlayerScene extends Phaser.Scene {
   }
 
   setupKeyboardMapping = () => {
+    this.input.keyboard.clearCaptures();
+    this.input.keyboard.removeAllListeners();
+    this.input.keyboard.removeAllKeys(true);
+
     const actionInputMappings = this.griddlyjs.getActionInputMappings();
     const actionNames = this.griddlyjs.getActionNames();
 
-    const actionKeyOrder = [
-      Phaser.Input.Keyboard.KeyCodes.THREE,
-      Phaser.Input.Keyboard.KeyCodes.TWO,
-      Phaser.Input.Keyboard.KeyCodes.ONE,
-      Phaser.Input.Keyboard.KeyCodes.L,
-      Phaser.Input.Keyboard.KeyCodes.O,
-      Phaser.Input.Keyboard.KeyCodes.M,
-      Phaser.Input.Keyboard.KeyCodes.K,
-      Phaser.Input.Keyboard.KeyCodes.N,
-      Phaser.Input.Keyboard.KeyCodes.J,
-      Phaser.Input.Keyboard.KeyCodes.U,
-      Phaser.Input.Keyboard.KeyCodes.B,
-      Phaser.Input.Keyboard.KeyCodes.H,
-      Phaser.Input.Keyboard.KeyCodes.Y,
-      Phaser.Input.Keyboard.KeyCodes.V,
-      Phaser.Input.Keyboard.KeyCodes.G,
-      Phaser.Input.Keyboard.KeyCodes.T,
-      Phaser.Input.Keyboard.KeyCodes.C,
-      Phaser.Input.Keyboard.KeyCodes.F,
-      Phaser.Input.Keyboard.KeyCodes.R,
-      Phaser.Input.Keyboard.KeyCodes.Q,
-      Phaser.Input.Keyboard.KeyCodes.E,
-    ];
-
     const movementKeySets = [
-      {
-        "0,-1": Phaser.Input.Keyboard.KeyCodes.W,
-        "-1,0": Phaser.Input.Keyboard.KeyCodes.A,
-        "0,1": Phaser.Input.Keyboard.KeyCodes.S,
-        "1,0": Phaser.Input.Keyboard.KeyCodes.D,
-      },
       {
         "0,-1": Phaser.Input.Keyboard.KeyCodes.UP,
         "-1,0": Phaser.Input.Keyboard.KeyCodes.LEFT,
@@ -337,26 +311,7 @@ export class PlayerScene extends Phaser.Scene {
             }
 
             const mappedKey = this.input.keyboard.addKey(key, false);
-            mappedKey.on("down", this.processUserKeydown);
-            mappedKey.on("up", this.processUserKeyup);
-
-            this.keyMap.set(key, {
-              actionName,
-              actionTypeId,
-              actionId,
-              description: mapping.description,
-            });
-          });
-        } else {
-          // We have an action Key
-
-          inputMappings.forEach((inputMapping) => {
-            const key = actionKeyOrder.pop();
-
-            const actionId = Number(inputMapping[0]);
-            const mapping = inputMapping[1];
-
-            const mappedKey = this.input.keyboard.addKey(key, false);
+            mappedKey.removeAllListeners();
             mappedKey.on("down", this.processUserKeydown);
             mappedKey.on("up", this.processUserKeyup);
 
@@ -394,10 +349,10 @@ export class PlayerScene extends Phaser.Scene {
   };
 
   beginPlayback = () => {
-    this.keyboardIntervals.forEach((interval, key) => {
-      clearInterval(interval);
+    this.keyActionBuffer.forEach((t, key) => {
+      clearTimeout(t);
     });
-    this.keyboardIntervals.clear();
+    this.keyActionBuffer.clear();
 
     this.isRunningTrajectory = true;
     this.currentTrajectoryBuffer = {
@@ -422,6 +377,7 @@ export class PlayerScene extends Phaser.Scene {
     this.griddlyjs.seed(seed);
     // this.griddlyjs.reset();
     this.currentState = this.griddlyjs.getState();
+    this.keyActionBuffer.clear();
   };
 
   processTrajectory = () => {
@@ -505,60 +461,38 @@ export class PlayerScene extends Phaser.Scene {
 
     if (stepResult.terminated) {
       this.onLevelComplete();
-      // this.resetLevel();
+      this.resetLevel();
     }
+  };
+
+  dispatchAction = (action) => {
+    clearTimeout(this.keyActionBuffer.get(action[1]));
+    this.keyActionBuffer.set(
+      action[1],
+      setTimeout(() => this.doUserAction(action), 50)
+    );
   };
 
   processUserKeydown = (event) => {
-    if (!this.isRunningTrajectory) {
-      if (this.keyboardIntervals.has(event.keyCode)) {
-        clearInterval(this.keyboardIntervals.get(event.keyCode));
-      }
-
-      const actionMapping = this.keyMap.get(event.keyCode);
-      const action = [actionMapping.actionTypeId, actionMapping.actionId];
-      this.doUserAction(action);
-
-      // this.keyboardIntervals.set(
-      //   event.keyCode,
-      //   setInterval(() => this.doUserAction(action), 100)
-      // );
-    }
+    const actionMapping = this.keyMap.get(event.keyCode);
+    const action = [actionMapping.actionTypeId, actionMapping.actionId];
+    this.dispatchAction(action);
   };
 
   processUserKeyup = (event) => {
-    if (this.keyboardIntervals.has(event.keyCode)) {
-      clearInterval(this.keyboardIntervals.get(event.keyCode));
+    if (this.keyActionBuffer.has(event.keyCode)) {
+      clearTimeout(this.keyActionBuffer.get(event.keyCode));
     }
   };
 
   preload = () => {
-    const envName = this.gdy.Environment.Name;
-
     this.input.mouse.disableContextMenu();
-
-    this.loadingText = this.add.text(
-      this.cameras.main.width / 2,
-      this.cameras.main.height / 2,
-      "",
-      {
-        fontFamily: "Droid Sans Mono",
-        font: "32px",
-        fill: COLOR_LOADING_TEXT,
-        align: "center",
-      }
-    );
-
-    this.loadingText.setX(this.cameras.main.width / 2);
-    this.loadingText.setY(this.cameras.main.height / 2);
-    this.loadingText.setOrigin(0.5, 0.5);
     if (this.grenderer) {
       this.grenderer.loadTemplates(this.gdy.Objects);
     }
   };
 
   create = () => {
-    this.loadingText.destroy();
     this.loaded = true;
 
     if (this.grenderer) {
@@ -569,11 +503,7 @@ export class PlayerScene extends Phaser.Scene {
   };
 
   update = () => {
-    if (!this.loaded) {
-      this.loadingText.setX(this.cameras.main.width / 2);
-      this.loadingText.setY(this.cameras.main.height / 2);
-      this.loadingText.setOrigin(0.5, 0.5);
-    } else {
+    if (this.loaded) {
       if (this.grenderer) {
         if (
           this.currentLevelStringOrId !== this.griddlyjs.getLevelStringOrId()

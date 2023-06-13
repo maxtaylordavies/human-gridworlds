@@ -137,8 +137,15 @@ const PlayerContainer = ({ griddlyjs }) => {
     <motion.div
       className="game-container"
       initial={{ opacity: 0 }}
-      animate={{ opacity: uiState.showFinishedScreen ? 0.1 : 1 }}
-      transition={{ duration: 0.4 }}
+      animate={{
+        opacity:
+          uiState.showFinishedScreen ||
+          uiState.showPhaseInstructions ||
+          uiState.showLevelPopup
+            ? 0.1
+            : 1,
+      }}
+      transition={{ duration: 0.3 }}
     >
       <InfoBar />
       <Player

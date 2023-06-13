@@ -144,8 +144,6 @@ const App = () => {
   const loadGame = async (gdy) => {
     const gdyString = yaml.dump(gdy, { noRefs: true });
 
-    console.log("gdyString: ", gdyString);
-
     griddlyjs.unloadGDY();
     griddlyjs.loadGDY(gdyString);
     loadRenderers(gdy);
@@ -216,7 +214,7 @@ const App = () => {
     <div>loading...</div>
   ) : (
     <div className="main-container">
-      {!(uiState.showInitialInstructions || uiState.showPhaseInstructions) && (
+      {!uiState.showInitialInstructions && (
         <PlayerContainer griddlyjs={griddlyjs} />
       )}
       <InitialInstructions />
