@@ -54,7 +54,7 @@ Actions:
           Object: player
           Commands:
             - mov: _dest
-            - reward: 0
+            - reward: -1
         Dst:
           Object: _empty
       - Src:
