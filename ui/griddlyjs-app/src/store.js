@@ -35,7 +35,7 @@ export const useStore = create((set) => ({
       // current phase - if so, increment phaseIdx
       if (est.levelIdx > state.expState.levelIdx) {
         const phase = est.session.phases[est.phaseIdx];
-        if (est.levelIdx >= phase.levels.length - 1) {
+        if (est.levelIdx >= phase.levels.length) {
           est.phaseIdx += 1;
         }
       }
