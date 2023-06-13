@@ -23,7 +23,7 @@ export class PlayerScene extends Phaser.Scene {
 
     this.stateHash = 0;
     this.loaded = false;
-    this.defaultTileSize = 24;
+    this.defaultTileSize = 48;
     this.levelStringOrId = "";
     this.keyboardIntervals = new Map();
   }
