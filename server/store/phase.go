@@ -3,7 +3,7 @@ package store
 type Replay struct {
 	AgentPhi   int    `json:"agentPhi"`
 	AgentName  string `json:"agentName"`
-	Trajectory []int  `json:"trajectory"`
+	Trajectory string `json:"trajectory"`
 }
 
 type Level struct {
@@ -23,6 +23,12 @@ func CreatePhase(name string, levelIDs []int, interactive bool, objectsHidden bo
 	for _, levelID := range levelIDs {
 		levels = append(levels, Level{ID: levelID, ObjectsHidden: objectsHidden, Replays: []Replay{}})
 	}
+
+	levels[0].Replays = append(levels[0].Replays, Replay{
+		AgentPhi:   0,
+		AgentName:  "max",
+		Trajectory: "1,1,1,1,1",
+	})
 
 	return Phase{
 		Name:        name,

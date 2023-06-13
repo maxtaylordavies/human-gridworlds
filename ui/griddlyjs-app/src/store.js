@@ -27,13 +27,33 @@ export const useStore = create((set) => ({
     session: null, // session object
     phaseIdx: 0, // index of phase we're in
     levelIdx: 0, // index of level we're in (within the current phase)
-    agentTrajectories: null, // set of agent trajectories to show
+    replayIdx: 0, // index of replay we're in (within the current level)
   },
   setExpState: (est) =>
     set((state) => {
+      // if replayIdx is being incremented, check if we're at the end of the
+      // replays for the current level - if so, check if this phase is interactive;
+      // if it is, set gameState.playing to true, otherwise increment levelIdx
+      if (est.replayIdx > state.expState.replayIdx) {
+        console.log("replayIdx being incremented");
+        const phase = est.session.phases[est.phaseIdx];
+        const level = phase.levels[est.levelIdx];
+        if (est.replayIdx >= level.replays.length) {
+          console.log("end of replays for this level");
+          if (phase.interactive) {
+            return {
+              gameState: { ...state.gameState, playing: true },
+              expState: est,
+            };
+          }
+          est.levelIdx += 1;
+        }
+      }
+
       // if levelIdx is being incremented, check if we're at the end of the
       // current phase - if so, increment phaseIdx
       if (est.levelIdx > state.expState.levelIdx) {
+        est.replayIdx = 0;
         const phase = est.session.phases[est.phaseIdx];
         if (est.levelIdx >= phase.levels.length) {
           est.phaseIdx += 1;
@@ -42,7 +62,7 @@ export const useStore = create((set) => ({
 
       // if phaseIdx is being incremented, first check if we've
       // reached the end of the experiment - otherwise reset
-      // levelIdx to -1 and set showPhaseInstructions to true
+      // levelIdx to 0 and set showPhaseInstructions to true
       if (est.phaseIdx > state.expState.phaseIdx) {
         if (est.phaseIdx >= est.session.phases.length) {
           return { uiState: { ...state.uiState, showFinishedScreen: true } };
@@ -76,12 +96,7 @@ export const useStore = create((set) => ({
       };
     }),
 
-  // playback and renderer state
-  playbackState: {
-    pathsToShow: null,
-    currentPathIdx: -1,
-  },
-  setPlaybackState: (pst) => set(() => ({ playbackState: pst })),
+  // renderer state
   rendererState: {
     renderers: [],
     rendererName: "",

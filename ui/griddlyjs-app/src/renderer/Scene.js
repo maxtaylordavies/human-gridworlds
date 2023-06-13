@@ -39,6 +39,9 @@ export class PlayerScene extends Phaser.Scene {
       this.levelId = data.levelId;
       this.avatarPath = data.avatarPath;
       this.trajectoryString = data.trajectoryString;
+
+      console.log("this.trajectoryString", this.trajectoryString);
+
       this.waitToBeginPlayback = data.waitToBeginPlayback;
       this.beforePlaybackMs = data.beforePlaybackMs;
 
@@ -124,9 +127,10 @@ export class PlayerScene extends Phaser.Scene {
 
     // if this.trajectoryString is a non-empty string, then we're in
     // demonstration phase rather than interactive phase
-    const pos = this.trajectoryString
-      ? this.gdy.Environment.DemonstratorStartPositions[this.levelId]
-      : this.playerPos;
+    // const pos = this.trajectoryString
+    //   ? this.gdy.Environment.DemonstratorStartPositions[this.levelId]
+    //   : this.playerPos;
+    const pos = this.playerPos;
 
     // update the position
     rows = this.gdy.Environment.Levels[this.levelId]
@@ -360,6 +364,8 @@ export class PlayerScene extends Phaser.Scene {
       steps: this.trajectoryString.split(",").map((char) => [0, +char]),
     };
 
+    console.log(this.currentTrajectoryBuffer);
+
     this.trajectoryActionIdx = 0;
     // this.resetLevel();
     this.onPlaybackStart();
@@ -382,7 +388,7 @@ export class PlayerScene extends Phaser.Scene {
 
   processTrajectory = () => {
     if (this.currentTrajectoryBuffer.steps.length === 0) {
-      this.isRunningTrajectory = false;
+      this.endPlayback();
       return;
     }
 
@@ -474,12 +480,20 @@ export class PlayerScene extends Phaser.Scene {
   };
 
   processUserKeydown = (event) => {
+    if (this.isRunningTrajectory) {
+      return;
+    }
+
     const actionMapping = this.keyMap.get(event.keyCode);
     const action = [actionMapping.actionTypeId, actionMapping.actionId];
     this.dispatchAction(action);
   };
 
   processUserKeyup = (event) => {
+    if (this.isRunningTrajectory) {
+      return;
+    }
+
     if (this.keyActionBuffer.has(event.keyCode)) {
       clearTimeout(this.keyActionBuffer.get(event.keyCode));
     }

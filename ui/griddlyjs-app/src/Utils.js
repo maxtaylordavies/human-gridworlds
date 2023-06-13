@@ -117,3 +117,53 @@ export const currentLevelId = (expState) => {
   const level = phase.levels[expState.levelIdx];
   return level.id;
 };
+
+export const currentAvatarImg = (expState) => {
+  const defaultImg = "custom/avi-grey.png";
+
+  if (
+    !expState ||
+    !expState.session ||
+    expState.phaseIdx < 0 ||
+    expState.levelIdx < 0
+  ) {
+    return defaultImg;
+  }
+
+  const phase = expState.session.phases[expState.phaseIdx];
+  const level = phase.levels[expState.levelIdx];
+
+  if (
+    level.replays.length === 0 ||
+    expState.replayIdx >= level.replays.length
+  ) {
+    return defaultImg;
+  }
+
+  const replay = level.replays[expState.replayIdx];
+  return `custom/avi-${replay.agentPhi === 0 ? "red" : "blue"}.png`;
+};
+
+export const currentPlaybackTrajectory = (expState) => {
+  if (
+    !expState ||
+    !expState.session ||
+    expState.phaseIdx < 0 ||
+    expState.levelIdx < 0
+  ) {
+    return "";
+  }
+
+  const phase = expState.session.phases[expState.phaseIdx];
+  const level = phase.levels[expState.levelIdx];
+
+  if (
+    level.replays.length === 0 ||
+    expState.replayIdx >= level.replays.length
+  ) {
+    return "";
+  }
+
+  const replay = level.replays[expState.replayIdx];
+  return replay.trajectory;
+};

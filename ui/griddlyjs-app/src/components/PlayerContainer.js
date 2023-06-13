@@ -21,10 +21,6 @@ const PlayerContainer = ({ griddlyjs }) => {
     state.setGameState,
   ]);
   const updateScore = useStore((state) => state.updateScore);
-  const [playbackState, setPlaybackState] = useStore((state) => [
-    state.playbackState,
-    state.setPlaybackState,
-  ]);
   const [rendererState, setRendererState] = useStore((state) => [
     state.rendererState,
     state.setRendererState,
@@ -62,12 +58,6 @@ const PlayerContainer = ({ griddlyjs }) => {
     // }
   }, [expState.levelIdx]);
 
-  useEffect(() => {
-    if (playbackState.pathsToShow?.length > 0) {
-      updateCurrentPathIdx();
-    }
-  }, [playbackState.pathsToShow]);
-
   // load the map for the current level
   const loadLevel = async () => {
     // griddlyjs.reset(
@@ -77,22 +67,9 @@ const PlayerContainer = ({ griddlyjs }) => {
     // );
   };
 
-  const updateCurrentPathIdx = () => {
-    let i = playbackState.currentPathIdx + 1;
-
-    while (i < playbackState.pathsToShow.length) {
-      if (playbackState.pathsToShow[i]) {
-        break;
-      }
-      i += 1;
-    }
-
-    if (i >= playbackState.pathsToShow.length) {
-      i = -1;
-      setGameState({ ...gameState, playing: true });
-    }
-
-    setPlaybackState({ ...playbackState, currentPathIdx: i });
+  const onPlaybackEnd = () => {
+    console.log("onPlaybackEnd");
+    setExpState({ ...expState, replayIdx: expState.replayIdx + 1 });
   };
 
   const onLevelComplete = () => {
@@ -144,26 +121,16 @@ const PlayerContainer = ({ griddlyjs }) => {
         gdyHash={gameState.gdyHash}
         gdy={gameState.gdy}
         levelId={utils.currentLevelId(expState)}
-        // avatarPath={
-        //   expState.session.agentAvatars[
-        //     expState.session.agentIds[playbackState.currentPathIdx]
-        //   ] || "sprite2d/player.png"
-        // }
-        avatarPath={"sprite2d/player.png"}
+        avatarPath={utils.currentAvatarImg(expState)}
         griddlyjs={griddlyjs}
         rendererState={rendererState}
         onTrajectoryStep={onTrajectoryStep}
         onReward={updateScore}
         onLevelComplete={onLevelComplete}
-        // trajectoryString={
-        //   playbackState.currentPathIdx < playbackState.pathsToShow.length
-        //     ? playbackState.pathsToShow[playbackState.currentPathIdx]
-        //     : ""
-        // }
-        trajectoryString={""}
+        trajectoryString={utils.currentPlaybackTrajectory(expState)}
         waitToBeginPlayback={uiState.showLevelPopup}
         onPlaybackStart={onPlaybackStart}
-        onPlaybackEnd={updateCurrentPathIdx}
+        onPlaybackEnd={onPlaybackEnd}
         beforePlaybackMs={INTER_AGENT_INTERVAL_MS}
       />
     </motion.div>

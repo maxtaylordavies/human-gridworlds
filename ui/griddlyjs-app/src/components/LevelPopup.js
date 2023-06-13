@@ -11,11 +11,6 @@ const LevelPopup = ({ duration, delay }) => {
     state.setUIState,
   ]);
   const expState = useStore((state) => state.expState);
-  const { gdy, goalImages } = useStore((state) => state.gameState);
-  const [playbackState, setPlaybackState] = useStore((state) => [
-    state.playbackState,
-    state.setPlaybackState,
-  ]);
 
   const [lvl, setLvl] = useState(-1);
 
@@ -51,7 +46,7 @@ const LevelPopup = ({ duration, delay }) => {
     expState.levelIdx !== -1 && (
       <Modal open={uiState.showLevelPopup} className="level-popup">
         <div className="level-popup-title">Level {lvl + 1}</div>
-        {expState.session.agentIds && (
+        {/* {expState.session.agentIds && (
           <div>
             <span>Aliens</span>
             <div className="level-popup-icon-container">
@@ -91,7 +86,7 @@ const LevelPopup = ({ duration, delay }) => {
                 })}
             </div>
           </div>
-        )}
+        )} */}
         <div className="level-popup-button-row">
           <motion.button
             onClick={onProceedClicked}

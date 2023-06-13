@@ -29,10 +29,6 @@ const App = () => {
     state.gameState,
     state.setGameState,
   ]);
-  const [playbackState, setPlaybackState] = useStore((state) => [
-    state.playbackState,
-    state.setPlaybackState,
-  ]);
   const [rendererState, setRendererState] = useStore((state) => [
     state.rendererState,
     state.setRendererState,
@@ -52,10 +48,6 @@ const App = () => {
       fetchData();
     }
   }, [expState.session]);
-
-  useEffect(() => {
-    updatePathsToShow();
-  }, [expState.session, expState.agentTrajectories]);
 
   // useEffect(() => {
   //   if (!uiState.showQuiz && !uiState.showInitialInstructions) {
@@ -172,20 +164,6 @@ const App = () => {
     });
   };
 
-  const updatePathsToShow = () => {
-    // if (expState.session && expState.agentTrajectories) {
-    //   if (expState.session.levels && expState.agentTrajectories.paths) {
-    //     setPlaybackState({
-    //       ...playbackState,
-    //       pathsToShow:
-    //         expState.agentTrajectories.paths[
-    //           expState.session.levels[levelIdxRef.current]
-    //         ] || [],
-    //     });
-    //   }
-    // }
-  };
-
   const uploadTrajectories = async () => {
     let traj = { ...trajectories };
     Object.keys(traj).forEach((k) => {
@@ -203,11 +181,7 @@ const App = () => {
   };
 
   const isLoading = () => {
-    return !(
-      expState.session &&
-      // playbackState.pathsToShow &&
-      gameState.gdy
-    );
+    return !(expState.session && gameState.gdy);
   };
 
   return isLoading() ? (

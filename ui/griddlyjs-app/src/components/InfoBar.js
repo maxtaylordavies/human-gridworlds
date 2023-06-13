@@ -14,8 +14,6 @@ const InfoBar = () => {
     setprevScore(score);
   }, [score]);
 
-  console.log("scoreDelta", scoreDelta);
-
   return (
     <div className="info-bar">
       <div className="info-bar-playing">
