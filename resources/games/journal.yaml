@@ -21,20 +21,15 @@ Environment:
       OffsetY: 0
     AvatarObject: player
   Variables:
+    - Name: collected
+      InitialValue: 0
     - Name: dead
       InitialValue: 0
   Termination:
     Win:
-      - or:
-          - eq:
-              - goalA:count
-              - 0
-          - eq:
-              - goalB:count
-              - 0
-          - eq:
-              - goalC:count
-              - 0
+      - eq:
+          - collected
+          - 1
     End:
       - eq:
           - dead
@@ -71,6 +66,7 @@ Actions:
           Object: goalA
           Commands:
             - remove: true
+            - set: [ collected, 1 ]
       - Src:
           Object: player
           Commands:
@@ -80,6 +76,7 @@ Actions:
           Object: goalB
           Commands:
             - remove: true
+            - set: [ collected, 1 ]
       - Src:
           Object: player
           Commands:
@@ -89,6 +86,17 @@ Actions:
           Object: goalC
           Commands:
             - remove: true
+            - set: [ collected, 1 ]
+      - Src:
+          Object: player
+          Commands:
+            - mov: _dest
+            - reward: 1
+        Dst:
+          Object: goalD
+          Commands:
+            - remove: true
+            - set: [ collected, 1 ]
 Objects:
   - Name: player
     Z: 2
@@ -135,43 +143,24 @@ Objects:
     Observers:
       Sprite2D:
         - Image: oryx/oryx_fantasy/ore-2.png
-      Block2D:
-        - Shape: square
-          Color:
-            - 1
-            - 0
-            - 0
   - Name: goalB
     MapCharacter: B
     Observers:
       Sprite2D:
         - Image: oryx/oryx_fantasy/ore-6.png
-      Block2D:
-        - Shape: square
-          Color:
-            - 0
-            - 1
-            - 0
   - Name: goalC
     MapCharacter: C
     Observers:
       Sprite2D:
         - Image: oryx/oryx_fantasy/ore-3.png
-      Block2D:
-        - Shape: square
-          Color:
-            - 0
-            - 0
-            - 1
+  - Name: goalD
+    MapCharacter: D
+    Observers:
+      Sprite2D:
+        - Image: oryx/oryx_fantasy/ore-4.png
   - Name: fog
     MapCharacter: F
     Z: 10
     Observers:
       Sprite2D:
         - Image: gvgai/oryx/space1.png
-      Block2D:
-        - Shape: square
-          Color:
-            - 0
-            - 0
-            - 0
