@@ -64,6 +64,10 @@ const App = () => {
   // }, [uiState.showQuiz]);
 
   useEffect(() => {
+    console.log("level idx: ", expState.levelIdx);
+  }, [expState.levelIdx]);
+
+  useEffect(() => {
     const onFinished = async () => {
       await uploadTrajectories();
       await uploadFinalScore();
@@ -219,7 +223,7 @@ const App = () => {
       )}
       <InitialInstructions />
       <PhaseInstructions />
-      <LevelPopup duration={INTER_LEVEL_INTERVAL_MS} delay={250} />
+      {/* <LevelPopup duration={INTER_LEVEL_INTERVAL_MS} delay={250} /> */}
       {/* <QuizModal /> */}
       <ExperimentCompleteModal submitResponse={uploadFreeTextResponse} />
     </div>

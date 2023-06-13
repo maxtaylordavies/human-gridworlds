@@ -76,13 +76,6 @@ const PlayerContainer = ({ griddlyjs }) => {
     // );
   };
 
-  const incrementLevelIdx = () => {
-    setExpState({
-      ...expState,
-      levelIdx: expState.levelIdx + 1,
-    });
-  };
-
   const updateCurrentPathIdx = () => {
     let i = playbackState.currentPathIdx + 1;
 
@@ -102,12 +95,10 @@ const PlayerContainer = ({ griddlyjs }) => {
   };
 
   const onLevelComplete = () => {
-    // if (levelIdxRef.current === 0) {
-    //   setUIState({ ...uiState, showQuiz: true });
-    // } else {
-    //   incrementLevelIdx();
-    // }
-    incrementLevelIdx();
+    setExpState({
+      ...expState,
+      levelIdx: expState.levelIdx + 1,
+    });
   };
 
   const onPlaybackStart = () => {
@@ -133,19 +124,19 @@ const PlayerContainer = ({ griddlyjs }) => {
     setTrajectories(traj);
   };
 
+  let opacity = 1;
+  if (uiState.showPhaseInstructions || uiState.showFinishedScreen) {
+    opacity = 0;
+  } else if (uiState.showLevelPopup) {
+    opacity = 0.5;
+  }
+
   return (
     <motion.div
       className="game-container"
       initial={{ opacity: 0 }}
-      animate={{
-        opacity:
-          uiState.showFinishedScreen ||
-          uiState.showPhaseInstructions ||
-          uiState.showLevelPopup
-            ? 0.1
-            : 1,
-      }}
-      transition={{ duration: 0.3 }}
+      animate={{ opacity }}
+      transition={{ duration: 0.4 }}
     >
       <InfoBar />
       <Player

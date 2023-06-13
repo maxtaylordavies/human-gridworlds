@@ -37,7 +37,7 @@ const LevelPopup = ({ duration, delay }) => {
   const update = () => {
     setTimeout(() => {
       setLvl(expState.levelIdx);
-      setUIState({ ...uiState, showLevelPopup: true });
+      // setUIState({ ...uiState, showLevelPopup: true });
     }, delay);
   };
 

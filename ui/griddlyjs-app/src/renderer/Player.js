@@ -53,6 +53,7 @@ class Player extends Component {
     this.updateCanvasSize();
     if (this.props.griddlyjs) {
       if (
+        prevProps.levelId !== this.props.levelId ||
         prevProps.gdyHash !== this.props.gdyHash ||
         prevProps.avatarPath !== this.props.avatarPath ||
         prevProps.trajectoryString !== this.props.trajectoryString ||

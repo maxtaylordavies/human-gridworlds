@@ -6,7 +6,7 @@ export const useStore = create((set) => ({
     showInitialInstructions: true,
     showPhaseInstructions: false,
     showQuiz: false,
-    showLevelPopup: true,
+    showLevelPopup: false,
     showFinishedScreen: false,
   },
   setUIState: (uist) =>
@@ -25,8 +25,8 @@ export const useStore = create((set) => ({
   // experiment/session state
   expState: {
     session: null, // session object
-    phaseIdx: -1, // index of phase we're in
-    levelIdx: -1, // index of level we're in (within the current phase)
+    phaseIdx: 0, // index of phase we're in
+    levelIdx: 0, // index of level we're in (within the current phase)
     agentTrajectories: null, // set of agent trajectories to show
   },
   setExpState: (est) =>
@@ -40,12 +40,16 @@ export const useStore = create((set) => ({
         }
       }
 
-      // if phaseIdx is being incremented, reset levelIdx to -1
-      // and set showPhaseInstructions to true
+      // if phaseIdx is being incremented, first check if we've
+      // reached the end of the experiment - otherwise reset
+      // levelIdx to -1 and set showPhaseInstructions to true
       if (est.phaseIdx > state.expState.phaseIdx) {
+        if (est.phaseIdx >= est.session.phases.length) {
+          return { uiState: { ...state.uiState, showFinishedScreen: true } };
+        }
         return {
           uiState: { ...state.uiState, showPhaseInstructions: true },
-          expState: { ...est, levelIdx: -1 },
+          expState: { ...est, levelIdx: 0 },
         };
       }
 
