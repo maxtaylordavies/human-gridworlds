@@ -6,10 +6,10 @@ Environment:
     stuff
   Observers:
     Sprite2D:
-      TileSize: 48
+      TileSize: 60
       BackgroundTile: sprite2d/grass.png
     Block2D:
-      TileSize: 48
+      TileSize: 60
   Player:
     Count: 1
     Observer:

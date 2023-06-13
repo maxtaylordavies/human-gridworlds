@@ -64,10 +64,6 @@ const App = () => {
   // }, [uiState.showQuiz]);
 
   useEffect(() => {
-    console.log("level idx: ", expState.levelIdx);
-  }, [expState.levelIdx]);
-
-  useEffect(() => {
     const onFinished = async () => {
       await uploadTrajectories();
       await uploadFinalScore();

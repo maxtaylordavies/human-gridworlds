@@ -20,6 +20,7 @@ const PlayerContainer = ({ griddlyjs }) => {
     state.gameState,
     state.setGameState,
   ]);
+  const updateScore = useStore((state) => state.updateScore);
   const [playbackState, setPlaybackState] = useStore((state) => [
     state.playbackState,
     state.setPlaybackState,
@@ -152,12 +153,7 @@ const PlayerContainer = ({ griddlyjs }) => {
         griddlyjs={griddlyjs}
         rendererState={rendererState}
         onTrajectoryStep={onTrajectoryStep}
-        onReward={(val) => {
-          setGameState({
-            ...gameState,
-            score: gameState.score + val,
-          });
-        }}
+        onReward={updateScore}
         onLevelComplete={onLevelComplete}
         // trajectoryString={
         //   playbackState.currentPathIdx < playbackState.pathsToShow.length

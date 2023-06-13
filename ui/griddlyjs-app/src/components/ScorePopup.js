@@ -1,54 +1,31 @@
 import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
-import { useStore } from "../store";
-
-// const emoji = { high: "🎉", medium: "😐", low: "🤦‍♂️" };
-
-const ScorePopup = () => {
-  const session = useStore((state) => state.expState.session);
-  const score = useStore((state) => state.gameState.score);
-
+const ScorePopup = ({ scoreDelta, clearDelta }) => {
   const [open, setOpen] = useState(false);
-  const [prevScore, setprevScore] = useState(score);
-  const [scoreDelta, setScoreDelta] = useState(0);
-  const [bounds, setBounds] = useState({ min: 0, max: 0 });
-
-  // useEffect(() => {
-  //   if (session) {
-  //     setBounds({
-  //       min: Math.min(...session.utility.goals),
-  //       max: Math.max(...session.utility.goals),
-  //     });
-  //   }
-  // }, [session]);
+  const [timeoutId, setTimeoutId] = useState(null);
 
   useEffect(() => {
-    let delta = score - prevScore;
-    setScoreDelta(delta);
-    setprevScore(score);
-  }, [score]);
-
-  useEffect(() => {
-    if (scoreDelta > 0) {
-      setOpen(true);
-      setTimeout(() => setOpen(false), 2000);
-    }
+    if (scoreDelta === 0) return;
+    setOpen(scoreDelta > 0);
+    clearTimeout(timeoutId);
+    setTimeoutId(
+      setTimeout(
+        () => {
+          setOpen(false);
+          clearDelta();
+        },
+        scoreDelta > 0 ? 2000 : 500
+      )
+    );
   }, [scoreDelta]);
-
-  const bracket =
-    scoreDelta === bounds.max
-      ? "high"
-      : scoreDelta === bounds.min
-      ? "low"
-      : "medium";
 
   return (
     <AnimatePresence>
       {open && (
         <motion.div
           key="score-popup"
-          className={`score-popup ${bracket}`}
+          className={`score-popup high`}
           initial={{ opacity: 0, top: 10 }}
           animate={{ opacity: 1, top: -70 }}
           exit={{ opacity: 0, top: 0 }}

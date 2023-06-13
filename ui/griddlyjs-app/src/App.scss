@@ -371,11 +371,13 @@
 
 .info-bar-stats-item {
   display: flex;
+  justify-content: center;
+  align-items: center;
   margin-left: 10px;
   height: fit-content;
   padding: 4px 10px;
   border-radius: 10px;
-  background-color: lightcoral;
+  background-color: rgb(255, 215, 215);
 }
 
 .info-bar-stats-item-key {

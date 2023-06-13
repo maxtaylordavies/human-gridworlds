@@ -23,7 +23,7 @@ export class PlayerScene extends Phaser.Scene {
 
     this.stateHash = 0;
     this.loaded = false;
-    this.defaultTileSize = 48;
+    this.defaultTileSize = 60;
     this.levelStringOrId = "";
     this.keyActionBuffer = new Map();
   }
@@ -469,7 +469,7 @@ export class PlayerScene extends Phaser.Scene {
     clearTimeout(this.keyActionBuffer.get(action[1]));
     this.keyActionBuffer.set(
       action[1],
-      setTimeout(() => this.doUserAction(action), 50)
+      setTimeout(() => this.doUserAction(action))
     );
   };
 

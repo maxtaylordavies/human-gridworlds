@@ -64,7 +64,17 @@ export const useStore = create((set) => ({
     playing: false,
     score: 100,
   },
-  setGameState: (gst) => set(() => ({ gameState: gst })),
+  setGameState: (gst) =>
+    set(() => {
+      return { gameState: gst };
+    }),
+  updateScore: (delta) =>
+    set((state) => {
+      const newScore = state.gameState.score + delta;
+      return {
+        gameState: { ...state.gameState, score: newScore },
+      };
+    }),
 
   // playback and renderer state
   playbackState: {
