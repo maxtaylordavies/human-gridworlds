@@ -8,7 +8,6 @@ const InfoBar = () => {
   const score = useStore((state) => state.gameState.score);
   const pathIdx = useStore((state) => state.playbackState.currentPathIdx);
 
-  const numLevels = session.phases[phaseIdx].levels.length;
   // const avatarPath = session.agentAvatars[session.agentIds[pathIdx]] || "";
   const avatarPath = "";
 
@@ -29,7 +28,7 @@ const InfoBar = () => {
         {InfoBarItem("phase", phaseIdx + 1)}
         {InfoBarItem(
           "level",
-          `${Math.min(levelIdx, numLevels - 1)}/${numLevels - 1}`
+          `${levelIdx + 1}/${session.phases[phaseIdx].levels.length}`
         )}
         {InfoBarItem("score", score)}
       </div>
