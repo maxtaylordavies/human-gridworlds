@@ -51,9 +51,13 @@ export class PlayerScene extends Phaser.Scene {
       this.onPlaybackEnd = data.onPlaybackEnd;
 
       this.avatarObject = this.gdy.Environment.Player.AvatarObject;
-      this.occlusionWindow =
-        this.gdy.Environment.OcclusionWindows[this.levelId];
+
+      this.occlusionWindow = -1;
       this.occlusionPositions = [];
+      if (this.gdy.Environment.OcclusionWindows !== undefined) {
+        this.occlusionWindow =
+          this.gdy.Environment.OcclusionWindows[this.levelId];
+      }
       if (this.occlusionWindow !== -1) {
         for (let x = 0; x < this.gridWidth; x++) {
           for (let y = 0; y < this.gridHeight; y++) {
