@@ -119,8 +119,17 @@ const PlayerContainer = ({ griddlyjs }) => {
       return;
     }
 
+    let levelId = utils.currentLevelId(expState);
+    if (levelId === null) {
+      return;
+    }
+
     let traj = { ...trajectories };
-    traj[expState.session.levels[expState.levelIdx]].push(step);
+    if (!(levelId in traj)) {
+      traj[levelId] = [];
+    }
+
+    traj[levelId].push(step);
     setTrajectories(traj);
   };
 

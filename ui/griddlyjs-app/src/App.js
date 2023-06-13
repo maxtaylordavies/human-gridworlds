@@ -37,10 +37,7 @@ const App = () => {
     state.rendererState,
     state.setRendererState,
   ]);
-  const [trajectories, setTrajectories] = useStore((state) => [
-    state.trajectories,
-    state.setTrajectories,
-  ]);
+  const trajectories = useStore((state) => state.trajectories);
 
   // create and initialise an instance of the GriddlyJS core
   const [griddlyjs, setGriddlyjs] = useState(new GriddlyJSCore());
@@ -58,9 +55,6 @@ const App = () => {
     if (expState.session) {
       // fetch data
       fetchData();
-      // initialise trajectories
-      // setTrajectories(session.levels.reduce((o, l) => ({ ...o, [l]: [] }), {}));
-      setTrajectories({});
     }
   }, [expState.session]);
 
