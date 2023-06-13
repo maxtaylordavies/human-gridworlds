@@ -50,9 +50,7 @@ const LevelPopup = ({ duration, delay }) => {
     uiState.showLevelPopup &&
     expState.levelIdx !== -1 && (
       <Modal open={uiState.showLevelPopup} className="level-popup">
-        <div className="level-popup-title">
-          {lvl === 0 ? "Practice level" : `Level ${lvl}`}
-        </div>
+        <div className="level-popup-title">Level {lvl + 1}</div>
         {expState.session.agentIds && (
           <div>
             <span>Aliens</span>

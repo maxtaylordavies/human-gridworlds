@@ -8,13 +8,22 @@ const phaseInstructionsContent = [
     {
       content: (
         <>
-          <p>Phase instructions :)</p>
+          <p>Exploration phase instructions :)</p>
         </>
       ),
       buttonLabel: "let's goooo",
     },
   ],
-  [],
+  [
+    {
+      content: (
+        <>
+          <p>Evidence phase instructions :)</p>
+        </>
+      ),
+      buttonLabel: "let's goooo",
+    },
+  ],
   [],
 ];
 

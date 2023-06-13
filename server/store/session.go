@@ -38,6 +38,7 @@ func CreateSession(experimentID string, isTest bool, context interface{}) Sessio
 		GriddlySpecName: "journal",
 		Phases: []Phase{
 			CreatePhase("exploration", []int{0, 1}, true, false),
+			CreatePhase("evidence", []int{0, 1}, true, false),
 		},
 		Conditions: conditions,
 		Context:    context,

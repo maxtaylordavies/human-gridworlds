@@ -13,7 +13,7 @@ export const MultiScreenModal = ({ content, visible, key, onFinish }) => {
 
   useEffect(() => {
     setCurrScreen(content[stageKeys[stageIdx]][screenIdx]);
-  }, [stageIdx, screenIdx]);
+  }, [stageIdx, screenIdx, content]);
 
   const onNextClicked = () => {
     // three cases:
