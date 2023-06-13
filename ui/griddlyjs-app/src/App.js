@@ -47,11 +47,6 @@ const App = () => {
   }, []);
 
   useEffect(() => {
-    console.log("expState: ", expState);
-    console.log("uiState: ", uiState);
-  }, [expState, uiState]);
-
-  useEffect(() => {
     if (expState.session) {
       // fetch data
       fetchData();
