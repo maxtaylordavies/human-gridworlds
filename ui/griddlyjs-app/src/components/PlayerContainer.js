@@ -122,6 +122,7 @@ const PlayerContainer = ({ griddlyjs }) => {
         gdy={gameState.gdy}
         levelId={utils.currentLevelId(expState)}
         avatarPath={utils.currentAvatarImg(expState)}
+        hideGoals={utils.shouldHideGoals(expState)}
         griddlyjs={griddlyjs}
         rendererState={rendererState}
         onTrajectoryStep={onTrajectoryStep}

@@ -40,8 +40,6 @@ export class PlayerScene extends Phaser.Scene {
       this.avatarPath = data.avatarPath;
       this.trajectoryString = data.trajectoryString;
 
-      console.log("this.trajectoryString", this.trajectoryString);
-
       this.waitToBeginPlayback = data.waitToBeginPlayback;
       this.beforePlaybackMs = data.beforePlaybackMs;
 
@@ -67,6 +65,11 @@ export class PlayerScene extends Phaser.Scene {
             this.occlusionPositions.push({ x, y });
           }
         }
+      }
+
+      this.hideGoals = data.hideGoals;
+      if (this.hideGoals) {
+        this.hideGoalItems();
       }
 
       this.rendererName = data.rendererState.rendererName;
@@ -211,6 +214,15 @@ export class PlayerScene extends Phaser.Scene {
         delete this.renderData.objects[k];
       }
     }
+  };
+
+  hideGoalItems = () => {
+    this.gdy.Objects.forEach((object, i) => {
+      if (object.Name.includes("goal")) {
+        this.gdy.Objects[i].Observers.Sprite2D[0].Image =
+          "custom/mystery-box.png";
+      }
+    });
   };
 
   toMovementKey(vector) {

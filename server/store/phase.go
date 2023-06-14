@@ -21,7 +21,7 @@ type Phase struct {
 func CreatePhase(name string, levelIDs []int, interactive bool, objectsHidden bool) Phase {
 	levels := []Level{}
 	for _, levelID := range levelIDs {
-		levels = append(levels, Level{ID: levelID, ObjectsHidden: objectsHidden, Replays: []Replay{}})
+		levels = append(levels, Level{ID: levelID, ObjectsHidden: true, Replays: []Replay{}})
 	}
 
 	levels[0].Replays = append(levels[0].Replays, Replay{

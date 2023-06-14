@@ -35,6 +35,7 @@ class Player extends Component {
         gdy: this.props.gdy,
         levelId: this.props.levelId,
         avatarPath: this.props.avatarPath,
+        hideGoals: this.props.hideGoals,
         rendererState: this.props.rendererState,
         griddlyjs: this.props.griddlyjs,
         onTrajectoryStep: this.props.onTrajectoryStep,
@@ -56,6 +57,7 @@ class Player extends Component {
         prevProps.levelId !== this.props.levelId ||
         prevProps.gdyHash !== this.props.gdyHash ||
         prevProps.avatarPath !== this.props.avatarPath ||
+        prevProps.hideGoals !== this.props.hideGoals ||
         prevProps.trajectoryString !== this.props.trajectoryString ||
         prevProps.waitToBeginPlayback !== this.props.waitToBeginPlayback ||
         prevProps.beforePlaybackMs !== this.props.beforePlaybackMs
@@ -64,6 +66,7 @@ class Player extends Component {
           gdy: this.props.gdy,
           levelId: this.props.levelId,
           avatarPath: this.props.avatarPath,
+          hideGoals: this.props.hideGoals,
           rendererState: this.props.rendererState,
           griddlyjs: this.props.griddlyjs,
           onTrajectoryStep: this.props.onTrajectoryStep,

@@ -103,7 +103,7 @@ export const findCompatibleRenderers = (observers, objects) => {
   return compatibleRenderers;
 };
 
-export const currentLevelId = (expState) => {
+const currentLevel = (expState) => {
   if (
     !expState ||
     !expState.session ||
@@ -114,24 +114,21 @@ export const currentLevelId = (expState) => {
   }
 
   const phase = expState.session.phases[expState.phaseIdx];
-  const level = phase.levels[expState.levelIdx];
-  return level.id;
+  return phase.levels[expState.levelIdx];
+};
+
+export const currentLevelId = (expState) => {
+  const level = currentLevel(expState);
+  return level ? level.id : null;
 };
 
 export const currentAvatarImg = (expState) => {
   const defaultImg = "custom/avi-grey.png";
 
-  if (
-    !expState ||
-    !expState.session ||
-    expState.phaseIdx < 0 ||
-    expState.levelIdx < 0
-  ) {
+  const level = currentLevel(expState);
+  if (!level) {
     return defaultImg;
   }
-
-  const phase = expState.session.phases[expState.phaseIdx];
-  const level = phase.levels[expState.levelIdx];
 
   if (
     level.replays.length === 0 ||
@@ -145,17 +142,10 @@ export const currentAvatarImg = (expState) => {
 };
 
 export const currentPlaybackTrajectory = (expState) => {
-  if (
-    !expState ||
-    !expState.session ||
-    expState.phaseIdx < 0 ||
-    expState.levelIdx < 0
-  ) {
+  const level = currentLevel(expState);
+  if (!level) {
     return "";
   }
-
-  const phase = expState.session.phases[expState.phaseIdx];
-  const level = phase.levels[expState.levelIdx];
 
   if (
     level.replays.length === 0 ||
@@ -166,4 +156,13 @@ export const currentPlaybackTrajectory = (expState) => {
 
   const replay = level.replays[expState.replayIdx];
   return replay.trajectory;
+};
+
+export const shouldHideGoals = (expState) => {
+  const level = currentLevel(expState);
+  if (!level) {
+    return false;
+  }
+
+  return level.objectsHidden;
 };
