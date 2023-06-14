@@ -226,12 +226,18 @@
   width: 400px;
   z-index: 40;
   background: white;
-  border-radius: 10px;
+  border-radius: 15px;
+  border: 3px solid black;
   text-align: left;
 
   .quiz-modal-title {
     font-size: 26px;
-    margin: 8px 5px 25px 15px;
+    font-weight: bold;
+    width: 100%;
+    margin-top: 5px;
+    margin-left: 15px;
+    margin-bottom: 20px;
+    text-align: left;
     color: black;
   }
 
@@ -241,7 +247,8 @@
     margin: 0 50px 20px 15px;
 
     .quiz-modal-text {
-      margin-bottom: 20px;
+      margin-top: 10px;
+      margin-bottom: 10px;
       text-align: left;
       color: black;
       font-size: 20px;
@@ -253,30 +260,36 @@
       display: flex;
       flex-direction: row;
       align-items: center;
-      margin-bottom: 15px;
+      margin-bottom: 20px;
 
-      .quiz-modal-agent-image {
-        margin-right: 20px;
-      }
-
-      .quiz-modal-gem-option {
+      .quiz-modal-option {
         padding: 10px;
         border-radius: 15px;
         margin-right: 10px;
-        background-color: #e7e7e7;
+        background-color: #eeeeee;
         cursor: pointer;
+
+        .quiz-modal-equal {
+          height: 50px;
+          width: 50px;
+          font-size: 44px;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          color: #5A5A5A
+        }
       }
 
-      .quiz-modal-gem-option.selected {
-        background-color: #a0a0a0;
-        color: white;
+      .quiz-modal-option.selected {
+        background-color: #c6c6c6;
+        // color: white;
       }
 
-      .quiz-modal-gem-option.correct {
+      .quiz-modal-option.correct {
         background-color: #00916E;
       }
 
-      .quiz-modal-gem-option.incorrect {
+      .quiz-modal-option.incorrect {
         background-color: #FF0000;
       }
     }
@@ -371,8 +384,8 @@
 
 .info-bar-stats-item {
   display: flex;
-  justify-content: center;
-  align-items: center;
+  // justify-content: center;
+  // align-items: center;
   margin-left: 10px;
   height: fit-content;
   padding: 4px 10px;

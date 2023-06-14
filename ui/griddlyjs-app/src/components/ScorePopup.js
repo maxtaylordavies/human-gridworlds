@@ -25,7 +25,7 @@ const ScorePopup = ({ scoreDelta, clearDelta }) => {
       {open && (
         <motion.div
           key="score-popup"
-          className={`score-popup high`}
+          className={`score-popup ${scoreDelta > 10 ? "high" : "medium"}`}
           initial={{ opacity: 0, top: 10 }}
           animate={{ opacity: 1, top: -70 }}
           exit={{ opacity: 0, top: 0 }}

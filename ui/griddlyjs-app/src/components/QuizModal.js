@@ -10,7 +10,6 @@ const QuizModal = () => {
     state.setUIState,
   ]);
   const session = useStore((state) => state.expState.session);
-  const goalImages = useStore((state) => state.gameState.goalImages);
 
   const [expected, setExpected] = useState([-1, -1]);
   const [selected, setSelected] = useState([-1, -1]);
@@ -18,12 +17,24 @@ const QuizModal = () => {
 
   useEffect(() => {
     if (session) {
-      setExpected([
-        session.agentIds.indexOf("a-0001"),
-        session.agentIds.indexOf("a-0002"),
-      ]);
+      const expctd = [];
+      const thetas = session.conditions.thetas;
+      for (let i = 0; i < 2; i++) {
+        if (thetas[i][0] > thetas[i][1]) {
+          expctd.push(0);
+        } else if (thetas[i][0] < thetas[i][1]) {
+          expctd.push(1);
+        } else {
+          expctd.push(2);
+        }
+      }
+      setExpected(expctd);
     }
   }, [session]);
+
+  useEffect(() => {
+    console.log("expected", expected);
+  }, [expected]);
 
   const disabled = selected.includes(-1);
 
@@ -43,39 +54,73 @@ const QuizModal = () => {
       <div className="quiz-modal-title">Quiz</div>
       <div className="quiz-modal-body">
         <div className="quiz-modal-text">
-          Select the gem collected by each alien in the practice level
+          1. select which <b>colour</b> gives you more points
         </div>
-        {session.agentIds.slice(0, 2).map((agent, aIdx) => (
-          <div className="quiz-modal-option-row">
-            <img
-              src={`resources/images/${session.agentAvatars[agent]}`}
-              className="quiz-modal-agent-image"
-              height="50px"
-            />
-            {goalImages.slice(0, 3).map((goal, gIdx) => {
-              let modifier = "";
-              if (selected[aIdx] === gIdx) {
-                modifier = showIfCorrect
-                  ? expected[aIdx] === gIdx
-                    ? " correct"
-                    : " incorrect"
-                  : " selected";
-              }
-              return (
-                <div
-                  onClick={() => {
-                    const newSelected = [...selected];
-                    newSelected[aIdx] = gIdx;
-                    setSelected(newSelected);
-                  }}
-                  className={`quiz-modal-gem-option${modifier}`}
-                >
-                  <img src={`resources/images/${goal}`} height="40px" />
-                </div>
-              );
-            })}
-          </div>
-        ))}
+        <div className="quiz-modal-option-row">
+          {["yellow", "green", "equal"].map((color, idx) => {
+            let modifier = "";
+            if (selected[0] === idx) {
+              modifier = showIfCorrect
+                ? expected[0] === idx
+                  ? " correct"
+                  : " incorrect"
+                : " selected";
+            }
+            return (
+              <div
+                onClick={() => {
+                  const newSelected = [...selected];
+                  newSelected[0] = idx;
+                  setSelected(newSelected);
+                }}
+                className={`quiz-modal-option${modifier}`}
+              >
+                {color === "equal" ? (
+                  <div className="quiz-modal-equal">=</div>
+                ) : (
+                  <img
+                    src={`resources/images/custom/quiz-${color}.png`}
+                    width="50px"
+                  />
+                )}
+              </div>
+            );
+          })}
+        </div>
+        <div className="quiz-modal-text">
+          2. select which <b>shape</b> gives you more points
+        </div>
+        <div className="quiz-modal-option-row">
+          {["circle", "triangle", "equal"].map((shape, idx) => {
+            let modifier = "";
+            if (selected[1] === idx) {
+              modifier = showIfCorrect
+                ? expected[1] === idx
+                  ? " correct"
+                  : " incorrect"
+                : " selected";
+            }
+            return (
+              <div
+                onClick={() => {
+                  const newSelected = [...selected];
+                  newSelected[1] = idx;
+                  setSelected(newSelected);
+                }}
+                className={`quiz-modal-option${modifier}`}
+              >
+                {shape === "equal" ? (
+                  <div className="quiz-modal-equal">=</div>
+                ) : (
+                  <img
+                    src={`resources/images/custom/quiz-${shape}.png`}
+                    width="50px"
+                  />
+                )}
+              </div>
+            );
+          })}
+        </div>
       </div>
       <div className="quiz-modal-button-row">
         <motion.button

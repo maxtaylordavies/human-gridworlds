@@ -24,6 +24,16 @@ const phaseInstructionsContent = [
       buttonLabel: "let's goooo",
     },
   ],
+  [
+    {
+      content: (
+        <>
+          <p>Test phase instructions :)</p>
+        </>
+      ),
+      buttonLabel: "let's goooo",
+    },
+  ],
   [],
 ];
 

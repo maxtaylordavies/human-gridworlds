@@ -49,11 +49,9 @@ const App = () => {
     }
   }, [expState.session]);
 
-  // useEffect(() => {
-  //   if (!uiState.showQuiz && !uiState.showInitialInstructions) {
-  //     incrementLevelIdx();
-  //   }
-  // }, [uiState.showQuiz]);
+  useEffect(() => {
+    console.log("gameState: ", gameState);
+  }, [gameState]);
 
   useEffect(() => {
     const onFinished = async () => {
@@ -197,7 +195,7 @@ const App = () => {
       <InitialInstructions />
       <PhaseInstructions />
       {/* <LevelPopup duration={INTER_LEVEL_INTERVAL_MS} delay={250} /> */}
-      {/* <QuizModal /> */}
+      <QuizModal />
       <ExperimentCompleteModal submitResponse={uploadFreeTextResponse} />
     </div>
   );

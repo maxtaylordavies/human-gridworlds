@@ -103,7 +103,11 @@ const PlayerContainer = ({ griddlyjs }) => {
   };
 
   let opacity = 1;
-  if (uiState.showPhaseInstructions || uiState.showFinishedScreen) {
+  if (
+    uiState.showPhaseInstructions ||
+    uiState.showFinishedScreen ||
+    uiState.showQuiz
+  ) {
     opacity = 0;
   } else if (uiState.showLevelPopup) {
     opacity = 0.5;
@@ -129,7 +133,7 @@ const PlayerContainer = ({ griddlyjs }) => {
         onReward={updateScore}
         onLevelComplete={onLevelComplete}
         trajectoryString={utils.currentPlaybackTrajectory(expState)}
-        waitToBeginPlayback={uiState.showLevelPopup}
+        waitToBeginPlayback={uiState.showPhaseInstructions}
         onPlaybackStart={onPlaybackStart}
         onPlaybackEnd={onPlaybackEnd}
         beforePlaybackMs={INTER_AGENT_INTERVAL_MS}

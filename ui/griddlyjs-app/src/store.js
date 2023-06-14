@@ -11,14 +11,35 @@ export const useStore = create((set) => ({
   },
   setUIState: (uist) =>
     set((state) => {
-      console.log("setting uiState: ", uist);
+      // if showInitialInstructions is being set to false, set showPhaseInstructions to true
+      if (
+        !uist.showInitialInstructions &&
+        state.uiState.showInitialInstructions
+      ) {
+        console.log("setting showPhaseInstructions to true");
+        return { uiState: { ...uist, showPhaseInstructions: true } };
+      }
 
       // if showPhaseInstructions is being set to false, set levelIdx to 0
       if (!uist.showPhaseInstructions && state.uiState.showPhaseInstructions) {
         console.log("setting levelIdx to 0");
         return { uiState: uist, expState: { ...state.expState, levelIdx: 0 } };
       }
-      console.log("not setting levelIdx to 0");
+
+      // if showQuiz is being set to false, increment phaseIdx
+      if (!uist.showQuiz && state.uiState.showQuiz) {
+        console.log("incrementing phaseIdx");
+        return {
+          uiState: uist,
+          expState: {
+            ...state.expState,
+            phaseIdx: state.expState.phaseIdx + 1,
+            levelIdx: 0,
+            replayIdx: 0,
+          },
+        };
+      }
+
       return { uiState: uist };
     }),
 
@@ -51,11 +72,17 @@ export const useStore = create((set) => ({
       }
 
       // if levelIdx is being incremented, check if we're at the end of the
-      // current phase - if so, increment phaseIdx
+      // current phase. if we are, and it's the first phase, then show the
+      // quiz; otherwise, increment phaseIdx
       if (est.levelIdx > state.expState.levelIdx) {
         est.replayIdx = 0;
         const phase = est.session.phases[est.phaseIdx];
         if (est.levelIdx >= phase.levels.length) {
+          if (est.phaseIdx === 0) {
+            return {
+              uiState: { ...state.uiState, showQuiz: true },
+            };
+          }
           est.phaseIdx += 1;
         }
       }
@@ -69,7 +96,7 @@ export const useStore = create((set) => ({
         }
         return {
           uiState: { ...state.uiState, showPhaseInstructions: true },
-          expState: { ...est, levelIdx: 0 },
+          expState: { ...est, levelIdx: 0, replayIdx: 0 },
         };
       }
 
@@ -81,7 +108,7 @@ export const useStore = create((set) => ({
     gdy: null,
     gdyHash: 0,
     gdyString: "",
-    playing: false,
+    playing: true,
     score: 100,
   },
   setGameState: (gst) =>

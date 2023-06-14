@@ -5,7 +5,8 @@ import ScorePopup from "./ScorePopup";
 
 const InfoBar = () => {
   const { session, phaseIdx, levelIdx } = useStore((state) => state.expState);
-  const score = useStore((state) => state.gameState.score);
+  const { playing, score } = useStore((state) => state.gameState);
+
   const [prevScore, setprevScore] = useState(score);
   const [scoreDelta, setScoreDelta] = useState(0);
 
@@ -14,9 +15,19 @@ const InfoBar = () => {
     setprevScore(score);
   }, [score]);
 
+  let color = "";
+  if (scoreDelta > 10) {
+    color = "#00C14D";
+  } else if (scoreDelta > 0) {
+    color = "#FF9900";
+  } else if (scoreDelta < 0) {
+    color = "#FF0000";
+  }
+
   return (
     <div className="info-bar">
       <div className="info-bar-playing">
+        {playing ? "Playing" : "Observing"}
         {/* {avatarPath ? (
           <span>
             <img src={`resources/images/${avatarPath}`} />
@@ -34,9 +45,9 @@ const InfoBar = () => {
           `${levelIdx + 1}/${session.phases[phaseIdx].levels.length}`
         )}
         {InfoBarItem("score", score, {
-          color: scoreDelta > 0 ? "#00C14D" : scoreDelta < 0 ? "#FF0000" : "",
+          color: color,
           fontWeight: scoreDelta === 0 ? "" : "bold",
-          minWidth: 96,
+          minWidth: 110,
         })}
       </div>
     </div>

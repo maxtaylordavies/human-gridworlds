@@ -10,6 +10,7 @@ type Level struct {
 	ID            int      `json:"id"`
 	ObjectsHidden bool     `json:"objectsHidden"`
 	Replays       []Replay `json:"replays"`
+	StartPos      []int    `json:"startPos"`
 }
 
 type Phase struct {
@@ -18,26 +19,34 @@ type Phase struct {
 	Interactive bool    `json:"interactive"`
 }
 
+func CreateReplay(agentPhi int, agentName string, dest string) Replay {
+	trajectory := ""
+	if dest == "top-left" {
+		trajectory = "1,1,1,2,2,2"
+	} else if dest == "top-right" {
+		trajectory = "3,3,3,2,2,2"
+	} else if dest == "bottom-left" {
+		trajectory = "1,1,1,4,4,4"
+	} else if dest == "bottom-right" {
+		trajectory = "3,3,3,4,4,4"
+	}
+
+	return Replay{
+		AgentPhi:   agentPhi,
+		AgentName:  agentName,
+		Trajectory: trajectory,
+	}
+}
+
 func CreatePhase(name string, levelIDs []int, interactive bool, objectsHidden bool) Phase {
 	levels := []Level{}
 	for _, levelID := range levelIDs {
 		levels = append(levels, Level{ID: levelID, ObjectsHidden: objectsHidden, Replays: []Replay{}})
 	}
 
-	levels[0].Replays = append(levels[0].Replays, Replay{
-		AgentPhi:   0,
-		AgentName:  "max",
-		Trajectory: "1,1,1,2,2,2",
-	})
-	levels[1].Replays = append(levels[1].Replays, Replay{
-		AgentPhi:   1,
-		AgentName:  "kate",
-		Trajectory: "3,3,3,4,4,4",
-	})
-
 	return Phase{
 		Name:        name,
 		Levels:      levels,
-		Interactive: false,
+		Interactive: interactive,
 	}
 }
