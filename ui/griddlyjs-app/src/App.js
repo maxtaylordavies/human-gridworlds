@@ -107,27 +107,30 @@ const App = () => {
     if (!expState.session) {
       return;
     }
-    api.loadGameSpec(expState.session.griddlySpecName, (gdy) => {
-      loadGame(setRewards(gdy));
-      // api.loadAgentPaths(expState.session, (paths) => {
-      //   setExpState({ ...expState, agentTrajectories: paths });
-      // });
-    });
+    api.loadGameSpec(
+      expState.session.griddlySpecName,
+      (gdy) => {
+        loadGame(setRewards(gdy));
+      },
+      console.error
+    );
   };
 
   const setRewards = (gdy) => {
-    // let u = session.utility["terrains"].concat(session.utility["goals"]);
-    // let j = 0;
+    const thetas = expState.session.conditions.thetas;
 
-    // gdy.Actions[0].Behaviours = gdy.Actions[0].Behaviours.map((b) => {
-    //   let src = {
-    //     ...b.Src,
-    //     Commands: b.Src.Commands.map((cmd) =>
-    //       cmd.reward === undefined ? cmd : { reward: u[j++] }
-    //     ),
-    //   };
-    //   return { ...b, Src: src };
-    // });
+    gdy.Actions[0].Behaviours = gdy.Actions[0].Behaviours.map((b) => {
+      let src = {
+        ...b.Src,
+        Commands: b.Src.Commands.map((cmd) => {
+          const item = b.Dst.Object;
+          return item.includes("goal") && cmd.reward !== undefined
+            ? { reward: utils.itemReward(item, thetas) }
+            : cmd;
+        }),
+      };
+      return { ...b, Src: src };
+    });
 
     return gdy;
   };

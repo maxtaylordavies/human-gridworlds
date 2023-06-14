@@ -1,3 +1,5 @@
+import { OBJECT_FEATURE_MAP } from "./constants";
+
 export const getValueFromUrlOrLocalstorage = (key) => {
   const params = new URLSearchParams(window.location.search);
   return (
@@ -165,4 +167,13 @@ export const shouldHideGoals = (expState) => {
   }
 
   return level.objectsHidden;
+};
+
+export const itemReward = (itemName, thetas) => {
+  const x = OBJECT_FEATURE_MAP[itemName];
+  let r = 0;
+  for (let i = 0; i < x.length; i++) {
+    r += thetas[i][x[i]];
+  }
+  return r;
 };

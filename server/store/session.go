@@ -25,8 +25,8 @@ func CreateSession(experimentID string, isTest bool, context interface{}) Sessio
 		"group":         SampleFromSliceString([]string{"A", "B"}, 1)[0],
 		"groupsVisible": SampleFromSliceString([]string{"none", "self", "agents", "all"}, 1)[0],
 		"thetas": [][]int{
-			{0, 0},
-			{0, 0},
+			{10, 0},
+			{10, 10},
 		},
 	}
 
