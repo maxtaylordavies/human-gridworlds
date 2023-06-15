@@ -46,6 +46,7 @@ export class PlayerScene extends Phaser.Scene {
       this.setPlayerPosAndImage();
 
       this.onTrajectoryStep = data.onTrajectoryStep;
+      this.onPlayerPosChange = data.onPlayerPosChange;
       this.onReward = data.onReward;
       this.onLevelComplete = data.onLevelComplete;
       this.onPlaybackStart = data.onPlaybackStart;
@@ -174,6 +175,10 @@ export class PlayerScene extends Phaser.Scene {
     this.grenderer.beginUpdate(state.objects);
 
     state.objects.forEach((object) => {
+      if (object.name === "player") {
+        this.onPlayerPosChange(object.location);
+      }
+
       const objectTemplateName = object.name + object.renderTileId;
       if (object.id in this.renderData.objects) {
         const currentObjectData = this.renderData.objects[object.id];

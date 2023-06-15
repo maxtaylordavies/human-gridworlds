@@ -110,6 +110,7 @@ export const useStore = create((set) => ({
     gdyString: "",
     playing: true,
     score: 100,
+    agentPos: { x: 0, y: 0 },
   },
   setGameState: (gst) =>
     set(() => {

@@ -102,6 +102,12 @@ const PlayerContainer = ({ griddlyjs }) => {
     setTrajectories(traj);
   };
 
+  const computeNameBadgePos = (agentPos) => {
+    const left = 190 + agentPos.x * 60;
+    const top = 95 + agentPos.y * 60 - 30;
+    return { left, top };
+  };
+
   let opacity = 1;
   if (
     uiState.showPhaseInstructions ||
@@ -113,6 +119,8 @@ const PlayerContainer = ({ griddlyjs }) => {
     opacity = 0.5;
   }
 
+  const nameBadgePos = computeNameBadgePos(gameState.agentPos);
+
   return (
     <motion.div
       className="game-container"
@@ -121,23 +129,43 @@ const PlayerContainer = ({ griddlyjs }) => {
       transition={{ duration: 0.1 }}
     >
       <InfoBar />
-      <Player
-        gdyHash={gameState.gdyHash}
-        gdy={gameState.gdy}
-        levelId={utils.currentLevelId(expState)}
-        avatarPath={utils.currentAvatarImg(expState)}
-        hideGoals={utils.shouldHideGoals(expState)}
-        griddlyjs={griddlyjs}
-        rendererState={rendererState}
-        onTrajectoryStep={onTrajectoryStep}
-        onReward={updateScore}
-        onLevelComplete={onLevelComplete}
-        trajectoryString={utils.currentPlaybackTrajectory(expState)}
-        waitToBeginPlayback={uiState.showPhaseInstructions}
-        onPlaybackStart={onPlaybackStart}
-        onPlaybackEnd={onPlaybackEnd}
-        beforePlaybackMs={INTER_AGENT_INTERVAL_MS}
-      />
+      <div>
+        <div
+          style={{
+            width: 60,
+            height: 24,
+            position: "absolute",
+            left: nameBadgePos.left,
+            top: nameBadgePos.top,
+            backgroundColor: "#007458",
+            color: "white",
+            borderRadius: 5,
+            zIndex: 100,
+          }}
+        >
+          You
+        </div>
+        <Player
+          gdyHash={gameState.gdyHash}
+          gdy={gameState.gdy}
+          levelId={utils.currentLevelId(expState)}
+          avatarPath={utils.currentAvatarImg(expState)}
+          hideGoals={utils.shouldHideGoals(expState)}
+          griddlyjs={griddlyjs}
+          rendererState={rendererState}
+          onTrajectoryStep={onTrajectoryStep}
+          onPlayerPosChange={(pos) => {
+            setGameState({ ...gameState, agentPos: pos });
+          }}
+          onReward={updateScore}
+          onLevelComplete={onLevelComplete}
+          trajectoryString={utils.currentPlaybackTrajectory(expState)}
+          waitToBeginPlayback={uiState.showPhaseInstructions}
+          onPlaybackStart={onPlaybackStart}
+          onPlaybackEnd={onPlaybackEnd}
+          beforePlaybackMs={INTER_AGENT_INTERVAL_MS}
+        />
+      </div>
     </motion.div>
   );
 };
