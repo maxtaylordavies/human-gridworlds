@@ -12,6 +12,11 @@ export const MultiScreenModal = ({ content, visible, key, onFinish }) => {
   );
 
   useEffect(() => {
+    setStageIdx(0);
+    setScreenIdx(0);
+  }, [content]);
+
+  useEffect(() => {
     setCurrScreen(content[stageKeys[stageIdx]][screenIdx]);
   }, [stageIdx, screenIdx, content]);
 

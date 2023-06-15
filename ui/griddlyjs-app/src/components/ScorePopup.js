@@ -15,7 +15,7 @@ const ScorePopup = ({ scoreDelta, clearDelta }) => {
           setOpen(false);
           clearDelta();
         },
-        scoreDelta > 0 ? 2000 : 500
+        scoreDelta > 0 ? 1000 : 500
       )
     );
   }, [scoreDelta]);

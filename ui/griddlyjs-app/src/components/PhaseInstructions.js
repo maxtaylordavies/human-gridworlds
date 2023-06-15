@@ -8,10 +8,38 @@ const phaseInstructionsContent = [
     {
       content: (
         <>
-          <p>Exploration phase instructions :)</p>
+          <p>
+            In this phase, you will play through a series of levels in a game.{" "}
+            You can control the game using the arrow keys on your keyboard.{" "}
+          </p>
+          <p>
+            In each level, you need to collect an item. Some levels will only
+            contain one item, but in other levels you will have to choose
+            between items.
+          </p>
         </>
       ),
-      buttonLabel: "let's goooo",
+      buttonLabel: "Next",
+    },
+    {
+      content: (
+        <>
+          <p>
+            Every time you collect an item, you will receive some points. The
+            number of points you receive will depend on the properties of the
+            item you collect.
+          </p>
+          <p>
+            You should first try to determine the relationship between item
+            properties and points.{" "}
+          </p>
+          <p>
+            You can then use this information to score as many points as
+            possible.
+          </p>
+        </>
+      ),
+      buttonLabel: "Start phase",
     },
   ],
   [
@@ -21,7 +49,7 @@ const phaseInstructionsContent = [
           <p>Evidence phase instructions :)</p>
         </>
       ),
-      buttonLabel: "let's goooo",
+      buttonLabel: "Start phase",
     },
   ],
   [
@@ -31,7 +59,7 @@ const phaseInstructionsContent = [
           <p>Test phase instructions :)</p>
         </>
       ),
-      buttonLabel: "let's goooo",
+      buttonLabel: "Start phase",
     },
   ],
   [],
@@ -64,8 +92,11 @@ const PhaseInstructions = () => {
 
   const generateContentProp = () => {
     const prop = {};
-    const name = expState.session.phases[expState.phaseIdx].name;
+    const name = `Phase ${expState.phaseIdx + 1}`;
     prop[name] = phaseInstructionsContent[expState.phaseIdx];
+
+    console.log("prop", prop);
+
     return prop;
   };
 

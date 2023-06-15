@@ -26,11 +26,11 @@ export const useStore = create((set) => ({
         return { uiState: uist, expState: { ...state.expState, levelIdx: 0 } };
       }
 
-      // if showQuiz is being set to false, increment phaseIdx
+      // if showQuiz is being set to false, increment phaseIdx and set showPhaseInstructions to true
       if (!uist.showQuiz && state.uiState.showQuiz) {
         console.log("incrementing phaseIdx");
         return {
-          uiState: uist,
+          uiState: { ...uist, showPhaseInstructions: true },
           expState: {
             ...state.expState,
             phaseIdx: state.expState.phaseIdx + 1,
