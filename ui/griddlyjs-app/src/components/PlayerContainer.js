@@ -4,7 +4,6 @@ import { motion } from "framer-motion";
 import { useStore } from "../store";
 import * as utils from "../utils";
 import { INTER_LEVEL_INTERVAL_MS, INTER_AGENT_INTERVAL_MS } from "../constants";
-import { PlayButton } from "./PlayButton";
 import Player from "../renderer/Player";
 import InfoBar from "./InfoBar";
 
@@ -123,7 +122,6 @@ const PlayerContainer = ({ griddlyjs }) => {
 
   return (
     <motion.div className="game-container">
-      {/* <PlayButton /> */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity }}
