@@ -9,7 +9,6 @@ export const useStore = create((set) => ({
     showPhaseInstructions: false,
     showQuiz: false,
     showLevelPopup: false,
-    showPlayButton: false,
     showFinishedScreen: false,
   },
   setUIState: (uist) =>
@@ -63,7 +62,6 @@ export const useStore = create((set) => ({
       // if it is, set gameState.playing to true, otherwise increment levelIdx
       if (est.replayIdx > state.expState.replayIdx) {
         console.log("replayIdx being incremented");
-        uist.showPlayButton = true;
         const phase = est.session.phases[est.phaseIdx];
         const level = phase.levels[est.levelIdx];
         if (est.replayIdx >= level.replays.length) {
