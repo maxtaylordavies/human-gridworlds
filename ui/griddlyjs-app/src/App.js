@@ -55,10 +55,6 @@ const App = () => {
   }, [expState]);
 
   useEffect(() => {
-    console.log("gameState: ", gameState);
-  }, [gameState]);
-
-  useEffect(() => {
     const onFinished = async () => {
       await uploadTrajectories();
       await uploadFinalScore();

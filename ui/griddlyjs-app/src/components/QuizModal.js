@@ -32,10 +32,6 @@ const QuizModal = () => {
     }
   }, [session]);
 
-  useEffect(() => {
-    console.log("expected", expected);
-  }, [expected]);
-
   const disabled = selected.includes(-1);
 
   const checkAnswers = () => {

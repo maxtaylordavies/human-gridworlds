@@ -9,7 +9,6 @@ class GriddlyJSCore {
       locateFile: (file, prefix) => {
         if (file === "griddlyjs.wasm") {
           const newPath = prefix + "../../js/" + file;
-          console.log("new path:", newPath);
           return newPath;
         }
       },
@@ -37,8 +36,8 @@ class GriddlyJSCore {
 
       this.game.init();
       this.game.reset();
-    } catch(e) {
-      if(!isNaN(e)) {
+    } catch (e) {
+      if (!isNaN(e)) {
         throw Error(this.griddlyjs.getExceptionMessage(e));
       }
       throw e;
@@ -51,7 +50,7 @@ class GriddlyJSCore {
       this.game.delete();
       delete this.game;
     }
-    if(this.gdy) {
+    if (this.gdy) {
       this.gdy.delete();
       delete this.gdy;
     }
@@ -104,7 +103,7 @@ class GriddlyJSCore {
   };
 
   reset = (levelStringOrId) => {
-    if(!this.game) {
+    if (!this.game) {
       return;
     }
     if (levelStringOrId) {
@@ -120,15 +119,15 @@ class GriddlyJSCore {
 
   getLevelStringOrId = () => {
     return this.levelStringOrId;
-  }
+  };
 
   seed = (seed) => {
     this.game.seedRandomGenerator(seed);
-  }
+  };
 
   getExceptionMessage = (messagePtr) => {
     return this.griddlyjs.getExceptionMessage(messagePtr);
-  }
+  };
 }
 
 export default GriddlyJSCore;

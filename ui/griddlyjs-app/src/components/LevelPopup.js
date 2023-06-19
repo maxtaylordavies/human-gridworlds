@@ -47,47 +47,13 @@ const LevelPopup = ({ duration, delay }) => {
     expState.levelIdx !== -1 && (
       <Modal open={show} className="level-popup">
         <div className="level-popup-title">Level {lvl + 1}</div>
-        {/* {expState.session.agentIds && (
-          <div>
-            <span>Aliens</span>
-            <div className="level-popup-icon-container">
-              {expState.session.agentIds
-                .filter((agent, idx) => playbackState.pathsToShow[idx] !== "")
-                .map((agent) => expState.session.agentAvatars[agent])
-                .map((imgPath) => (
-                  <img
-                    src={`resources/images/${imgPath}`}
-                    height="40px"
-                    style={{ marginRight: 10 }}
-                  />
-                ))}
-            </div>
-          </div>
-        )}
-        {goalImages && (
-          <div>
-            <span>Gems</span>
-            <div className="level-popup-icon-container">
-              {goalImages
-                .filter((gi) =>
-                  gdy.Environment.Levels[
-                    utils.currentLevelId(expState)
-                  ].includes(gi.replace(".png", "").slice(-1))
-                )
-                .map((imgPath) => {
-                  let idx = goalImages.indexOf(imgPath);
-                  return (
-                    <div className="level-popup-gem">
-                      <img src={`resources/images/${imgPath}`} height="40px" />
-                      <span>
-                        {idx <= 2 ? expState.session.utility.goals[idx] : "?"}
-                      </span>
-                    </div>
-                  );
-                })}
-            </div>
-          </div>
-        )} */}
+        <div>
+          <img
+            src={utils.getLevelImage(expState)}
+            className="level-popup-image"
+            width={300}
+          />
+        </div>
         <div className="level-popup-button-row">
           <motion.button
             onClick={onProceedClicked}

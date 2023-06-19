@@ -94,9 +94,6 @@ const PhaseInstructions = () => {
     const prop = {};
     const name = `Phase ${expState.phaseIdx + 1}`;
     prop[name] = phaseInstructionsContent[expState.phaseIdx];
-
-    console.log("prop", prop);
-
     return prop;
   };
 

@@ -69,7 +69,6 @@ const PlayerContainer = ({ griddlyjs }) => {
   };
 
   const onPlaybackEnd = () => {
-    console.log("onPlaybackEnd");
     setExpState({ ...expState, replayIdx: expState.replayIdx + 1 });
   };
 

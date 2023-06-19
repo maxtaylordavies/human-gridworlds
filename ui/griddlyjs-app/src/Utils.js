@@ -131,7 +131,7 @@ export const isPlaying = (expState) => {
 };
 
 export const currentAvatarImg = (expState) => {
-  const defaultImg = "custom/avi-grey.png";
+  const defaultImg = "custom/avatars/avi-grey.png";
 
   const level = currentLevel(expState);
   if (!level) {
@@ -146,7 +146,7 @@ export const currentAvatarImg = (expState) => {
   }
 
   const replay = level.replays[expState.replayIdx];
-  return `custom/avi-${replay.agentPhi === 0 ? "red" : "blue"}.png`;
+  return `custom/avatars/avi-${replay.agentPhi === 0 ? "red" : "blue"}.png`;
 };
 
 export const currentPlaybackTrajectory = (expState) => {
@@ -190,6 +190,15 @@ export const getAgentName = (expState) => {
 
   const replay = level.replays[expState.replayIdx];
   return replay.agentName;
+};
+
+export const getLevelImage = (expState) => {
+  const level = currentLevel(expState);
+  if (!level) {
+    return "";
+  }
+  const fn = level.objectsHidden ? "mystery" : level.id;
+  return `resources/images/custom/levels/${fn}.png`;
 };
 
 export const itemReward = (itemName, thetas) => {

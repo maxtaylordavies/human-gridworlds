@@ -381,8 +381,6 @@ export class PlayerScene extends Phaser.Scene {
       steps: this.trajectoryString.split(",").map((char) => [0, +char]),
     };
 
-    console.log(this.currentTrajectoryBuffer);
-
     this.trajectoryActionIdx = 0;
     // this.resetLevel();
     this.onPlaybackStart();
