@@ -29,6 +29,7 @@ const App = () => {
     state.gameState,
     state.setGameState,
   ]);
+  const score = useStore((state) => state.score);
   const [rendererState, setRendererState] = useStore((state) => [
     state.rendererState,
     state.setRendererState,
@@ -48,6 +49,10 @@ const App = () => {
       fetchData();
     }
   }, [expState.session]);
+
+  useEffect(() => {
+    setGameState({ ...gameState, playing: utils.isPlaying(expState) });
+  }, [expState]);
 
   useEffect(() => {
     console.log("gameState: ", gameState);
@@ -174,7 +179,7 @@ const App = () => {
   };
 
   const uploadFinalScore = async () => {
-    await api.storeFinalScore(expState.session, gameState.score);
+    await api.storeFinalScore(expState.session, score);
   };
 
   const uploadFreeTextResponse = async (response) => {

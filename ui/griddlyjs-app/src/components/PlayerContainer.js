@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { useStore } from "../store";
 import * as utils from "../utils";
 import { INTER_LEVEL_INTERVAL_MS, INTER_AGENT_INTERVAL_MS } from "../constants";
+import { PlayButton } from "./PlayButton";
 import Player from "../renderer/Player";
 import InfoBar from "./InfoBar";
 
@@ -108,6 +109,8 @@ const PlayerContainer = ({ griddlyjs }) => {
     return { left, top };
   };
 
+  const showPlayButton = uiState.showPlayButton && !gameState.playing;
+
   let opacity = 1;
   if (
     uiState.showPhaseInstructions ||
@@ -115,57 +118,61 @@ const PlayerContainer = ({ griddlyjs }) => {
     uiState.showQuiz
   ) {
     opacity = 0;
-  } else if (uiState.showLevelPopup) {
+  } else if (showPlayButton) {
     opacity = 0.5;
   }
 
   const nameBadgePos = computeNameBadgePos(gameState.agentPos);
 
   return (
-    <motion.div
-      className="game-container"
-      initial={{ opacity: 0 }}
-      animate={{ opacity }}
-      transition={{ duration: 0.1 }}
-    >
-      <InfoBar />
-      <div>
-        <div
-          style={{
-            width: 60,
-            height: 24,
-            position: "absolute",
-            left: nameBadgePos.left,
-            top: nameBadgePos.top,
-            backgroundColor: "#007458",
-            color: "white",
-            borderRadius: 5,
-            zIndex: 100,
-          }}
-        >
-          You
+    <motion.div className="game-container">
+      <PlayButton />
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity }}
+        transition={{ duration: 0.1 }}
+      >
+        <InfoBar />
+        <div>
+          <div
+            style={{
+              width: 60,
+              height: 24,
+              position: "absolute",
+              left: nameBadgePos.left,
+              top: nameBadgePos.top,
+              backgroundColor: "#007458",
+              color: "white",
+              borderRadius: 5,
+              zIndex: 100,
+            }}
+          >
+            You
+          </div>
+          <Player
+            gdyHash={gameState.gdyHash}
+            gdy={gameState.gdy}
+            levelId={utils.currentLevelId(expState)}
+            avatarPath={utils.currentAvatarImg(expState)}
+            hideGoals={utils.shouldHideGoals(expState)}
+            griddlyjs={griddlyjs}
+            rendererState={rendererState}
+            onTrajectoryStep={onTrajectoryStep}
+            onPlayerPosChange={(pos) => {
+              setGameState({ ...gameState, agentPos: pos });
+            }}
+            onReward={updateScore}
+            onLevelComplete={onLevelComplete}
+            trajectoryString={utils.currentPlaybackTrajectory(expState)}
+            waitToBeginPlayback={
+              uiState.showPhaseInstructions || uiState.showPlayButton
+            }
+            onPlaybackStart={onPlaybackStart}
+            onPlaybackEnd={onPlaybackEnd}
+            beforePlaybackMs={INTER_AGENT_INTERVAL_MS}
+          />
         </div>
-        <Player
-          gdyHash={gameState.gdyHash}
-          gdy={gameState.gdy}
-          levelId={utils.currentLevelId(expState)}
-          avatarPath={utils.currentAvatarImg(expState)}
-          hideGoals={utils.shouldHideGoals(expState)}
-          griddlyjs={griddlyjs}
-          rendererState={rendererState}
-          onTrajectoryStep={onTrajectoryStep}
-          onPlayerPosChange={(pos) => {
-            setGameState({ ...gameState, agentPos: pos });
-          }}
-          onReward={updateScore}
-          onLevelComplete={onLevelComplete}
-          trajectoryString={utils.currentPlaybackTrajectory(expState)}
-          waitToBeginPlayback={uiState.showPhaseInstructions}
-          onPlaybackStart={onPlaybackStart}
-          onPlaybackEnd={onPlaybackEnd}
-          beforePlaybackMs={INTER_AGENT_INTERVAL_MS}
-        />
-      </div>
+      </motion.div>
     </motion.div>
   );
 };

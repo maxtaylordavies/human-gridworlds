@@ -31,7 +31,7 @@ func CreateSession(experimentID string, isTest bool, context interface{}) Sessio
 	}
 
 	phases := []Phase{
-		CreatePhase("exploration", []int{0, 1, 2, 3, 4, 6, 8, 10}, true, false),
+		CreatePhase("exploration", []int{0}, true, false),
 		CreatePhase("evidence", []int{4, 5, 6, 7, 8, 9, 10, 11}, false, false),
 		CreatePhase("test", []int{4}, true, true),
 	}

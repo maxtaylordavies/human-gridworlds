@@ -1,5 +1,7 @@
 import create from "zustand";
 
+import * as utils from "./utils";
+
 export const useStore = create((set) => ({
   // general UI state
   uiState: {
@@ -7,6 +9,7 @@ export const useStore = create((set) => ({
     showPhaseInstructions: false,
     showQuiz: false,
     showLevelPopup: false,
+    showPlayButton: false,
     showFinishedScreen: false,
   },
   setUIState: (uist) =>
@@ -20,15 +23,16 @@ export const useStore = create((set) => ({
         return { uiState: { ...uist, showPhaseInstructions: true } };
       }
 
-      // if showPhaseInstructions is being set to false, set levelIdx to 0
+      // if showPhaseInstructions is being set to false, set levelIdx to 0 and showPlayButton to true
       if (!uist.showPhaseInstructions && state.uiState.showPhaseInstructions) {
-        console.log("setting levelIdx to 0");
-        return { uiState: uist, expState: { ...state.expState, levelIdx: 0 } };
+        return {
+          uiState: { ...uist, showPlayButton: true },
+          expState: { ...state.expState, levelIdx: 0 },
+        };
       }
 
       // if showQuiz is being set to false, increment phaseIdx and set showPhaseInstructions to true
       if (!uist.showQuiz && state.uiState.showQuiz) {
-        console.log("incrementing phaseIdx");
         return {
           uiState: { ...uist, showPhaseInstructions: true },
           expState: {
@@ -52,19 +56,23 @@ export const useStore = create((set) => ({
   },
   setExpState: (est) =>
     set((state) => {
+      let uist = { ...state.uiState };
+
       // if replayIdx is being incremented, check if we're at the end of the
       // replays for the current level - if so, check if this phase is interactive;
       // if it is, set gameState.playing to true, otherwise increment levelIdx
       if (est.replayIdx > state.expState.replayIdx) {
         console.log("replayIdx being incremented");
+        uist.showPlayButton = true;
         const phase = est.session.phases[est.phaseIdx];
         const level = phase.levels[est.levelIdx];
         if (est.replayIdx >= level.replays.length) {
           console.log("end of replays for this level");
           if (phase.interactive) {
             return {
-              gameState: { ...state.gameState, playing: true },
               expState: est,
+              gameState: { ...state.gameState, playing: true },
+              uiState: uist,
             };
           }
           est.levelIdx += 1;
@@ -76,14 +84,20 @@ export const useStore = create((set) => ({
       // quiz; otherwise, increment phaseIdx
       if (est.levelIdx > state.expState.levelIdx) {
         est.replayIdx = 0;
+
         const phase = est.session.phases[est.phaseIdx];
         if (est.levelIdx >= phase.levels.length) {
           if (est.phaseIdx === 0) {
             return {
-              uiState: { ...state.uiState, showQuiz: true },
+              uiState: { ...uist, showQuiz: true },
             };
           }
           est.phaseIdx += 1;
+        } else {
+          uist.showPlayButton = true;
+          // uist.showPlayButton =
+          //   est.session.phases[est.phaseIdx].levels[est.levelIdx].replays
+          //     .length > 0;
         }
       }
 
@@ -100,7 +114,7 @@ export const useStore = create((set) => ({
         };
       }
 
-      return { expState: est };
+      return { expState: est, uiState: uist };
     }),
 
   // game state
@@ -109,18 +123,18 @@ export const useStore = create((set) => ({
     gdyHash: 0,
     gdyString: "",
     playing: true,
-    score: 100,
     agentPos: { x: 0, y: 0 },
   },
   setGameState: (gst) =>
     set(() => {
       return { gameState: gst };
     }),
+  score: 50,
   updateScore: (delta) =>
     set((state) => {
-      const newScore = state.gameState.score + delta;
+      const newScore = state.score + delta;
       return {
-        gameState: { ...state.gameState, score: newScore },
+        score: newScore,
       };
     }),
 

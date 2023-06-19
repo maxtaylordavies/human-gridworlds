@@ -162,6 +162,18 @@
   color: #3b3b3b;
 }
 
+.play-button-modal {
+  position: absolute;
+  z-index: 100;
+  width: 100px;
+  height: 100px;
+  left: 350px;
+  top: 200px;
+  font-size: 100px;
+  color: #00916E;
+  cursor: pointer;
+}
+
 .level-popup {
   min-width: 300px;
   z-index: 30;

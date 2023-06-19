@@ -124,6 +124,12 @@ export const currentLevelId = (expState) => {
   return level ? level.id : null;
 };
 
+export const isPlaying = (expState) => {
+  const level = currentLevel(expState);
+  const replaysExist = level && level.replays && level.replays.length > 0;
+  return !(replaysExist && expState.replayIdx < level.replays.length);
+};
+
 export const currentAvatarImg = (expState) => {
   const defaultImg = "custom/avi-grey.png";
 

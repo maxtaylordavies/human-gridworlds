@@ -5,7 +5,8 @@ import ScorePopup from "./ScorePopup";
 
 const InfoBar = () => {
   const { session, phaseIdx, levelIdx } = useStore((state) => state.expState);
-  const { playing, score } = useStore((state) => state.gameState);
+  const playing = useStore((state) => state.gameState.playing);
+  const score = useStore((state) => state.score);
 
   const [prevScore, setprevScore] = useState(score);
   const [scoreDelta, setScoreDelta] = useState(0);
@@ -47,7 +48,7 @@ const InfoBar = () => {
         {InfoBarItem("score", score, {
           color: color,
           fontWeight: scoreDelta === 0 ? "" : "bold",
-          minWidth: 110,
+          minWidth: 95,
         })}
       </div>
     </div>
