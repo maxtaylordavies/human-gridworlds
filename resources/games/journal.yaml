@@ -7,7 +7,7 @@ Environment:
   Observers:
     Sprite2D:
       TileSize: 60
-      BackgroundTile: custom/tile.png
+      BackgroundTile: custom/items/tile.png
     Block2D:
       TileSize: 60
   Player:
@@ -193,7 +193,7 @@ Objects:
     MapCharacter: p
     Observers:
       Sprite2D:
-        - Image: custom/avi-grey.png
+        - Image: custom/avatars/avi-grey.png
   - Name: ocean
     MapCharacter: o
     Observers:
@@ -232,22 +232,22 @@ Objects:
     MapCharacter: A
     Observers:
       Sprite2D:
-        - Image: custom/circle-yellow.png
+        - Image: custom/items/circle-yellow.png
   - Name: goalB
     MapCharacter: B
     Observers:
       Sprite2D:
-        - Image: custom/circle-green.png
+        - Image: custom/items/circle-green.png
   - Name: goalC
     MapCharacter: C
     Observers:
       Sprite2D:
-        - Image: custom/triangle-yellow.png
+        - Image: custom/items/triangle-yellow.png
   - Name: goalD
     MapCharacter: D
     Observers:
       Sprite2D:
-        - Image: custom/triangle-green.png
+        - Image: custom/items/triangle-green.png
   - Name: fog
     MapCharacter: F
     Z: 10

@@ -79,7 +79,7 @@ const QuizModal = () => {
                   <div className="quiz-modal-equal">=</div>
                 ) : (
                   <img
-                    src={`resources/images/custom/quiz-${color}.png`}
+                    src={`resources/images/custom/quiz/quiz-${color}.png`}
                     width="50px"
                   />
                 )}
@@ -113,7 +113,7 @@ const QuizModal = () => {
                   <div className="quiz-modal-equal">=</div>
                 ) : (
                   <img
-                    src={`resources/images/custom/quiz-${shape}.png`}
+                    src={`resources/images/custom/quiz/quiz-${shape}.png`}
                     width="50px"
                   />
                 )}

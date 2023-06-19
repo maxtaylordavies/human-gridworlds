@@ -225,7 +225,7 @@ export class PlayerScene extends Phaser.Scene {
     this.gdy.Objects.forEach((object, i) => {
       if (object.Name.includes("goal")) {
         this.gdy.Objects[i].Observers.Sprite2D[0].Image =
-          "custom/mystery-box.png";
+          "custom/items/mystery-box.png";
       }
     });
   };
