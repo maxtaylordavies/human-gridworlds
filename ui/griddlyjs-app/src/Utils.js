@@ -175,6 +175,23 @@ export const shouldHideGoals = (expState) => {
   return level.objectsHidden;
 };
 
+export const getAgentName = (expState) => {
+  const level = currentLevel(expState);
+  if (!level) {
+    return "";
+  }
+
+  if (
+    level.replays.length === 0 ||
+    expState.replayIdx >= level.replays.length
+  ) {
+    return "";
+  }
+
+  const replay = level.replays[expState.replayIdx];
+  return replay.agentName;
+};
+
 export const itemReward = (itemName, thetas) => {
   const x = OBJECT_FEATURE_MAP[itemName];
   let r = 0;

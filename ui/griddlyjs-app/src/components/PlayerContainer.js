@@ -147,7 +147,7 @@ const PlayerContainer = ({ griddlyjs }) => {
               zIndex: 100,
             }}
           >
-            You
+            {gameState.playing ? "You" : utils.getAgentName(expState)}
           </div>
           <Player
             gdyHash={gameState.gdyHash}
