@@ -105,11 +105,9 @@ const PlayerContainer = ({ griddlyjs }) => {
 
   const computeNameBadgePos = (agentPos) => {
     const left = 190 + agentPos.x * 60;
-    const top = 95 + agentPos.y * 60 - 30;
+    const top = 75 + agentPos.y * 60;
     return { left, top };
   };
-
-  const showPlayButton = uiState.showPlayButton && !gameState.playing;
 
   let opacity = 1;
   if (
@@ -118,15 +116,15 @@ const PlayerContainer = ({ griddlyjs }) => {
     uiState.showQuiz
   ) {
     opacity = 0;
-  } else if (showPlayButton) {
-    opacity = 0.5;
+  } else if (uiState.showLevelPopup) {
+    opacity = 0.2;
   }
 
   const nameBadgePos = computeNameBadgePos(gameState.agentPos);
 
   return (
     <motion.div className="game-container">
-      <PlayButton />
+      {/* <PlayButton /> */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity }}
@@ -165,7 +163,7 @@ const PlayerContainer = ({ griddlyjs }) => {
             onLevelComplete={onLevelComplete}
             trajectoryString={utils.currentPlaybackTrajectory(expState)}
             waitToBeginPlayback={
-              uiState.showPhaseInstructions || uiState.showPlayButton
+              uiState.showPhaseInstructions || uiState.showLevelPopup
             }
             onPlaybackStart={onPlaybackStart}
             onPlaybackEnd={onPlaybackEnd}

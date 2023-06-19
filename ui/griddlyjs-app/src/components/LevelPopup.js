@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPlay } from "@fortawesome/free-solid-svg-icons";
 
 import { useStore } from "../store";
 import { Modal } from "./core/Modal";
@@ -13,10 +15,16 @@ const LevelPopup = ({ duration, delay }) => {
   const expState = useStore((state) => state.expState);
 
   const [lvl, setLvl] = useState(-1);
+  const [show, setShow] = useState(uiState.showLevelPopup);
 
   useEffect(() => {
-    if (expState.levelIdx !== lvl && isReady()) {
-      update();
+    setLvl(expState.levelIdx);
+    if (uiState.showLevelPopup) {
+      setTimeout(() => {
+        setShow(true);
+      }, delay);
+    } else {
+      setShow(false);
     }
   }, [uiState, expState]);
 
@@ -29,13 +37,6 @@ const LevelPopup = ({ duration, delay }) => {
     );
   };
 
-  const update = () => {
-    setTimeout(() => {
-      setLvl(expState.levelIdx);
-      // setUIState({ ...uiState, showLevelPopup: true });
-    }, delay);
-  };
-
   const onProceedClicked = () => {
     setUIState({ ...uiState, showLevelPopup: false });
   };
@@ -44,7 +45,7 @@ const LevelPopup = ({ duration, delay }) => {
     isReady() &&
     uiState.showLevelPopup &&
     expState.levelIdx !== -1 && (
-      <Modal open={uiState.showLevelPopup} className="level-popup">
+      <Modal open={show} className="level-popup">
         <div className="level-popup-title">Level {lvl + 1}</div>
         {/* {expState.session.agentIds && (
           <div>
@@ -96,6 +97,7 @@ const LevelPopup = ({ duration, delay }) => {
             transition={{ duration: 0.2 }}
           >
             Proceed
+            <FontAwesomeIcon icon={faPlay} className="level-popup-play-icon" />
           </motion.button>
         </div>
       </Modal>

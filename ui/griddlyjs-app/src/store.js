@@ -23,10 +23,10 @@ export const useStore = create((set) => ({
         return { uiState: { ...uist, showPhaseInstructions: true } };
       }
 
-      // if showPhaseInstructions is being set to false, set levelIdx to 0 and showPlayButton to true
+      // if showPhaseInstructions is being set to false, set levelIdx to 0 and showLevelPopup to true
       if (!uist.showPhaseInstructions && state.uiState.showPhaseInstructions) {
         return {
-          uiState: { ...uist, showPlayButton: true },
+          uiState: { ...uist, showLevelPopup: true },
           expState: { ...state.expState, levelIdx: 0 },
         };
       }
@@ -81,10 +81,9 @@ export const useStore = create((set) => ({
 
       // if levelIdx is being incremented, check if we're at the end of the
       // current phase. if we are, and it's the first phase, then show the
-      // quiz; otherwise, increment phaseIdx
+      // quiz; otherwise, increment phaseIdx. also set showLevelPopup to true
       if (est.levelIdx > state.expState.levelIdx) {
         est.replayIdx = 0;
-
         const phase = est.session.phases[est.phaseIdx];
         if (est.levelIdx >= phase.levels.length) {
           if (est.phaseIdx === 0) {
@@ -94,10 +93,7 @@ export const useStore = create((set) => ({
           }
           est.phaseIdx += 1;
         } else {
-          uist.showPlayButton = true;
-          // uist.showPlayButton =
-          //   est.session.phases[est.phaseIdx].levels[est.levelIdx].replays
-          //     .length > 0;
+          uist.showLevelPopup = true;
         }
       }
 

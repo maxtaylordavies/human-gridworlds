@@ -199,7 +199,7 @@ const App = () => {
       )}
       <InitialInstructions />
       <PhaseInstructions />
-      {/* <LevelPopup duration={INTER_LEVEL_INTERVAL_MS} delay={250} /> */}
+      <LevelPopup duration={INTER_LEVEL_INTERVAL_MS} delay={250} />
       <QuizModal />
       <ExperimentCompleteModal submitResponse={uploadFreeTextResponse} />
     </div>
