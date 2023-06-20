@@ -41,6 +41,8 @@ export class PlayerScene extends Phaser.Scene {
       this.trajectoryString = data.trajectoryString;
       this.startPos = data.startPos;
 
+      console.log("this.startPos: ", this.startPos);
+
       this.waitToBeginPlayback = data.waitToBeginPlayback;
       this.beforePlaybackMs = data.beforePlaybackMs;
       this.stepIntervalMs = data.stepIntervalMs;
@@ -367,6 +369,7 @@ export class PlayerScene extends Phaser.Scene {
   };
 
   beginPlayback = () => {
+    console.log("beginPlayback");
     this.keyActionBuffer.forEach((t, key) => {
       clearTimeout(t);
     });
@@ -471,11 +474,13 @@ export class PlayerScene extends Phaser.Scene {
   };
 
   doUserAction = (action) => {
+    if (this.isRunningTrajectory || this.trajectoryString.length > 0) {
+      return;
+    }
+
     this.onTrajectoryStep(action);
     const stepResult = this.griddlyjs.step(action);
-    console.log("reward", stepResult.reward);
     this.onReward(+stepResult.reward);
-    this.globalVariableDebugText = this.getGlobalVariableDebugText();
     this.currentState = this.griddlyjs.getState();
 
     if (stepResult.terminated) {
@@ -485,6 +490,10 @@ export class PlayerScene extends Phaser.Scene {
   };
 
   dispatchAction = (action) => {
+    if (this.isRunningTrajectory || this.trajectoryString.length > 0) {
+      return;
+    }
+
     clearTimeout(this.keyActionBuffer.get(action[1]));
     this.keyActionBuffer.set(
       action[1],
@@ -493,7 +502,7 @@ export class PlayerScene extends Phaser.Scene {
   };
 
   processUserKeydown = (event) => {
-    if (this.isRunningTrajectory) {
+    if (this.isRunningTrajectory || this.trajectoryString.length > 0) {
       return;
     }
 
@@ -503,7 +512,7 @@ export class PlayerScene extends Phaser.Scene {
   };
 
   processUserKeyup = (event) => {
-    if (this.isRunningTrajectory) {
+    if (this.isRunningTrajectory || this.trajectoryString.length > 0) {
       return;
     }
 

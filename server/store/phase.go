@@ -31,7 +31,7 @@ type Phase struct {
 	ObjectsHidden bool           `json:"objectsHidden"`
 }
 
-func createReplay(levelId int, start string, dest string) Replay {
+func CreateReplay(levelId int, start string, dest string) Replay {
 	trajectory := ""
 	if dest == "A" { // top left corner
 		if start == "left" {
@@ -67,26 +67,25 @@ func createReplay(levelId int, start string, dest string) Replay {
 	}
 
 	return Replay{
-		LevelID:      levelId,
-		Trajectory:   trajectory,
-		StepInterval: 200,
-		StartPos:     startPos,
+		LevelID:    levelId,
+		Trajectory: trajectory,
+		StartPos:   startPos,
 	}
 }
 
-func CreateReplays(levelId int, dests []string) []Replay {
+func CreateEvidenceReplays(levelId int, dests []string) []Replay {
 	return []Replay{
-		createReplay(levelId, "left", dests[0]),
-		createReplay(levelId, "right", dests[1]),
-		createReplay(levelId, "top", dests[2]),
-		createReplay(levelId, "bottom", dests[3]),
+		CreateReplay(levelId, "left", dests[0]),
+		CreateReplay(levelId, "right", dests[1]),
+		CreateReplay(levelId, "top", dests[2]),
+		CreateReplay(levelId, "bottom", dests[3]),
 	}
 }
 
 func CreatePhase(name string, levelIDs []int, interactive bool, objectsHidden bool) Phase {
 	levels := []Level{}
 	for _, levelID := range levelIDs {
-		levels = append(levels, Level{ID: levelID})
+		levels = append(levels, Level{ID: levelID, StartPos: Pos{X: 3, Y: 3}})
 	}
 
 	return Phase{

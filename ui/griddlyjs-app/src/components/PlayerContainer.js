@@ -84,7 +84,6 @@ const PlayerContainer = ({ griddlyjs }) => {
   const nameBadgePos = computeNameBadgePos(gameState.agentPos);
 
   const replay = utils.currentReplay(expState);
-  console.log("replay", replay);
 
   let startPos = { x: 3, y: 3 };
   if (replay && replay.startPos) {

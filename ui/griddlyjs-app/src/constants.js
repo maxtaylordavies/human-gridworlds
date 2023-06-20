@@ -1,4 +1,4 @@
-export const INTER_STEP_INTERVAL_MS = 100;
+export const INTER_STEP_INTERVAL_MS = 200;
 export const INTER_LEVEL_INTERVAL_MS = 4000;
 export const INTER_SCENE_INTERVAL_MS = 1000;
 export const OBJECT_FEATURE_MAP = {

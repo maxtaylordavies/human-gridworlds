@@ -17,15 +17,23 @@ const AgentPopup = ({ delay }) => {
 
   const [show, setShow] = useState(uiState.showAgentPopup);
   const [ready, setReady] = useState(false);
+  const [name, setName] = useState("");
+  const [avatar, setAvatar] = useState("");
+  const [agentsShown, setAgentsShown] = useState([]);
 
   useEffect(() => {
     if (uiState.showAgentPopup) {
+      const _name = utils.getAgentName(expState);
+      const _avatar = utils.currentAvatarImg(expState);
+      setName(_name);
+      setAvatar(_avatar);
       setReady(false);
       setTimeout(() => {
         setShow(true);
       }, delay);
     } else {
       setShow(false);
+      setAgentsShown([...agentsShown, name]);
     }
   }, [uiState, expState]);
 
@@ -44,14 +52,16 @@ const AgentPopup = ({ delay }) => {
 
   return (
     <Modal open={show} className="agent-popup">
-      <div className="agent-popup-title">New character</div>
+      {!agentsShown.includes(name) && (
+        <div className="agent-popup-title">New character!</div>
+      )}
       <div className="agent-popup-agent">
         <img
-          src={`resources/images/${utils.currentAvatarImg(expState)}`}
+          src={`resources/images/${avatar}`}
           className="agent-popup-image"
           width={150}
         />
-        <div className="agent-popup-name">{utils.getAgentName(expState)}</div>
+        <div className="agent-popup-name">{name}</div>
       </div>
       <div className="agent-popup-button-row">
         <motion.button

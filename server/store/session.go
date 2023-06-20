@@ -22,8 +22,9 @@ type Session struct {
 
 func CreateSession(experimentID string, isTest bool, context interface{}) Session {
 	conditions := Conditions{
-		"group":         SampleFromSliceString([]string{"A", "B"}, 1)[0],
-		"groupsVisible": SampleFromSliceString([]string{"none", "self", "agents", "all"}, 1)[0],
+		"phi": SampleFromSliceInt([]int{-1, 0}, 1)[0],
+		// "correlation": SampleFromSliceInt([]int{0, 1}, 1)[0],
+		"correlation": 0,
 		"thetas": [][]int{
 			{10, 0},
 			{10, 10},
@@ -43,27 +44,112 @@ func CreateSession(experimentID string, isTest bool, context interface{}) Sessio
 		AgentPhi:  -1,
 		AgentName: "max",
 	}
-	ar.Replays = append(ar.Replays, CreateReplays(4, []string{"A", "A", "A", "A"})...)
-	ar.Replays = append(ar.Replays, CreateReplays(7, []string{"B", "B", "B", "B"})...)
-	ar.Replays = append(ar.Replays, CreateReplays(8, []string{"A", "B", "A", "B"})...)
-	ar.Replays = append(ar.Replays, CreateReplays(10, []string{"A", "B", "A", "B"})...)
+	ar.Replays = append(ar.Replays, CreateEvidenceReplays(4, []string{"A", "A", "A", "A"})...)
+	ar.Replays = append(ar.Replays, CreateEvidenceReplays(7, []string{"B", "B", "B", "B"})...)
+	ar.Replays = append(ar.Replays, CreateEvidenceReplays(8, []string{"A", "B", "A", "B"})...)
+	ar.Replays = append(ar.Replays, CreateEvidenceReplays(10, []string{"A", "B", "A", "B"})...)
 	phase.AgentReplays = append(phase.AgentReplays, ar)
 
 	ar = AgentReplays{
 		AgentPhi:  -1,
 		AgentName: "kate",
 	}
-	ar.Replays = append(ar.Replays, CreateReplays(4, []string{"B", "B", "B", "B"})...)
-	ar.Replays = append(ar.Replays, CreateReplays(7, []string{"A", "A", "A", "A"})...)
-	ar.Replays = append(ar.Replays, CreateReplays(8, []string{"A", "B", "A", "B"})...)
-	ar.Replays = append(ar.Replays, CreateReplays(10, []string{"A", "B", "A", "B"})...)
+	ar.Replays = append(ar.Replays, CreateEvidenceReplays(4, []string{"B", "B", "B", "B"})...)
+	ar.Replays = append(ar.Replays, CreateEvidenceReplays(7, []string{"A", "A", "A", "A"})...)
+	ar.Replays = append(ar.Replays, CreateEvidenceReplays(8, []string{"A", "B", "A", "B"})...)
+	ar.Replays = append(ar.Replays, CreateEvidenceReplays(10, []string{"A", "B", "A", "B"})...)
 	phase.AgentReplays = append(phase.AgentReplays, ar)
-
 	phases = append(phases, phase)
 
 	// test phase 1
 	phase = CreatePhase("test 1", []int{4}, true, true)
-	// phase.Levels[0].Replays = leftRight
+	phase.AgentReplays = []AgentReplays{
+		{
+			AgentPhi:  -1,
+			AgentName: "max",
+			Replays: []Replay{
+				CreateReplay(4, "right", "A"),
+			},
+		},
+		{
+			AgentPhi:  -1,
+			AgentName: "kate",
+			Replays: []Replay{
+				CreateReplay(4, "left", "B"),
+			},
+		},
+	}
+	phases = append(phases, phase)
+
+	// evidence phase 2
+	phase = CreatePhase("evidence 2", []int{4, 6, 8, 10}, false, false)
+	var replaysC []Replay
+	var replaysD []Replay
+	if conditions["correlation"].(int) == 0 {
+		// phi correlates to item color, not shape. so we will have C prefer yellow,
+		// D prefer green and both be indifferent to shape
+		replaysC = append(replaysC, CreateEvidenceReplays(4, []string{"A", "A", "A", "A"})...)
+		replaysC = append(replaysC, CreateEvidenceReplays(7, []string{"B", "B", "B", "B"})...)
+		replaysC = append(replaysC, CreateEvidenceReplays(8, []string{"A", "B", "A", "B"})...)
+		replaysC = append(replaysC, CreateEvidenceReplays(10, []string{"A", "B", "A", "B"})...)
+		replaysD = append(replaysD, CreateEvidenceReplays(4, []string{"B", "B", "B", "B"})...)
+		replaysD = append(replaysD, CreateEvidenceReplays(7, []string{"A", "A", "A", "A"})...)
+		replaysD = append(replaysD, CreateEvidenceReplays(8, []string{"A", "B", "A", "B"})...)
+		replaysD = append(replaysD, CreateEvidenceReplays(10, []string{"A", "B", "A", "B"})...)
+	} else {
+		// phi correlates to item shape, not color. so we will have C prefer circle,
+		// D prefer triangle and both be indifferent to color
+		replaysC = append(replaysC, CreateEvidenceReplays(4, []string{"A", "B", "A", "B"})...)
+		replaysC = append(replaysC, CreateEvidenceReplays(7, []string{"A", "B", "A", "B"})...)
+		replaysC = append(replaysC, CreateEvidenceReplays(8, []string{"A", "A", "A", "A"})...)
+		replaysC = append(replaysC, CreateEvidenceReplays(10, []string{"B", "B", "B", "B"})...)
+		replaysD = append(replaysD, CreateEvidenceReplays(4, []string{"A", "B", "A", "B"})...)
+		replaysD = append(replaysD, CreateEvidenceReplays(7, []string{"A", "B", "A", "B"})...)
+		replaysD = append(replaysD, CreateEvidenceReplays(8, []string{"B", "B", "B", "B"})...)
+		replaysD = append(replaysD, CreateEvidenceReplays(10, []string{"A", "A", "A", "A"})...)
+	}
+	phase.AgentReplays = []AgentReplays{
+		{
+			AgentPhi:  0,
+			AgentName: "C",
+			Replays:   replaysC,
+		},
+		{
+			AgentPhi:  1,
+			AgentName: "D",
+			Replays:   replaysD,
+		},
+		{
+			AgentPhi:  0,
+			AgentName: "E",
+			Replays:   replaysC,
+		},
+		{
+			AgentPhi:  1,
+			AgentName: "F",
+			Replays:   replaysD,
+		},
+	}
+	phases = append(phases, phase)
+
+	// test phase 2
+	phase = CreatePhase("test 2", []int{4}, true, true)
+	phase.AgentReplays = []AgentReplays{
+		{
+			AgentPhi:  0,
+			AgentName: "G",
+			Replays: []Replay{
+				CreateReplay(4, "left", "B"),
+			},
+		},
+		{
+			AgentPhi:  1,
+			AgentName: "H",
+			Replays: []Replay{
+				CreateReplay(4, "right", "A"),
+			},
+		},
+	}
 	phases = append(phases, phase)
 
 	return Session{
