@@ -27,42 +27,6 @@ func (s Store) CreateSession(experimentID string, isTest bool, context interface
 	return sess, err
 }
 
-func (s Store) GetLevelPaths(gameID string, agentIDs []string, levels []int) SetOfLevelPaths {
-	// initialise set of paths object
-	set := SetOfLevelPaths{
-		AgentIDs: []string{},
-		Paths:    make(map[int][]string),
-	}
-	for _, l := range levels {
-		set.Paths[l] = []string{}
-	}
-
-	// iterate through requested agents
-	for _, aid := range agentIDs {
-		// retrieve paths for agent - if not present, then skip to next agent
-		traj, ok := AgentTrajectories[aid]
-		if !ok {
-			continue
-		}
-
-		// add the agentID to set.AgentIDs
-		set.AgentIDs = append(set.AgentIDs, aid)
-
-		// now we iterate through the requested levels
-		for _, l := range levels {
-			// for each level, if the agent has trajectory data for level l,
-			// we add it to set.Paths[l] - otherwise, we add an empty string
-			path := ""
-			if p, ok := traj[l]; ok {
-				path = p
-			}
-			set.Paths[l] = append(set.Paths[l], path)
-		}
-	}
-
-	return set
-}
-
 func (s Store) StoreTrajectories(sessionID string, trajectories Trajectories) error {
 	// load session file
 	fp := s.GetSessionFilePath(sessionID)

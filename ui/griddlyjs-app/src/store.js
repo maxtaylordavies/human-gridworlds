@@ -8,6 +8,7 @@ export const useStore = create((set) => ({
     showInitialInstructions: true,
     showPhaseInstructions: false,
     showQuiz: false,
+    showAgentPopup: false,
     showLevelPopup: false,
     showFinishedScreen: false,
   },
@@ -18,15 +19,20 @@ export const useStore = create((set) => ({
         !uist.showInitialInstructions &&
         state.uiState.showInitialInstructions
       ) {
-        console.log("setting showPhaseInstructions to true");
         return { uiState: { ...uist, showPhaseInstructions: true } };
       }
 
-      // if showPhaseInstructions is being set to false, set levelIdx to 0 and showLevelPopup to true
+      // if showPhaseInstructions is being set to false, set levelIdx to 0 and (maybe) showLevelPopup to true
       if (!uist.showPhaseInstructions && state.uiState.showPhaseInstructions) {
+        const exp = { ...state.expState };
+        const playing = exp.session.phases[exp.phaseIdx].agentReplays === null;
         return {
-          uiState: { ...uist, showLevelPopup: true },
-          expState: { ...state.expState, levelIdx: 0 },
+          uiState: {
+            ...uist,
+            showAgentPopup: !playing,
+          },
+          expState: exp,
+          gameState: { ...state.gameState, playing: playing },
         };
       }
 
@@ -37,8 +43,9 @@ export const useStore = create((set) => ({
           expState: {
             ...state.expState,
             phaseIdx: state.expState.phaseIdx + 1,
-            levelIdx: 0,
+            agentIdx: 0,
             replayIdx: 0,
+            levelIdx: 0,
           },
         };
       }
@@ -50,22 +57,34 @@ export const useStore = create((set) => ({
   expState: {
     session: null, // session object
     phaseIdx: 0, // index of phase we're in
-    levelIdx: 0, // index of level we're in (within the current phase)
-    replayIdx: 0, // index of replay we're in (within the current level)
+    agentIdx: 0, // index of agent we're showing replays for (within the current phase)
+    replayIdx: 0, // index of replay we're in (for current agent)
+    levelIdx: 0, // if playing, index of level we're in (within the current phase)
   },
   setExpState: (est) =>
     set((state) => {
       let uist = { ...state.uiState };
 
       // if replayIdx is being incremented, check if we're at the end of the
-      // replays for the current level - if so, check if this phase is interactive;
-      // if it is, set gameState.playing to true, otherwise increment levelIdx
+      // replays for the current agent - if so, increment agentIdx
       if (est.replayIdx > state.expState.replayIdx) {
         console.log("replayIdx being incremented");
         const phase = est.session.phases[est.phaseIdx];
-        const level = phase.levels[est.levelIdx];
-        if (est.replayIdx >= level.replays.length) {
-          console.log("end of replays for this level");
+        if (est.replayIdx >= phase.agentReplays[est.agentIdx].replays.length) {
+          console.log("end of replays for this agent");
+          est.agentIdx += 1;
+        }
+      }
+
+      // if agentIdx is being incremented, check if we're at the end of the
+      // agents for the current phase. if we're not, set replayIdx to 0 and
+      // continue. if we are, check if it's an interactive phase. if it is,
+      // set playing to true; otherwise, increment phaseIdx
+      if (est.agentIdx > state.expState.agentIdx) {
+        console.log("agentIdx being incremented");
+        const phase = est.session.phases[est.phaseIdx];
+        if (est.agentIdx >= phase.agentReplays.length) {
+          console.log("end of agents for this phase");
           if (phase.interactive) {
             return {
               expState: est,
@@ -73,7 +92,10 @@ export const useStore = create((set) => ({
               uiState: uist,
             };
           }
-          est.levelIdx += 1;
+          est.phaseIdx += 1;
+        } else {
+          est.replayIdx = 0;
+          uist.showAgentPopup = true;
         }
       }
 
@@ -90,8 +112,6 @@ export const useStore = create((set) => ({
             };
           }
           est.phaseIdx += 1;
-        } else {
-          uist.showLevelPopup = true;
         }
       }
 
@@ -104,7 +124,7 @@ export const useStore = create((set) => ({
         }
         return {
           uiState: { ...state.uiState, showPhaseInstructions: true },
-          expState: { ...est, levelIdx: 0, replayIdx: 0 },
+          expState: { ...est, levelIdx: 0, agentIdx: 0, replayIdx: 0 },
         };
       }
 
@@ -121,6 +141,7 @@ export const useStore = create((set) => ({
   },
   setGameState: (gst) =>
     set(() => {
+      console.log("setting game state to ", gst);
       return { gameState: gst };
     }),
   score: 50,

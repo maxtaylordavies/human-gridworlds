@@ -30,43 +30,6 @@ const PlayerContainer = ({ griddlyjs }) => {
     state.setTrajectories,
   ]);
 
-  useEffect(() => {
-    if (!gameState.gdy) {
-      return;
-    }
-
-    const goalImages = gameState.gdy.Objects.filter((obj) =>
-      obj.Name.includes("goal")
-    ).map((obj) => obj.Observers.Sprite2D[0].Image);
-
-    setGameState({ ...gameState, goalImages });
-    loadLevel();
-  }, [gameState.gdy]);
-
-  useEffect(() => {
-    // // if we've run through all the levels specified in the session,
-    // // then finish the experiment
-    // if (
-    //   expState.session &&
-    //   levelIdxRef.current >= expState.session.levels.length
-    // ) {
-    //   setUIState({ ...uiState, showFinishedScreen: true });
-    //   // otherwise, load the next level
-    // } else if (gameState.gdy) {
-    //   loadLevel();
-    //   updatePathsToShow();
-    // }
-  }, [expState.levelIdx]);
-
-  // load the map for the current level
-  const loadLevel = async () => {
-    // griddlyjs.reset(
-    //   gameState.gdy.Environment.Levels[
-    //     expState.session.levels[levelIdxRef.current]
-    //   ]
-    // );
-  };
-
   const onPlaybackEnd = () => {
     setExpState({ ...expState, replayIdx: expState.replayIdx + 1 });
   };
@@ -114,7 +77,7 @@ const PlayerContainer = ({ griddlyjs }) => {
     uiState.showQuiz
   ) {
     opacity = 0;
-  } else if (uiState.showLevelPopup) {
+  } else if (uiState.showAgentPopup) {
     opacity = 0.2;
   }
 
@@ -160,7 +123,7 @@ const PlayerContainer = ({ griddlyjs }) => {
             onLevelComplete={onLevelComplete}
             trajectoryString={utils.currentPlaybackTrajectory(expState)}
             waitToBeginPlayback={
-              uiState.showPhaseInstructions || uiState.showLevelPopup
+              uiState.showPhaseInstructions || uiState.showAgentPopup
             }
             onPlaybackStart={onPlaybackStart}
             onPlaybackEnd={onPlaybackEnd}

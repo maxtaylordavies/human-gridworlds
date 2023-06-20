@@ -162,27 +162,16 @@
   color: #3b3b3b;
 }
 
-.play-button-modal {
-  position: absolute;
-  z-index: 100;
-  width: 100px;
-  height: 100px;
-  left: 350px;
-  top: 200px;
-  font-size: 100px;
-  color: #00916E;
-  cursor: pointer;
-}
-
-.level-popup {
+.agent-popup {
   min-width: 300px;
   z-index: 30;
   background: white;
   padding: 4px 15px;
   border-radius: 10px;
   text-align: left;
+  border: 2px solid black;
 
-  .level-popup-title {
+  .agent-popup-title {
     font-size: 26px;
     margin-bottom: 25px;
     color: black;
@@ -194,35 +183,35 @@
     color: #404040;
   }
 
-  .level-popup-icon-container {
+  .agent-popup-agent {
+    background-color: #e8e8e8;
     display: flex;
-    flex-direction: row;
-    background-color: #e3e3e3;
-    margin-bottom: 10px;
-    padding: 10px;
-    border-radius: 10px;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin-left: 35px;
+    margin-right: 35px;
+    padding: 30px;
+    border-radius: 20px;
 
-    .level-popup-gem {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-
-      span {
-        font-size: 16px;
-        font-weight: normal;
-        color: black;
-        margin-top: -5px
-      }
+    .agent-popup-name {
+      font-size: 40px;
+      line-height: 40px;
+      font-weight: bold;
+      color: #5a5a5a;
     }
   }
 
-  .level-popup-button-row {
+  .agent-popup-button-row {
     display: flex;
     justify-content: flex-end;
     padding: 10px 0;
     margin-top: 15px;
 
-    .level-popup-button {
+    .agent-popup-button {
+      display: flex;
+      align-items: center;
+      justify-content: center;
       width: 120px;
       height: 35px;
       border-radius: 20px;
@@ -232,8 +221,14 @@
       color: white;
       border: none;
 
-      .level-popup-play-icon {
+      .agent-popup-play-icon {
         margin-left: 10px;
+      }
+
+      .agent-popup-countdown {
+        height: 25px;
+        margin-left: 7px;
+        margin-bottom: 5px;
       }
     }
   }
@@ -330,7 +325,7 @@
     }
   }
 
-  .level-popup-icon-container {
+  .agent-popup-icon-container {
     display: flex;
     flex-direction: row;
     background-color: lightgrey;
@@ -338,7 +333,7 @@
     padding: 10px;
     border-radius: 10px;
 
-    .level-popup-gem {
+    .agent-popup-gem {
       display: flex;
       flex-direction: column;
       align-items: center;

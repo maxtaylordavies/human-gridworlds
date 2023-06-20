@@ -29,22 +29,14 @@ const InfoBar = () => {
     <div className="info-bar">
       <div className="info-bar-playing">
         {playing ? "Playing" : "Observing"}
-        {/* {avatarPath ? (
-          <span>
-            <img src={`resources/images/${avatarPath}`} />
-            's turn
-          </span>
-        ) : (
-          "Your turn"
-        )} */}
       </div>
       <ScorePopup scoreDelta={scoreDelta} clearDelta={() => setScoreDelta(0)} />
       <div className="info-bar-stats">
-        {InfoBarItem("phase", phaseIdx + 1)}
-        {InfoBarItem(
+        {InfoBarItem("phase", `${phaseIdx + 1}/${session.phases.length}`)}
+        {/* {InfoBarItem(
           "level",
           `${levelIdx + 1}/${session.phases[phaseIdx].levels.length}`
-        )}
+        )} */}
         {InfoBarItem("score", score, {
           color: color,
           fontWeight: scoreDelta === 0 ? "" : "bold",

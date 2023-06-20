@@ -105,99 +105,100 @@ export const findCompatibleRenderers = (observers, objects) => {
   return compatibleRenderers;
 };
 
-const currentLevel = (expState) => {
-  if (
-    !expState ||
-    !expState.session ||
-    expState.phaseIdx < 0 ||
-    expState.levelIdx < 0
-  ) {
+const currentPhase = (expState) => {
+  if (!expState || !expState.session || expState.phaseIdx < 0) {
     return null;
   }
 
-  const phase = expState.session.phases[expState.phaseIdx];
+  return expState.session.phases[expState.phaseIdx];
+};
+
+const currentLevel = (expState) => {
+  const phase = currentPhase(expState);
+  if (!phase) {
+    return null;
+  }
   return phase.levels[expState.levelIdx];
 };
 
 export const currentLevelId = (expState) => {
-  const level = currentLevel(expState);
-  return level ? level.id : null;
+  if (isPlaying(expState)) {
+    const level = currentLevel(expState);
+    return level ? level.id : null;
+  }
+
+  const ar = currentAgentReplay(expState);
+  if (!ar) {
+    return null;
+  }
+
+  return ar.replays[expState.replayIdx].levelId;
 };
 
 export const isPlaying = (expState) => {
-  const level = currentLevel(expState);
-  const replaysExist = level && level.replays && level.replays.length > 0;
-  return !(replaysExist && expState.replayIdx < level.replays.length);
-};
-
-export const currentAvatarImg = (expState) => {
-  const defaultImg = "custom/avatars/avi-grey.png";
-
-  const level = currentLevel(expState);
-  if (!level) {
-    return defaultImg;
-  }
-
-  if (
-    level.replays.length === 0 ||
-    expState.replayIdx >= level.replays.length
-  ) {
-    return defaultImg;
-  }
-
-  const replay = level.replays[expState.replayIdx];
-  return `custom/avatars/avi-${replay.agentPhi === 0 ? "red" : "blue"}.png`;
-};
-
-export const currentPlaybackTrajectory = (expState) => {
-  const level = currentLevel(expState);
-  if (!level) {
-    return "";
-  }
-
-  if (
-    level.replays.length === 0 ||
-    expState.replayIdx >= level.replays.length
-  ) {
-    return "";
-  }
-
-  const replay = level.replays[expState.replayIdx];
-  return replay.trajectory;
-};
-
-export const shouldHideGoals = (expState) => {
-  const level = currentLevel(expState);
-  if (!level) {
+  const phase = currentPhase(expState);
+  if (!phase) {
     return false;
   }
 
-  return level.objectsHidden;
+  const ar = phase.agentReplays;
+  if (
+    !ar ||
+    expState.agentIdx >= ar.length ||
+    expState.replayIdx >= ar[expState.agentIdx].replays.length
+  ) {
+    return true;
+  }
+  return false;
+};
+
+export const currentAgentReplay = (expState) => {
+  const phase = currentPhase(expState);
+  if (!phase || isPlaying(expState)) {
+    return null;
+  }
+  return phase.agentReplays[expState.agentIdx];
+};
+
+export const currentAvatarImg = (expState) => {
+  const ar = currentAgentReplay(expState);
+  if (!ar) {
+    return "custom/avatars/avi-grey.png";
+  }
+  return `custom/avatars/avi-${ar.agentPhi === 0 ? "red" : "blue"}.png`;
+};
+
+export const currentPlaybackTrajectory = (expState) => {
+  const ar = currentAgentReplay(expState);
+  if (!ar) {
+    return "";
+  }
+  return ar.replays[expState.replayIdx].trajectory;
+};
+
+export const shouldHideGoals = (expState) => {
+  const phase = currentPhase(expState);
+  if (!phase) {
+    return false;
+  }
+  return phase.objectsHidden;
 };
 
 export const getAgentName = (expState) => {
-  const level = currentLevel(expState);
-  if (!level) {
+  const ar = currentAgentReplay(expState);
+  if (!ar) {
     return "";
   }
-
-  if (
-    level.replays.length === 0 ||
-    expState.replayIdx >= level.replays.length
-  ) {
-    return "";
-  }
-
-  const replay = level.replays[expState.replayIdx];
-  return replay.agentName;
+  return ar.agentName;
 };
 
 export const getLevelImage = (expState) => {
-  const level = currentLevel(expState);
-  if (!level) {
+  const phase = currentPhase(expState);
+  const levelId = currentLevelId(expState);
+  if (phase === null || levelId === null) {
     return "";
   }
-  const fn = level.objectsHidden ? "mystery" : level.id;
+  const fn = phase.objectsHidden ? "mystery" : levelId;
   return `resources/images/custom/levels/${fn}.png`;
 };
 

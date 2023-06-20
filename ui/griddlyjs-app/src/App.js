@@ -11,7 +11,7 @@ import PlayerContainer from "./components/PlayerContainer";
 import InitialInstructions from "./components/InitialInstructions";
 import PhaseInstructions from "./components/PhaseInstructions";
 import ExperimentCompleteModal from "./components/ExperimentCompleteModal";
-import LevelPopup from "./components/LevelPopup";
+import AgentPopup from "./components/AgentPopup";
 import QuizModal from "./components/QuizModal";
 import "./App.scss";
 
@@ -49,10 +49,6 @@ const App = () => {
       fetchData();
     }
   }, [expState.session]);
-
-  useEffect(() => {
-    setGameState({ ...gameState, playing: utils.isPlaying(expState) });
-  }, [expState]);
 
   useEffect(() => {
     const onFinished = async () => {
@@ -195,7 +191,8 @@ const App = () => {
       )}
       <InitialInstructions />
       <PhaseInstructions />
-      <LevelPopup duration={INTER_LEVEL_INTERVAL_MS} delay={250} />
+      <AgentPopup delay={250} />
+      {/* <LevelPopup duration={INTER_LEVEL_INTERVAL_MS} delay={250} /> */}
       <QuizModal />
       <ExperimentCompleteModal submitResponse={uploadFreeTextResponse} />
     </div>

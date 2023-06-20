@@ -30,25 +30,17 @@ func CreateSession(experimentID string, isTest bool, context interface{}) Sessio
 		},
 	}
 
-	// replay templates
-	leftRight := []Replay{
-		CreateReplay(0, "max", "top-left"),
-		CreateReplay(1, "kate", "bottom-right"),
-	}
-	rightLeft := []Replay{
-		CreateReplay(0, "max", "bottom-right"),
-		CreateReplay(1, "kate", "top-left"),
-	}
+	// // replay templates
+	// leftRight := []Replay{
+	// 	CreateReplay(0, "max", "top-left"),
+	// 	CreateReplay(1, "kate", "bottom-right"),
+	// }
+	// rightLeft := []Replay{
+	// 	CreateReplay(0, "max", "bottom-right"),
+	// 	CreateReplay(1, "kate", "top-left"),
+	// }
 
 	var phases []Phase
-
-	// phases := []Phase{
-	// 	CreatePhase("exploration", []int{0}, true, false),
-	// 	CreatePhase("evidence 1", []int{4, 5, 6, 7, 8, 9, 10, 11}, false, false),
-	// 	CreatePhase("test 1", []int{4}, true, true),
-	// 	CreatePhase("evidence 2", []int{12, 13, 14, 15, 16, 17, 18, 19}, false, false),
-	// 	CreatePhase("test 2", []int{12}, true, true),
-	// }
 
 	// exploration phase
 	phase := CreatePhase("exploration", []int{0}, true, false)
@@ -56,15 +48,33 @@ func CreateSession(experimentID string, isTest bool, context interface{}) Sessio
 
 	// evidence phase 1
 	phase = CreatePhase("evidence 1", []int{4, 6, 8, 10}, false, false)
-	phase.Levels[0].Replays = leftRight
-	phase.Levels[1].Replays = rightLeft
-	phase.Levels[2].Replays = leftRight
-	phase.Levels[3].Replays = rightLeft
+	phase.AgentReplays = []AgentReplays{
+		{
+			AgentPhi:  0,
+			AgentName: "max",
+			Replays: []Replay{
+				CreateReplay(4, "top-left"),
+				CreateReplay(6, "bottom-right"),
+				CreateReplay(8, "top-left"),
+				CreateReplay(10, "bottom-right"),
+			},
+		},
+		{
+			AgentPhi:  1,
+			AgentName: "kate",
+			Replays: []Replay{
+				CreateReplay(4, "bottom-right"),
+				CreateReplay(6, "top-left"),
+				CreateReplay(8, "bottom-left"),
+				CreateReplay(10, "top-left"),
+			},
+		},
+	}
 	phases = append(phases, phase)
 
 	// test phase 1
 	phase = CreatePhase("test 1", []int{4}, true, true)
-	phase.Levels[0].Replays = leftRight
+	// phase.Levels[0].Replays = leftRight
 	phases = append(phases, phase)
 
 	return Session{

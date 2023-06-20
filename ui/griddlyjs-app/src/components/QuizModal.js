@@ -37,12 +37,12 @@ const QuizModal = () => {
   const checkAnswers = () => {
     setShowIfCorrect(true);
     setTimeout(() => {
-      setShowIfCorrect(false);
       setSelected([-1, -1]);
       if (selected.every((s, i) => s === expected[i])) {
         setUIState({ ...uiState, showQuiz: false });
       }
-    }, 1000);
+      setShowIfCorrect(false);
+    }, 500);
   };
 
   return (

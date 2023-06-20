@@ -1,25 +1,30 @@
 package store
 
 type Replay struct {
-	AgentPhi   int    `json:"agentPhi"`
-	AgentName  string `json:"agentName"`
+	LevelID    int    `json:"levelId"`
 	Trajectory string `json:"trajectory"`
 }
 
+type AgentReplays struct {
+	AgentPhi  int      `json:"agentPhi"`
+	AgentName string   `json:"agentName"`
+	Replays   []Replay `json:"replays"`
+}
+
 type Level struct {
-	ID            int      `json:"id"`
-	ObjectsHidden bool     `json:"objectsHidden"`
-	Replays       []Replay `json:"replays"`
-	StartPos      []int    `json:"startPos"`
+	ID       int   `json:"id"`
+	StartPos []int `json:"startPos"`
 }
 
 type Phase struct {
-	Name        string  `json:"name"`
-	Levels      []Level `json:"levels"`
-	Interactive bool    `json:"interactive"`
+	Name          string         `json:"name"`
+	AgentReplays  []AgentReplays `json:"agentReplays"`
+	Levels        []Level        `json:"levels"`
+	Interactive   bool           `json:"interactive"`
+	ObjectsHidden bool           `json:"objectsHidden"`
 }
 
-func CreateReplay(agentPhi int, agentName string, dest string) Replay {
+func CreateReplay(levelId int, dest string) Replay {
 	trajectory := ""
 	if dest == "top-left" {
 		trajectory = "1,1,1,2,2,2"
@@ -32,8 +37,7 @@ func CreateReplay(agentPhi int, agentName string, dest string) Replay {
 	}
 
 	return Replay{
-		AgentPhi:   agentPhi,
-		AgentName:  agentName,
+		LevelID:    levelId,
 		Trajectory: trajectory,
 	}
 }
@@ -41,12 +45,13 @@ func CreateReplay(agentPhi int, agentName string, dest string) Replay {
 func CreatePhase(name string, levelIDs []int, interactive bool, objectsHidden bool) Phase {
 	levels := []Level{}
 	for _, levelID := range levelIDs {
-		levels = append(levels, Level{ID: levelID, ObjectsHidden: objectsHidden, Replays: []Replay{}})
+		levels = append(levels, Level{ID: levelID})
 	}
 
 	return Phase{
-		Name:        name,
-		Levels:      levels,
-		Interactive: interactive,
+		Name:          name,
+		Levels:        levels,
+		Interactive:   interactive,
+		ObjectsHidden: objectsHidden,
 	}
 }
