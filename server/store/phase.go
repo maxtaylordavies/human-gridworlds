@@ -1,8 +1,9 @@
 package store
 
 type Replay struct {
-	LevelID    int    `json:"levelId"`
-	Trajectory string `json:"trajectory"`
+	LevelID      int    `json:"levelId"`
+	Trajectory   string `json:"trajectory"`
+	StepInterval int    `json:"stepInterval"`
 }
 
 type AgentReplays struct {
@@ -37,8 +38,9 @@ func CreateReplay(levelId int, dest string) Replay {
 	}
 
 	return Replay{
-		LevelID:    levelId,
-		Trajectory: trajectory,
+		LevelID:      levelId,
+		Trajectory:   trajectory,
+		StepInterval: 50,
 	}
 }
 

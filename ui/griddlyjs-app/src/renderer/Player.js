@@ -47,6 +47,7 @@ class Player extends Component {
         onPlaybackStart: this.props.onPlaybackStart,
         onPlaybackEnd: this.props.onPlaybackEnd,
         beforePlaybackMs: this.props.beforePlaybackMs,
+        stepIntervalMs: this.props.stepIntervalMs,
       });
     }
   }
@@ -61,7 +62,8 @@ class Player extends Component {
         prevProps.hideGoals !== this.props.hideGoals ||
         prevProps.trajectoryString !== this.props.trajectoryString ||
         prevProps.waitToBeginPlayback !== this.props.waitToBeginPlayback ||
-        prevProps.beforePlaybackMs !== this.props.beforePlaybackMs
+        prevProps.beforePlaybackMs !== this.props.beforePlaybackMs ||
+        prevProps.stepIntervalMs !== this.props.stepIntervalMs
       ) {
         this.game.scene.getScene("PlayerScene").scene.restart({
           gdy: this.props.gdy,
@@ -79,6 +81,7 @@ class Player extends Component {
           onPlaybackStart: this.props.onPlaybackStart,
           onPlaybackEnd: this.props.onPlaybackEnd,
           beforePlaybackMs: this.props.beforePlaybackMs,
+          stepIntervalMs: this.props.stepIntervalMs,
         });
       }
     }

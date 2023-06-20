@@ -176,6 +176,14 @@ export const currentPlaybackTrajectory = (expState) => {
   return ar.replays[expState.replayIdx].trajectory;
 };
 
+export const currentPlaybackStepInterval = (expState) => {
+  const ar = currentAgentReplay(expState);
+  if (!ar) {
+    return 0;
+  }
+  return ar.replays[expState.replayIdx].stepInterval;
+};
+
 export const shouldHideGoals = (expState) => {
   const phase = currentPhase(expState);
   if (!phase) {

@@ -5,7 +5,7 @@ import * as api from "./api";
 import * as utils from "./utils";
 import { useStore } from "./store";
 import { hashString } from "./hash";
-import { INTER_LEVEL_INTERVAL_MS, INTER_AGENT_INTERVAL_MS } from "./constants";
+import { INTER_LEVEL_INTERVAL_MS, INTER_SCENE_INTERVAL_MS } from "./constants";
 import GriddlyJSCore from "./GriddlyJSCore";
 import PlayerContainer from "./components/PlayerContainer";
 import InitialInstructions from "./components/InitialInstructions";

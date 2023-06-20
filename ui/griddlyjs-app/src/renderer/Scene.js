@@ -2,8 +2,6 @@ import Phaser from "phaser";
 
 import Block2DRenderer from "./Block2DRenderer";
 import Sprite2DRenderer from "./Sprite2DRenderer";
-import { COLOR_LOADING_TEXT } from "./ThemeConsts";
-import { INTER_STEP_INTERVAL_MS } from "../constants";
 
 export class LoadingScene extends Phaser.Scene {
   constructor() {
@@ -42,6 +40,7 @@ export class PlayerScene extends Phaser.Scene {
 
       this.waitToBeginPlayback = data.waitToBeginPlayback;
       this.beforePlaybackMs = data.beforePlaybackMs;
+      this.stepIntervalMs = data.stepIntervalMs;
 
       this.setPlayerPosAndImage();
 
@@ -411,7 +410,7 @@ export class PlayerScene extends Phaser.Scene {
       this.cooldown = true;
       setTimeout(() => {
         this.cooldown = false;
-      }, INTER_STEP_INTERVAL_MS);
+      }, this.stepIntervalMs);
 
       const action =
         this.currentTrajectoryBuffer.steps[this.trajectoryActionIdx++];
