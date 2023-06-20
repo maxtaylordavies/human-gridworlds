@@ -141,7 +141,6 @@ export const useStore = create((set) => ({
   },
   setGameState: (gst) =>
     set(() => {
-      console.log("setting game state to ", gst);
       return { gameState: gst };
     }),
   score: 50,

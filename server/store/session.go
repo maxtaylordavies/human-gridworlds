@@ -30,46 +30,35 @@ func CreateSession(experimentID string, isTest bool, context interface{}) Sessio
 		},
 	}
 
-	// // replay templates
-	// leftRight := []Replay{
-	// 	CreateReplay(0, "max", "top-left"),
-	// 	CreateReplay(1, "kate", "bottom-right"),
-	// }
-	// rightLeft := []Replay{
-	// 	CreateReplay(0, "max", "bottom-right"),
-	// 	CreateReplay(1, "kate", "top-left"),
-	// }
-
 	var phases []Phase
 
 	// exploration phase
-	phase := CreatePhase("exploration", []int{0}, true, false)
+	phase := CreatePhase("exploration", []int{0, 1, 2, 3}, true, false)
 	phases = append(phases, phase)
 
 	// evidence phase 1
 	phase = CreatePhase("evidence 1", []int{4, 6, 8, 10}, false, false)
-	phase.AgentReplays = []AgentReplays{
-		{
-			AgentPhi:  0,
-			AgentName: "max",
-			Replays: []Replay{
-				CreateReplay(4, "top-left"),
-				CreateReplay(6, "bottom-right"),
-				CreateReplay(8, "top-left"),
-				CreateReplay(10, "bottom-right"),
-			},
-		},
-		{
-			AgentPhi:  1,
-			AgentName: "kate",
-			Replays: []Replay{
-				CreateReplay(4, "bottom-right"),
-				CreateReplay(6, "top-left"),
-				CreateReplay(8, "bottom-left"),
-				CreateReplay(10, "top-left"),
-			},
-		},
+
+	ar := AgentReplays{
+		AgentPhi:  -1,
+		AgentName: "max",
 	}
+	ar.Replays = append(ar.Replays, CreateReplays(4, []string{"A", "A", "A", "A"})...)
+	ar.Replays = append(ar.Replays, CreateReplays(7, []string{"B", "B", "B", "B"})...)
+	ar.Replays = append(ar.Replays, CreateReplays(8, []string{"A", "B", "A", "B"})...)
+	ar.Replays = append(ar.Replays, CreateReplays(10, []string{"A", "B", "A", "B"})...)
+	phase.AgentReplays = append(phase.AgentReplays, ar)
+
+	ar = AgentReplays{
+		AgentPhi:  -1,
+		AgentName: "kate",
+	}
+	ar.Replays = append(ar.Replays, CreateReplays(4, []string{"B", "B", "B", "B"})...)
+	ar.Replays = append(ar.Replays, CreateReplays(7, []string{"A", "A", "A", "A"})...)
+	ar.Replays = append(ar.Replays, CreateReplays(8, []string{"A", "B", "A", "B"})...)
+	ar.Replays = append(ar.Replays, CreateReplays(10, []string{"A", "B", "A", "B"})...)
+	phase.AgentReplays = append(phase.AgentReplays, ar)
+
 	phases = append(phases, phase)
 
 	// test phase 1

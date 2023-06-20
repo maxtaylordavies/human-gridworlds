@@ -27,6 +27,8 @@ export class PlayerScene extends Phaser.Scene {
   }
 
   init = (data) => {
+    console.log("init data: ", data);
+
     try {
       this.griddlyjs = data.griddlyjs;
 
@@ -37,12 +39,11 @@ export class PlayerScene extends Phaser.Scene {
       this.levelId = data.levelId;
       this.avatarPath = data.avatarPath;
       this.trajectoryString = data.trajectoryString;
+      this.startPos = data.startPos;
 
       this.waitToBeginPlayback = data.waitToBeginPlayback;
       this.beforePlaybackMs = data.beforePlaybackMs;
       this.stepIntervalMs = data.stepIntervalMs;
-
-      this.setPlayerPosAndImage();
 
       this.onTrajectoryStep = data.onTrajectoryStep;
       this.onPlayerPosChange = data.onPlayerPosChange;
@@ -50,6 +51,8 @@ export class PlayerScene extends Phaser.Scene {
       this.onLevelComplete = data.onLevelComplete;
       this.onPlaybackStart = data.onPlaybackStart;
       this.onPlaybackEnd = data.onPlaybackEnd;
+
+      this.setPlayerPosAndImage();
 
       this.avatarObject = this.gdy.Environment.Player.AvatarObject;
 
@@ -118,31 +121,26 @@ export class PlayerScene extends Phaser.Scene {
     // if this is the first time this function is being called for
     // this level, we need to store the original location so we can
     // recover it when the demonstration phase is over
-    if (this.playerPos === undefined) {
+    if (this.startPos === undefined) {
       rows = this.gdy.Environment.Levels[this.levelId].split("\n");
       rows.forEach((row, i) => {
         const j = row.indexOf("p");
         if (j !== -1) {
-          this.playerPos = { y: i, x: j / (row.length / this.gridWidth) };
+          this.startPos = { y: i, x: j / (row.length / this.gridWidth) };
         }
       });
     }
 
-    // if this.trajectoryString is a non-empty string, then we're in
-    // demonstration phase rather than interactive phase
-    // const pos = this.trajectoryString
-    //   ? this.gdy.Environment.DemonstratorStartPositions[this.levelId]
-    //   : this.playerPos;
-    const pos = this.playerPos;
+    console.log("startPos", this.startPos);
 
     // update the position
     rows = this.gdy.Environment.Levels[this.levelId]
       .replace("p", ".")
       .split("\n");
 
-    const tmp = rows[pos.y].split("");
-    tmp[pos.x * (tmp.length / this.gridWidth)] = "p";
-    rows[pos.y] = tmp.join("");
+    const tmp = rows[this.startPos.y].split("");
+    tmp[this.startPos.x * (tmp.length / this.gridWidth)] = "p";
+    rows[this.startPos.y] = tmp.join("");
 
     const levelStr = rows.join("\n");
 
@@ -150,9 +148,9 @@ export class PlayerScene extends Phaser.Scene {
     this.gdy.Environment.Levels[this.levelId] = levelStr;
 
     // if this is the last time this function is being called
-    // for this level, then set this.playerPos back to undefined
-    if (this.playerPos && !this.trajectoryString) {
-      this.playerPos = undefined;
+    // for this level, then set this.startPos back to undefined
+    if (this.startPos && !this.trajectoryString) {
+      this.startPos = undefined;
     }
 
     // update the avatar image

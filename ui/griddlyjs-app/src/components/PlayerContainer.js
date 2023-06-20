@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 
 import { useStore } from "../store";
 import * as utils from "../utils";
-import { INTER_LEVEL_INTERVAL_MS, INTER_SCENE_INTERVAL_MS } from "../constants";
+import { INTER_STEP_INTERVAL_MS, INTER_SCENE_INTERVAL_MS } from "../constants";
 import Player from "../renderer/Player";
 import InfoBar from "./InfoBar";
 
@@ -42,7 +42,7 @@ const PlayerContainer = ({ griddlyjs }) => {
   };
 
   const onPlaybackStart = () => {
-    setGameState({ ...gameState, playing: false });
+    // setGameState({ ...gameState, playing: false });
   };
 
   const onTrajectoryStep = (step) => {
@@ -83,6 +83,14 @@ const PlayerContainer = ({ griddlyjs }) => {
 
   const nameBadgePos = computeNameBadgePos(gameState.agentPos);
 
+  const replay = utils.currentReplay(expState);
+  console.log("replay", replay);
+
+  let startPos = { x: 3, y: 3 };
+  if (replay && replay.startPos) {
+    startPos = replay.startPos;
+  }
+
   return (
     <motion.div className="game-container">
       <motion.div
@@ -121,14 +129,15 @@ const PlayerContainer = ({ griddlyjs }) => {
             }}
             onReward={updateScore}
             onLevelComplete={onLevelComplete}
-            trajectoryString={utils.currentPlaybackTrajectory(expState)}
+            trajectoryString={replay?.trajectory || ""}
+            startPos={startPos}
             waitToBeginPlayback={
               uiState.showPhaseInstructions || uiState.showAgentPopup
             }
             onPlaybackStart={onPlaybackStart}
             onPlaybackEnd={onPlaybackEnd}
             beforePlaybackMs={INTER_SCENE_INTERVAL_MS}
-            stepIntervalMs={utils.currentPlaybackStepInterval(expState)}
+            stepIntervalMs={replay?.stepInterval || INTER_STEP_INTERVAL_MS}
           />
         </div>
       </motion.div>

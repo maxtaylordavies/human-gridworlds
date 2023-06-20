@@ -15,6 +15,10 @@ class Player extends Component {
     this.game.scale.resize(this.width, this.height);
   };
 
+  posEqual = (pos1, pos2) => {
+    return pos1.x === pos2.x && pos1.y === pos2.y;
+  };
+
   componentDidMount() {
     const config = {
       type: Phaser.AUTO,
@@ -43,6 +47,7 @@ class Player extends Component {
         onReward: this.props.onReward,
         onLevelComplete: this.props.onLevelComplete,
         trajectoryString: this.props.trajectoryString,
+        startPos: this.props.startPos,
         waitToBeginPlayback: this.props.waitToBeginPlayback,
         onPlaybackStart: this.props.onPlaybackStart,
         onPlaybackEnd: this.props.onPlaybackEnd,
@@ -61,6 +66,7 @@ class Player extends Component {
         prevProps.avatarPath !== this.props.avatarPath ||
         prevProps.hideGoals !== this.props.hideGoals ||
         prevProps.trajectoryString !== this.props.trajectoryString ||
+        !this.posEqual(prevProps.startPos, this.props.startPos) ||
         prevProps.waitToBeginPlayback !== this.props.waitToBeginPlayback ||
         prevProps.beforePlaybackMs !== this.props.beforePlaybackMs ||
         prevProps.stepIntervalMs !== this.props.stepIntervalMs
@@ -77,6 +83,7 @@ class Player extends Component {
           onReward: this.props.onReward,
           onLevelComplete: this.props.onLevelComplete,
           trajectoryString: this.props.trajectoryString,
+          startPos: this.props.startPos,
           waitToBeginPlayback: this.props.waitToBeginPlayback,
           onPlaybackStart: this.props.onPlaybackStart,
           onPlaybackEnd: this.props.onPlaybackEnd,

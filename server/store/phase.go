@@ -1,9 +1,15 @@
 package store
 
+type Pos struct {
+	X int `json:"x"`
+	Y int `json:"y"`
+}
+
 type Replay struct {
 	LevelID      int    `json:"levelId"`
 	Trajectory   string `json:"trajectory"`
 	StepInterval int    `json:"stepInterval"`
+	StartPos     Pos    `json:"startPos"`
 }
 
 type AgentReplays struct {
@@ -13,8 +19,8 @@ type AgentReplays struct {
 }
 
 type Level struct {
-	ID       int   `json:"id"`
-	StartPos []int `json:"startPos"`
+	ID       int `json:"id"`
+	StartPos Pos `json:"startPos"`
 }
 
 type Phase struct {
@@ -25,22 +31,55 @@ type Phase struct {
 	ObjectsHidden bool           `json:"objectsHidden"`
 }
 
-func CreateReplay(levelId int, dest string) Replay {
+func createReplay(levelId int, start string, dest string) Replay {
 	trajectory := ""
-	if dest == "top-left" {
-		trajectory = "1,1,1,2,2,2"
-	} else if dest == "top-right" {
-		trajectory = "3,3,3,2,2,2"
-	} else if dest == "bottom-left" {
-		trajectory = "1,1,1,4,4,4"
-	} else if dest == "bottom-right" {
-		trajectory = "3,3,3,4,4,4"
+	if dest == "A" { // top left corner
+		if start == "left" {
+			trajectory = "1,2,2,2"
+		} else if start == "right" {
+			trajectory = "1,1,1,1,1,2,2,2"
+		} else if start == "top" {
+			trajectory = "2,1,1,1"
+		} else if start == "bottom" {
+			trajectory = "2,2,2,2,2,1,1,1"
+		}
+	} else if dest == "B" { // bottom right corner
+		if start == "left" {
+			trajectory = "3,3,3,3,3,4,4,4"
+		} else if start == "right" {
+			trajectory = "3,4,4,4"
+		} else if start == "top" {
+			trajectory = "4,4,4,4,4,3,3,3"
+		} else if start == "bottom" {
+			trajectory = "4,3,3,3"
+		}
+	}
+
+	startPos := Pos{X: 3, Y: 3}
+	if start == "left" {
+		startPos.X = 1
+	} else if start == "right" {
+		startPos.X = 5
+	} else if start == "top" {
+		startPos.Y = 1
+	} else if start == "bottom" {
+		startPos.Y = 5
 	}
 
 	return Replay{
 		LevelID:      levelId,
 		Trajectory:   trajectory,
-		StepInterval: 50,
+		StepInterval: 200,
+		StartPos:     startPos,
+	}
+}
+
+func CreateReplays(levelId int, dests []string) []Replay {
+	return []Replay{
+		createReplay(levelId, "left", dests[0]),
+		createReplay(levelId, "right", dests[1]),
+		createReplay(levelId, "top", dests[2]),
+		createReplay(levelId, "bottom", dests[3]),
 	}
 }
 

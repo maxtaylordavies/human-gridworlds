@@ -161,27 +161,24 @@ export const currentAgentReplay = (expState) => {
 };
 
 export const currentAvatarImg = (expState) => {
+  let color = "grey";
   const ar = currentAgentReplay(expState);
-  if (!ar) {
-    return "custom/avatars/avi-grey.png";
+  if (ar) {
+    if (ar.agentPhi === 0) {
+      color = "red";
+    } else if (ar.agentPhi === 1) {
+      color = "blue";
+    }
   }
-  return `custom/avatars/avi-${ar.agentPhi === 0 ? "red" : "blue"}.png`;
+  return `custom/avatars/avi-${color}.png`;
 };
 
-export const currentPlaybackTrajectory = (expState) => {
+export const currentReplay = (expState) => {
   const ar = currentAgentReplay(expState);
   if (!ar) {
-    return "";
+    return null;
   }
-  return ar.replays[expState.replayIdx].trajectory;
-};
-
-export const currentPlaybackStepInterval = (expState) => {
-  const ar = currentAgentReplay(expState);
-  if (!ar) {
-    return 0;
-  }
-  return ar.replays[expState.replayIdx].stepInterval;
+  return ar.replays[expState.replayIdx];
 };
 
 export const shouldHideGoals = (expState) => {
