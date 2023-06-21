@@ -65,8 +65,8 @@ const PlayerContainer = ({ griddlyjs }) => {
   };
 
   const computeNameBadgePos = (agentPos) => {
-    const left = 190 + agentPos.x * 60;
-    const top = 75 + agentPos.y * 60;
+    const left = 185 + agentPos.x * 60;
+    const top = 65 + agentPos.y * 60;
     return { left, top };
   };
 
@@ -101,8 +101,8 @@ const PlayerContainer = ({ griddlyjs }) => {
         <div>
           <div
             style={{
-              width: 60,
-              height: 24,
+              width: 70,
+              height: 30,
               position: "absolute",
               left: nameBadgePos.left,
               top: nameBadgePos.top,
@@ -110,6 +110,8 @@ const PlayerContainer = ({ griddlyjs }) => {
               color: "white",
               borderRadius: 5,
               zIndex: 100,
+              fontSize: 20,
+              fontWeight: "bold",
             }}
           >
             {gameState.playing ? "You" : utils.getAgentName(expState)}

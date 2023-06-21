@@ -9,13 +9,9 @@ const phaseInstructionsContent = [
       content: (
         <>
           <p>
-            In this phase, you will play through a series of levels in a game.{" "}
-            You can control the game using the arrow keys on your keyboard.{" "}
-          </p>
-          <p>
-            In each level, you need to collect an item. Some levels will only
-            contain one item, but in other levels you will have to choose
-            between items.
+            In this phase, you will <b>use your arrow keys</b> to control an
+            avatar in a 2D grid world. You earn <b>points</b> by collecting{" "}
+            <b>items</b> that appear in corners of the grid.
           </p>
         </>
       ),
@@ -25,17 +21,16 @@ const phaseInstructionsContent = [
       content: (
         <>
           <p>
-            Every time you collect an item, you will receive some points. The
-            number of points you receive will depend on the properties of the
-            item you collect.
+            <b>Different items are worth different amounts of points.</b> Every
+            time you collect an item, the game will show you how many points you
+            earned. These points contribute to your final score.
           </p>
           <p>
-            You should first try to determine the relationship between item
-            properties and points.{" "}
+            A high final score means you will earn a bonus payment, so you
+            should try to get as many points as possible!
           </p>
           <p>
-            You can then use this information to score as many points as
-            possible.
+            <b>Note: every time you move your avatar, you will lose 1 point.</b>
           </p>
         </>
       ),

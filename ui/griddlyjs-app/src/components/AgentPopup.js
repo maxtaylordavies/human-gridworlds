@@ -6,6 +6,7 @@ import { CountdownCircleTimer } from "react-countdown-circle-timer";
 
 import { useStore } from "../store";
 import { Modal } from "./core/Modal";
+import { DelayButton } from "./core/DelayButton";
 import * as utils from "../utils";
 
 const AgentPopup = ({ delay }) => {
@@ -37,15 +38,6 @@ const AgentPopup = ({ delay }) => {
     }
   }, [uiState, expState]);
 
-  //   const isReady = () => {
-  //     return !(
-  //       uiState.showInitialInstructions ||
-  //       uiState.showFinishedScreen ||
-  //       expState.agentIdx >=
-  //         expState.session.phases[expState.phaseIdx].levels.length
-  //     );
-  //   };
-
   const onProceedClicked = () => {
     setUIState({ ...uiState, showAgentPopup: false });
   };
@@ -64,36 +56,13 @@ const AgentPopup = ({ delay }) => {
         <div className="agent-popup-name">{name}</div>
       </div>
       <div className="agent-popup-button-row">
-        <motion.button
+        <DelayButton
+          delay={2}
           onClick={onProceedClicked}
           className="agent-popup-button"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: ready ? 1 : 0.5 }}
-          whileHover={{ scale: 1.04 }}
-          whileTap={{ scale: 0.96 }}
-          transition={{ duration: 0.1 }}
-          style={{ pointerEvents: ready ? "auto" : "none" }}
         >
           Proceed
-          {ready ? (
-            <FontAwesomeIcon icon={faPlay} className="agent-popup-play-icon" />
-          ) : (
-            <div className="agent-popup-countdown">
-              <CountdownCircleTimer
-                isPlaying
-                duration={3}
-                colors={"white"}
-                size={22}
-                strokeWidth={3}
-                trailColor={"#00916E"}
-                onComplete={() => {
-                  setReady(true);
-                  return [true, 0];
-                }}
-              />
-            </div>
-          )}
-        </motion.button>
+        </DelayButton>
       </div>
     </Modal>
   );
