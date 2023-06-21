@@ -42,7 +42,7 @@ func CreateSession(experimentID string, isTest bool, context interface{}) Sessio
 
 	ar := AgentReplays{
 		AgentPhi:  -1,
-		AgentName: "max",
+		AgentName: "Alice",
 	}
 	ar.Replays = append(ar.Replays, CreateEvidenceReplays(4, []string{"A", "A", "A", "A"})...)
 	ar.Replays = append(ar.Replays, CreateEvidenceReplays(7, []string{"B", "B", "B", "B"})...)
@@ -52,7 +52,7 @@ func CreateSession(experimentID string, isTest bool, context interface{}) Sessio
 
 	ar = AgentReplays{
 		AgentPhi:  -1,
-		AgentName: "kate",
+		AgentName: "Bob",
 	}
 	ar.Replays = append(ar.Replays, CreateEvidenceReplays(4, []string{"B", "B", "B", "B"})...)
 	ar.Replays = append(ar.Replays, CreateEvidenceReplays(7, []string{"A", "A", "A", "A"})...)
@@ -66,14 +66,14 @@ func CreateSession(experimentID string, isTest bool, context interface{}) Sessio
 	phase.AgentReplays = []AgentReplays{
 		{
 			AgentPhi:  -1,
-			AgentName: "max",
+			AgentName: "Alice",
 			Replays: []Replay{
 				CreateReplay(4, "right", "A"),
 			},
 		},
 		{
 			AgentPhi:  -1,
-			AgentName: "kate",
+			AgentName: "Bob",
 			Replays: []Replay{
 				CreateReplay(4, "left", "B"),
 			},
@@ -111,22 +111,22 @@ func CreateSession(experimentID string, isTest bool, context interface{}) Sessio
 	phase.AgentReplays = []AgentReplays{
 		{
 			AgentPhi:  0,
-			AgentName: "C",
+			AgentName: "Carol",
 			Replays:   replaysC,
 		},
 		{
 			AgentPhi:  1,
-			AgentName: "D",
+			AgentName: "Dan",
 			Replays:   replaysD,
 		},
 		{
 			AgentPhi:  0,
-			AgentName: "E",
+			AgentName: "Erin",
 			Replays:   replaysC,
 		},
 		{
 			AgentPhi:  1,
-			AgentName: "F",
+			AgentName: "Frank",
 			Replays:   replaysD,
 		},
 	}
@@ -137,14 +137,14 @@ func CreateSession(experimentID string, isTest bool, context interface{}) Sessio
 	phase.AgentReplays = []AgentReplays{
 		{
 			AgentPhi:  0,
-			AgentName: "G",
+			AgentName: "Grace",
 			Replays: []Replay{
 				CreateReplay(4, "left", "B"),
 			},
 		},
 		{
 			AgentPhi:  1,
-			AgentName: "H",
+			AgentName: "Henry",
 			Replays: []Replay{
 				CreateReplay(4, "right", "A"),
 			},
