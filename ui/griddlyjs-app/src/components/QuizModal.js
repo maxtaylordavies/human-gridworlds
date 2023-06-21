@@ -50,7 +50,8 @@ const QuizModal = () => {
       <div className="quiz-modal-title">Quiz</div>
       <div className="quiz-modal-body">
         <div className="quiz-modal-text">
-          1. select which <b>colour</b> gives you more points
+          1. Which item do you think would give you more points? If you think
+          they're equal, select the = option.
         </div>
         <div className="quiz-modal-option-row">
           {["yellow", "green", "equal"].map((color, idx) => {
@@ -84,7 +85,8 @@ const QuizModal = () => {
           })}
         </div>
         <div className="quiz-modal-text">
-          2. select which <b>shape</b> gives you more points
+          2. Which item do you think would give you more points? If you think
+          they're equal, select the = option.
         </div>
         <div className="quiz-modal-option-row">
           {["circle", "triangle", "equal"].map((shape, idx) => {
