@@ -167,13 +167,14 @@
   z-index: 30;
   background: white;
   padding: 4px 15px;
+  padding-top: 25px;
   border-radius: 10px;
-  text-align: left;
   border: 2px solid black;
 
   .agent-popup-title {
     font-size: 26px;
-    color: black;
+    font-weight: bold;
+    color: #FF0000;
   }
 
   span {
@@ -190,13 +191,14 @@
     align-items: center;
     margin-left: 35px;
     margin-right: 35px;
-    margin-top: 25px;
+    margin-top: 3px;
     padding: 30px;
     border-radius: 20px;
 
     .agent-popup-name {
       font-size: 40px;
       line-height: 40px;
+      margin-top: 5px;
       font-weight: bold;
       color: #5a5a5a;
     }
@@ -323,41 +325,6 @@
       color: white;
       border: none;
     }
-  }
-
-  .agent-popup-icon-container {
-    display: flex;
-    flex-direction: row;
-    background-color: lightgrey;
-    margin-bottom: 10px;
-    padding: 10px;
-    border-radius: 10px;
-
-    .agent-popup-gem {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-
-      span {
-        font-size: 16px;
-        font-weight: normal;
-        color: black;
-        margin-top: -5px
-      }
-    }
-  }
-}
-
-.agent-turn-popup {
-  z-index: 20;
-  background: white;
-  color: black;
-  font-size: 34px;
-  padding: 10px 25px;
-  border-radius: 10px;
-
-  img {
-    margin-right: 5px;
   }
 }
 
