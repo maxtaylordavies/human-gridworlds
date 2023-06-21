@@ -53,7 +53,7 @@ const AgentPopup = ({ delay }) => {
   return (
     <Modal open={show} className="agent-popup">
       {!agentsShown.includes(name) && (
-        <div className="agent-popup-title">New character!</div>
+        <div className="agent-popup-title">‼️ New character ‼️</div>
       )}
       <div className="agent-popup-agent">
         <img

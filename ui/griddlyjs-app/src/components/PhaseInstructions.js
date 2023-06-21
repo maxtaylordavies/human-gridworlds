@@ -46,7 +46,7 @@ const phaseInstructionsContent = [
     {
       content: (
         <>
-          <p>Evidence phase instructions :)</p>
+          <p>Evidence phase 1 instructions :)</p>
         </>
       ),
       buttonLabel: "Start phase",
@@ -62,7 +62,26 @@ const phaseInstructionsContent = [
       buttonLabel: "Start phase",
     },
   ],
-  [],
+  [
+    {
+      content: (
+        <>
+          <p>Evidence phase 2 instructions :)</p>
+        </>
+      ),
+      buttonLabel: "Start phase",
+    },
+  ],
+  [
+    {
+      content: (
+        <>
+          <p>Test phase 2 instructions :)</p>
+        </>
+      ),
+      buttonLabel: "Start phase",
+    },
+  ],
 ];
 
 const PhaseInstructions = () => {

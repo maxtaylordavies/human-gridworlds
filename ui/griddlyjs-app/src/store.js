@@ -68,10 +68,8 @@ export const useStore = create((set) => ({
       // if replayIdx is being incremented, check if we're at the end of the
       // replays for the current agent - if so, increment agentIdx
       if (est.replayIdx > state.expState.replayIdx) {
-        console.log("replayIdx being incremented");
         const phase = est.session.phases[est.phaseIdx];
         if (est.replayIdx >= phase.agentReplays[est.agentIdx].replays.length) {
-          console.log("end of replays for this agent");
           est.agentIdx += 1;
         }
       }
@@ -81,10 +79,8 @@ export const useStore = create((set) => ({
       // continue. if we are, check if it's an interactive phase. if it is,
       // set playing to true; otherwise, increment phaseIdx
       if (est.agentIdx > state.expState.agentIdx) {
-        console.log("agentIdx being incremented");
         const phase = est.session.phases[est.phaseIdx];
         if (est.agentIdx >= phase.agentReplays.length) {
-          console.log("end of agents for this phase");
           if (phase.interactive) {
             return {
               expState: est,

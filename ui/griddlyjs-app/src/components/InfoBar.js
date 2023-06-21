@@ -2,9 +2,10 @@ import React, { useState, useEffect } from "react";
 
 import { useStore } from "../store";
 import ScorePopup from "./ScorePopup";
+import * as utils from "../utils";
 
 const InfoBar = () => {
-  const { session, phaseIdx, levelIdx } = useStore((state) => state.expState);
+  const expState = useStore((state) => state.expState);
   const playing = useStore((state) => state.gameState.playing);
   const score = useStore((state) => state.score);
 
@@ -28,11 +29,14 @@ const InfoBar = () => {
   return (
     <div className="info-bar">
       <div className="info-bar-playing">
-        {playing ? "Playing" : "Observing"}
+        {playing ? "Playing" : `Observing: ${utils.getAgentName(expState)}`}
       </div>
       <ScorePopup scoreDelta={scoreDelta} clearDelta={() => setScoreDelta(0)} />
       <div className="info-bar-stats">
-        {InfoBarItem("phase", `${phaseIdx + 1}/${session.phases.length}`)}
+        {InfoBarItem(
+          "phase",
+          `${expState.phaseIdx + 1}/${expState.session.phases.length}`
+        )}
         {/* {InfoBarItem(
           "level",
           `${levelIdx + 1}/${session.phases[phaseIdx].levels.length}`

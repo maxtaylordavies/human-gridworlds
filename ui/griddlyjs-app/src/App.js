@@ -75,14 +75,11 @@ const App = () => {
     };
 
     await griddlyjs.init().then(() => {
-      console.log("griddlyjs initialised");
-
       // check for existing session_id in url or localstorage
       // if we find one, then get the corresponding session from
       // the server (rather than creating a new session)
       const sid = utils.getValueFromUrlOrLocalstorage("sid");
       if (sid) {
-        console.log(`found session_id ${sid}, retrieving`);
         api.getSession(sid, onSession, console.Error);
       } else {
         // otherwise, we create a new session on the server, passing

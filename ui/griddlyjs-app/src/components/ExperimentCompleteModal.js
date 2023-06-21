@@ -23,19 +23,6 @@ const ExperimentCompleteModal = ({ submitResponse }) => {
     await navigator.clipboard.writeText(PROLIFIC_CODE);
   };
 
-  const questions =
-    2 === 2
-      ? [
-          "In the early levels (1-2), did you learn anything about the red and blue aliens from watching them?",
-          "In the dark levels (3-4), how did you decide which way to go?",
-          "In the last two levels (5-6) where the gems were unknown, how did you decide which one to collect?",
-        ]
-      : [
-          "In the early levels (1-2), did you learn anything about the red and blue aliens from watching them?",
-          "What about the yellow and pink aliens in levels 3-4?",
-          "In the last two levels (5-6), how did you decide which gem to collect?",
-        ];
-
   const content = [
     {
       title: "Free text response",
@@ -43,16 +30,11 @@ const ExperimentCompleteModal = ({ submitResponse }) => {
         <>
           <p>
             <b>
-              Please write a brief description (minimum 100 characters) of how
-              you decided what actions to take in the game. Consider the
-              following questions:
+              Please write a brief response (minimum 100 characters) to the
+              following question: how did you choose which of the mystery boxes
+              to collect in phase 3 and phase 5?
             </b>{" "}
           </p>
-          <ul>
-            {questions.map((q, i) => (
-              <li key={i}>{q}</li>
-            ))}
-          </ul>
           <textarea rows="5" onChange={(e) => setResponse(e.target.value)} />
         </>
       ),

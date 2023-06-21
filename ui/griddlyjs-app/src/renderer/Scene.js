@@ -22,13 +22,10 @@ export class PlayerScene extends Phaser.Scene {
     this.stateHash = 0;
     this.loaded = false;
     this.defaultTileSize = 60;
-    this.levelStringOrId = "";
     this.keyActionBuffer = new Map();
   }
 
   init = (data) => {
-    console.log("init data: ", data);
-
     try {
       this.griddlyjs = data.griddlyjs;
 
@@ -40,8 +37,6 @@ export class PlayerScene extends Phaser.Scene {
       this.avatarPath = data.avatarPath;
       this.trajectoryString = data.trajectoryString;
       this.startPos = data.startPos;
-
-      console.log("this.startPos: ", this.startPos);
 
       this.waitToBeginPlayback = data.waitToBeginPlayback;
       this.beforePlaybackMs = data.beforePlaybackMs;
@@ -75,6 +70,8 @@ export class PlayerScene extends Phaser.Scene {
       this.hideGoals = data.hideGoals;
       if (this.hideGoals) {
         this.hideGoalItems();
+      } else {
+        this.revealGoalItems();
       }
 
       this.rendererName = data.rendererState.rendererName;
@@ -132,8 +129,6 @@ export class PlayerScene extends Phaser.Scene {
         }
       });
     }
-
-    console.log("startPos", this.startPos);
 
     // update the position
     rows = this.gdy.Environment.Levels[this.levelId]
@@ -221,6 +216,7 @@ export class PlayerScene extends Phaser.Scene {
   };
 
   hideGoalItems = () => {
+    console.log("hiding goal items!");
     this.gdy.Objects.forEach((object, i) => {
       if (object.Name.includes("goal")) {
         this.gdy.Objects[i].Observers.Sprite2D[0].Image =
@@ -229,55 +225,18 @@ export class PlayerScene extends Phaser.Scene {
     });
   };
 
+  revealGoalItems = () => {
+    this.gdy.Objects.forEach((object, i) => {
+      if (object.Name.includes("goal")) {
+        this.gdy.Objects[
+          i
+        ].Observers.Sprite2D[0].Image = `custom/items/${object.Name}.png`;
+      }
+    });
+  };
+
   toMovementKey(vector) {
     return `${vector.x},${vector.y}`;
-  }
-
-  getGlobalVariableDebugText() {
-    const globalVariables = this.griddlyjs.getGlobalVariables();
-
-    const globalVariableDescription = [];
-    const playerVariableDescription = [];
-    for (const variableName in globalVariables) {
-      const variableData = globalVariables[variableName];
-      if (Object.keys(variableData).length === 1) {
-        // We have a global variable
-        const variableValue = variableData[0];
-        globalVariableDescription.push(variableName + ": " + variableValue);
-      } else {
-        // We have a player variable
-        if (this.griddlyjs.playerCount === 1) {
-          const variableValue = variableData[1];
-          playerVariableDescription.push(variableName + ": " + variableValue);
-        } else {
-          let variableValues = "";
-          for (let p = 0; p < this.griddlyjs.playerCount; p++) {
-            const variableValue = variableData[p + 1];
-            variableValues += "\t" + (p + 1) + ": " + variableValue;
-          }
-
-          playerVariableDescription.push(variableName + ":" + variableValues);
-        }
-      }
-    }
-
-    return [
-      "Global Variables:",
-      ...globalVariableDescription,
-      "",
-      "Player Variables:",
-      ...playerVariableDescription,
-    ];
-  }
-
-  toggleVariableDebugModal() {
-    this.variableDebugModalActive = !this.variableDebugModalActive;
-    this.variableDebugModal.setVisible(this.variableDebugModalActive);
-  }
-
-  toggleControlsModal() {
-    this.controlsModalActive = !this.controlsModalActive;
-    this.controlsModal.setVisible(this.controlsModalActive);
   }
 
   setupKeyboardMapping = () => {
@@ -369,7 +328,8 @@ export class PlayerScene extends Phaser.Scene {
   };
 
   beginPlayback = () => {
-    console.log("beginPlayback");
+    console.log(this.gdy.Objects);
+
     this.keyActionBuffer.forEach((t, key) => {
       clearTimeout(t);
     });
@@ -382,21 +342,20 @@ export class PlayerScene extends Phaser.Scene {
     };
 
     this.trajectoryActionIdx = 0;
-    // this.resetLevel();
+    this.resetLevel();
     this.onPlaybackStart();
   };
 
   endPlayback = () => {
     this.trajectoryActionIdx = 0;
     this.isRunningTrajectory = false;
-    // this.resetLevel();
-    // this.trajectoriesPlayedBack = 0;
+    this.resetLevel();
     this.onPlaybackEnd();
   };
 
   resetLevel = (seed = 100) => {
     this.griddlyjs.seed(seed);
-    // this.griddlyjs.reset();
+    this.griddlyjs.reset();
     this.currentState = this.griddlyjs.getState();
     this.keyActionBuffer.clear();
   };

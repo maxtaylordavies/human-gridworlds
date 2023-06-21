@@ -246,22 +246,22 @@ Objects:
     MapCharacter: A
     Observers:
       Sprite2D:
-        - Image: custom/items/circle-yellow.png
+        - Image: custom/items/goalA.png
   - Name: goalB
     MapCharacter: B
     Observers:
       Sprite2D:
-        - Image: custom/items/circle-green.png
+        - Image: custom/items/goalB.png
   - Name: goalC
     MapCharacter: C
     Observers:
       Sprite2D:
-        - Image: custom/items/triangle-yellow.png
+        - Image: custom/items/goalC.png
   - Name: goalD
     MapCharacter: D
     Observers:
       Sprite2D:
-        - Image: custom/items/triangle-green.png
+        - Image: custom/items/goalD.png
   - Name: fog
     MapCharacter: F
     Z: 10
