@@ -211,9 +211,6 @@
     margin-top: 15px;
 
     .agent-popup-button {
-      display: flex;
-      align-items: center;
-      justify-content: center;
       width: 120px;
       height: 35px;
       border-radius: 20px;
@@ -222,17 +219,23 @@
       background: #00916E;
       color: white;
       border: none;
-
-      .agent-popup-play-icon {
-        margin-left: 10px;
-      }
-
-      .agent-popup-countdown {
-        height: 25px;
-        margin-left: 7px;
-        margin-bottom: 5px;
-      }
     }
+  }
+}
+
+.delay-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  .delay-button-icon {
+    margin-left: 10px;
+  }
+
+  .delay-button-countdown {
+    height: 25px;
+    margin-left: 7px;
+    margin-bottom: 7px;
   }
 }
 

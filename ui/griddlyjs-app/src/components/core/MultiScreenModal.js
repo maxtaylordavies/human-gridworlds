@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
+
 import { Modal } from "./Modal";
+import { DelayButton } from "./DelayButton";
 
 export const MultiScreenModal = ({ content, visible, key, onFinish }) => {
   const stageKeys = Object.keys(content);
@@ -66,7 +68,7 @@ export const MultiScreenModal = ({ content, visible, key, onFinish }) => {
           ) : (
             <div />
           )}
-          <motion.button
+          {/* <motion.button
             className={`instruction-modal-button ${
               currScreen.buttonLabel === "Next" ? "next" : "start"
             }`}
@@ -76,7 +78,17 @@ export const MultiScreenModal = ({ content, visible, key, onFinish }) => {
             transition={{ duration: 0.2 }}
           >
             {currScreen.buttonLabel}
-          </motion.button>
+          </motion.button> */}
+          <DelayButton
+            icon={currScreen.buttonIcon}
+            className={`instruction-modal-button ${
+              currScreen.buttonLabel === "Next" ? "next" : "start"
+            }`}
+            onClick={onNextClicked}
+            delay={currScreen.buttonDelay}
+          >
+            {currScreen.buttonLabel}
+          </DelayButton>
         </div>
       </div>
     </Modal>

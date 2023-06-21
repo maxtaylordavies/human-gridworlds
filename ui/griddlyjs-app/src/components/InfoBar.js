@@ -31,7 +31,11 @@ const InfoBar = () => {
       <div className="info-bar-playing">
         {playing ? "Playing" : `Observing: ${utils.getAgentName(expState)}`}
       </div>
-      <ScorePopup scoreDelta={scoreDelta} clearDelta={() => setScoreDelta(0)} />
+      <ScorePopup
+        scoreDelta={scoreDelta}
+        clearDelta={() => setScoreDelta(0)}
+        scoreHidden={expState.session.phases[expState.phaseIdx].objectsHidden}
+      />
       <div className="info-bar-stats">
         {InfoBarItem(
           "phase",
@@ -41,11 +45,11 @@ const InfoBar = () => {
           "level",
           `${levelIdx + 1}/${session.phases[phaseIdx].levels.length}`
         )} */}
-        {InfoBarItem("score", score, {
+        {/* {InfoBarItem("score", score, {
           color: color,
           fontWeight: scoreDelta === 0 ? "" : "bold",
           minWidth: 95,
-        })}
+        })} */}
       </div>
     </div>
   );

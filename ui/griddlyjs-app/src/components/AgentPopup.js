@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { faPlay } from "@fortawesome/free-solid-svg-icons";
 
 import { useStore } from "../store";
 import { Modal } from "./core/Modal";
@@ -55,9 +56,12 @@ const AgentPopup = ({ delay }) => {
         <DelayButton
           delay={2}
           onClick={onProceedClicked}
+          icon={faPlay}
+          spinnerSize={16}
+          spinnerWidth={2.5}
           className="agent-popup-button"
         >
-          Proceed
+          Watch
         </DelayButton>
       </div>
     </Modal>

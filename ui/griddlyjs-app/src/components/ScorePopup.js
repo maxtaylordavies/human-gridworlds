@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
-const ScorePopup = ({ scoreDelta, clearDelta }) => {
+const ScorePopup = ({ scoreDelta, clearDelta, scoreHidden }) => {
   const [open, setOpen] = useState(false);
   const [timeoutId, setTimeoutId] = useState(null);
 
@@ -22,7 +22,7 @@ const ScorePopup = ({ scoreDelta, clearDelta }) => {
 
   return (
     <AnimatePresence>
-      {open && (
+      {open && !scoreHidden && (
         <motion.div
           key="score-popup"
           className={`score-popup ${scoreDelta > 10 ? "high" : "medium"}`}

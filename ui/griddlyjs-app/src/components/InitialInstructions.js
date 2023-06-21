@@ -1,4 +1,5 @@
 import React from "react";
+import { faThumbsUp } from "@fortawesome/free-solid-svg-icons";
 
 import { useStore } from "../store";
 import { MultiScreenModal } from "./core/MultiScreenModal";
@@ -12,9 +13,6 @@ const InitialInstructions = () => {
     state.expState,
     state.setExpState,
   ]);
-
-  // const expGroup = session?.agentIds?.length === 2 ? 1 : 2;
-  const expGroup = 1;
 
   const finishInstructions = () => {
     setUIState({ ...uiState, showInitialInstructions: false });
@@ -36,6 +34,8 @@ const InitialInstructions = () => {
           </>
         ),
         buttonLabel: "Confirm",
+        buttonIcon: faThumbsUp,
+        buttonDelay: 0,
       },
       {
         content: (
@@ -67,6 +67,8 @@ const InitialInstructions = () => {
           </>
         ),
         buttonLabel: "Give consent",
+        buttonIcon: faThumbsUp,
+        buttonDelay: 5,
       },
     ],
   };
