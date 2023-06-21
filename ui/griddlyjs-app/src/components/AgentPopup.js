@@ -1,8 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { motion } from "framer-motion";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlay } from "@fortawesome/free-solid-svg-icons";
-import { CountdownCircleTimer } from "react-countdown-circle-timer";
 
 import { useStore } from "../store";
 import { Modal } from "./core/Modal";
