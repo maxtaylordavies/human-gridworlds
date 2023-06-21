@@ -111,7 +111,6 @@ const PlayerContainer = ({ griddlyjs }) => {
               borderRadius: 5,
               zIndex: 100,
               fontSize: 20,
-              fontWeight: "bold",
             }}
           >
             {gameState.playing ? "You" : utils.getAgentName(expState)}

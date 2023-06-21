@@ -50,7 +50,6 @@ export class PlayerScene extends Phaser.Scene {
       this.onPlaybackEnd = data.onPlaybackEnd;
 
       this.setPlayerPosAndImage();
-
       this.avatarObject = this.gdy.Environment.Player.AvatarObject;
 
       this.occlusionWindow = -1;
@@ -328,14 +327,13 @@ export class PlayerScene extends Phaser.Scene {
   };
 
   beginPlayback = () => {
-    console.log(this.gdy.Objects);
-
     this.keyActionBuffer.forEach((t, key) => {
       clearTimeout(t);
     });
     this.keyActionBuffer.clear();
 
     this.isRunningTrajectory = true;
+    this.cooldown = false;
     this.currentTrajectoryBuffer = {
       seed: 100,
       steps: this.trajectoryString.split(",").map((char) => [0, +char]),
@@ -367,10 +365,8 @@ export class PlayerScene extends Phaser.Scene {
     }
 
     if (!this.cooldown) {
+      console.log("processing trajectory");
       this.cooldown = true;
-      setTimeout(() => {
-        this.cooldown = false;
-      }, this.stepIntervalMs);
 
       const action =
         this.currentTrajectoryBuffer.steps[this.trajectoryActionIdx++];
@@ -381,8 +377,12 @@ export class PlayerScene extends Phaser.Scene {
         stepResult.terminated ||
         this.trajectoryActionIdx === this.currentTrajectoryBuffer.steps.length
       ) {
-        // setTimeout(() => this.endPlayback(), 1000);
-        this.endPlayback();
+        this.cooldown = true;
+        setTimeout(() => this.endPlayback(), 1000);
+      } else {
+        setTimeout(() => {
+          this.cooldown = false;
+        }, this.stepIntervalMs);
       }
     }
   };
@@ -443,8 +443,10 @@ export class PlayerScene extends Phaser.Scene {
     this.currentState = this.griddlyjs.getState();
 
     if (stepResult.terminated) {
-      this.onLevelComplete();
-      this.resetLevel();
+      setTimeout(() => {
+        this.onLevelComplete();
+        this.resetLevel();
+      }, 1000);
     }
   };
 

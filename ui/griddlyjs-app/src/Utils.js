@@ -161,16 +161,18 @@ export const currentAgentReplay = (expState) => {
 };
 
 export const currentAvatarImg = (expState) => {
-  let color = "grey";
+  let avi = "grey-smile";
   const ar = currentAgentReplay(expState);
   if (ar) {
     if (ar.agentPhi === 0) {
-      color = "red";
+      avi = "red";
     } else if (ar.agentPhi === 1) {
-      color = "blue";
+      avi = "blue";
+    } else {
+      avi = "grey";
     }
   }
-  return `custom/avatars/avi-${color}.png`;
+  return `custom/avatars/avi-${avi}.png`;
 };
 
 export const currentReplay = (expState) => {

@@ -3,20 +3,23 @@ import { motion, AnimatePresence } from "framer-motion";
 
 const ScorePopup = ({ scoreDelta, clearDelta, scoreHidden }) => {
   const [open, setOpen] = useState(false);
+  const [delta, setDelta] = useState(scoreDelta);
   const [timeoutId, setTimeoutId] = useState(null);
 
   useEffect(() => {
-    if (scoreDelta === 0) return;
-    setOpen(scoreDelta > 0);
+    if (!open) {
+      setDelta(scoreDelta);
+    }
+
+    if (scoreDelta <= 0) return;
+
+    setOpen(true);
     clearTimeout(timeoutId);
     setTimeoutId(
-      setTimeout(
-        () => {
-          setOpen(false);
-          clearDelta();
-        },
-        scoreDelta > 0 ? 1000 : 500
-      )
+      setTimeout(() => {
+        setOpen(false);
+        clearDelta();
+      }, 1000)
     );
   }, [scoreDelta]);
 
@@ -25,13 +28,13 @@ const ScorePopup = ({ scoreDelta, clearDelta, scoreHidden }) => {
       {open && !scoreHidden && (
         <motion.div
           key="score-popup"
-          className={`score-popup ${scoreDelta > 10 ? "high" : "medium"}`}
+          className={`score-popup ${delta > 10 ? "high" : "medium"}`}
           initial={{ opacity: 0, top: 10 }}
           animate={{ opacity: 1, top: -70 }}
           exit={{ opacity: 0, top: 0 }}
           transition={{ duration: 0.4 }}
         >
-          +{scoreDelta} points
+          +{delta} points
         </motion.div>
       )}
     </AnimatePresence>
