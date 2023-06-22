@@ -365,7 +365,6 @@ export class PlayerScene extends Phaser.Scene {
     }
 
     if (!this.cooldown) {
-      console.log("processing trajectory");
       this.cooldown = true;
 
       const action =

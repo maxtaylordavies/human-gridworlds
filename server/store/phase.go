@@ -1,5 +1,9 @@
 package store
 
+import (
+	"math/rand"
+)
+
 type Pos struct {
 	X int `json:"x"`
 	Y int `json:"y"`
@@ -73,13 +77,42 @@ func CreateReplay(levelId int, start string, dest string) Replay {
 	}
 }
 
-func CreateEvidenceReplays(levelId int, dests []string) []Replay {
-	return []Replay{
-		CreateReplay(levelId, "left", dests[0]),
-		CreateReplay(levelId, "right", dests[1]),
-		CreateReplay(levelId, "top", dests[2]),
-		CreateReplay(levelId, "bottom", dests[3]),
+func CreateReplaysPreference(levelId int, dest string) []Replay {
+	var starts []string
+	if dest == "A" { // top left corner
+		starts = []string{"right", "bottom"}
+	} else { // bottom right corner
+		starts = []string{"left", "top"}
 	}
+
+	var replays []Replay
+	for _, start := range starts {
+		replays = append(replays, CreateReplay(levelId, start, dest))
+	}
+
+	// shuffle replays
+	rand.Shuffle(len(replays), func(i, j int) {
+		replays[i], replays[j] = replays[j], replays[i]
+	})
+
+	return replays
+}
+
+func CreateReplaysNoPreference(levelId int) []Replay {
+	start1 := SampleFromSliceString([]string{"left", "top"}, 1)[0]
+	start2 := SampleFromSliceString([]string{"right", "bottom"}, 1)[0]
+
+	replays := []Replay{
+		CreateReplay(levelId, start1, "A"),
+		CreateReplay(levelId, start2, "B"),
+	}
+
+	// shuffle replays
+	rand.Shuffle(len(replays), func(i, j int) {
+		replays[i], replays[j] = replays[j], replays[i]
+	})
+
+	return replays
 }
 
 func CreatePhase(name string, levelIDs []int, interactive bool, objectsHidden bool) Phase {

@@ -18,6 +18,16 @@ func rng() *rand.Rand {
 	return rand.New(rand.NewSource(time.Now().UnixNano()))
 }
 
+func SampleFromSliceInt(s []int, n int) []int {
+	perm, res := rng().Perm(len(s)), []int{}
+
+	for i := 0; i < n; i++ {
+		res = append(res, s[perm[i]])
+	}
+
+	return res
+}
+
 func SampleFromSliceString(s []string, n int) []string {
 	perm, res := rng().Perm(len(s)), []string{}
 
@@ -33,16 +43,6 @@ func BinaryChoice(a int, b int) int {
 		return a
 	}
 	return b
-}
-
-func SampleFromSliceInt(s []int, n int) []int {
-	perm, res := rng().Perm(len(s)), []int{}
-
-	for i := 0; i < n; i++ {
-		res = append(res, s[perm[i]])
-	}
-
-	return res
 }
 
 func SampleFromRange(low int, high int, n int) []int {
