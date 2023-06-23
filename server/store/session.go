@@ -26,9 +26,8 @@ type Session struct {
 
 func CreateSession(experimentID string, isTest bool, context interface{}) Session {
 	conditions := Conditions{
-		"phi": SampleFromSliceInt([]int{-1, 0}, 1)[0],
-		// "correlation": SampleFromSliceInt([]int{0, 1}, 1)[0],
-		"correlation": 1,
+		"phi":         SampleFromSliceInt([]int{-1, 0}, 1)[0],
+		"correlation": SampleFromSliceInt([]int{0, 1}, 1)[0],
 		"thetas": [][]int{
 			{10, 0},
 			{10, 10},
