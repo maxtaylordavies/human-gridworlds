@@ -1,56 +1,40 @@
 import React, { useEffect, useState } from "react";
-
 import { motion, AnimatePresence } from "framer-motion";
 
-const emoji = { high: "🎉", medium: "😐", low: "🤦‍♂️" };
-
-const ScorePopup = ({ score, session }) => {
+const ScorePopup = ({ scoreDelta, clearDelta, scoreHidden }) => {
   const [open, setOpen] = useState(false);
-  const [prevScore, setprevScore] = useState(score);
-  const [scoreDelta, setScoreDelta] = useState(0);
-  const [bounds, setBounds] = useState({ min: 0, max: 0 });
+  const [delta, setDelta] = useState(scoreDelta);
+  const [timeoutId, setTimeoutId] = useState(null);
 
   useEffect(() => {
-    if (session) {
-      setBounds({
-        min: Math.min(...session.utility.goals),
-        max: Math.max(...session.utility.goals),
-      });
+    if (!open) {
+      setDelta(scoreDelta);
     }
-  }, [session]);
 
-  useEffect(() => {
-    let delta = score - prevScore;
-    setScoreDelta(delta);
-    setprevScore(score);
-  }, [score]);
+    if (scoreDelta <= 0) return;
 
-  useEffect(() => {
-    if (scoreDelta > 0) {
-      setOpen(true);
-      setTimeout(() => setOpen(false), 2000);
-    }
+    setOpen(true);
+    clearTimeout(timeoutId);
+    setTimeoutId(
+      setTimeout(() => {
+        setOpen(false);
+        clearDelta();
+      }, 1000)
+    );
   }, [scoreDelta]);
-
-  const bracket =
-    scoreDelta === bounds.max
-      ? "high"
-      : scoreDelta === bounds.min
-      ? "low"
-      : "medium";
 
   return (
     <AnimatePresence>
-      {open && (
+      {open && !scoreHidden && (
         <motion.div
           key="score-popup"
-          className={`score-popup ${bracket}`}
+          className={`score-popup ${delta > 10 ? "high" : "medium"}`}
           initial={{ opacity: 0, top: 10 }}
           animate={{ opacity: 1, top: -70 }}
           exit={{ opacity: 0, top: 0 }}
           transition={{ duration: 0.4 }}
         >
-          +{scoreDelta} points
+          +{delta} points
         </motion.div>
       )}
     </AnimatePresence>

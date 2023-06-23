@@ -2,18 +2,19 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
-	"strconv"
-	"strings"
 	"time"
 
 	"github.com/gorilla/mux"
+
+	"human-gridworlds/store"
 )
 
 type Server struct {
 	Router *mux.Router
-	Store  Store
+	Store  store.Store
 	Port   string
 }
 
@@ -40,12 +41,13 @@ func respond(w http.ResponseWriter, data interface{}) {
 	json.NewEncoder(w).Encode(data)
 }
 
-func CreateServer() Server {
+func CreateServer(port int) Server {
 	s := Server{
-		Store: Store{
-			DataPath: "data/",
+		Store: store.Store{
+			DataPath:      "data/",
+			ResourcesPath: "resources/",
 		},
-		Port: ":8100",
+		Port: fmt.Sprintf(":%d", port),
 	}
 	s.registerRoutes()
 	return s
@@ -108,7 +110,7 @@ func (s *Server) registerRoutes() {
 				return
 			}
 
-			sess, err := s.Store.CreateSession(data.ExperimentID, data.HumanID, data.IsTest, data.Context)
+			sess, err := s.Store.CreateSession(data.ExperimentID, data.IsTest, data.Context)
 			if err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
@@ -118,102 +120,21 @@ func (s *Server) registerRoutes() {
 		}
 	})
 
-	s.Router.HandleFunc("/api/trajectories", func(w http.ResponseWriter, r *http.Request) {
+	s.Router.HandleFunc("/api/update-session", func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodPost {
 			http.Error(w, "method not supported", http.StatusBadRequest)
 			return
 		}
 
-		var data struct {
-			SessionID    string       `json:"session_id"`
-			Trajectories Trajectories `json:"trajectories"`
-		}
+		var sess store.Session
 
-		err := decodePostRequest(r, &data)
+		err := decodePostRequest(r, &sess)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
 
-		err = s.Store.StoreTrajectories(data.SessionID, data.Trajectories)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-
-	})
-
-	s.Router.HandleFunc("/api/paths", func(w http.ResponseWriter, r *http.Request) {
-		if r.Method != http.MethodGet {
-			http.Error(w, "method not supported", http.StatusBadRequest)
-			return
-		}
-
-		gameID := r.URL.Query().Get("game_id")
-		agentIDsStr := r.URL.Query().Get("agent_ids")
-		levelsStr := r.URL.Query().Get("levels")
-		if gameID == "" || agentIDsStr == "" || levelsStr == "" {
-			http.Error(w, "'game_id', 'agent_ids' and 'levels' params are required", http.StatusBadRequest)
-			return
-		}
-
-		agentIDs, tmp := strings.Split(agentIDsStr, ","), strings.Split(levelsStr, ",")
-		levels := make([]int, len(tmp))
-		for i, s := range tmp {
-			l, err := strconv.Atoi(s)
-			if err != nil {
-				http.Error(w, "'levels' param formatted incorrectly", http.StatusBadRequest)
-				return
-			}
-			levels[i] = l
-		}
-
-		paths := s.Store.GetLevelPaths(gameID, agentIDs, levels)
-		respond(w, paths)
-	})
-
-	s.Router.HandleFunc("/api/finalScore", func(w http.ResponseWriter, r *http.Request) {
-		if r.Method != http.MethodPost {
-			http.Error(w, "method not supported", http.StatusBadRequest)
-			return
-		}
-
-		var data struct {
-			SessionID string `json:"session_id"`
-			Score     int    `json:"score"`
-		}
-
-		err := decodePostRequest(r, &data)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
-			return
-		}
-
-		err = s.Store.StoreFinalScore(data.SessionID, data.Score)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-	})
-
-	s.Router.HandleFunc("/api/freeTextResponse", func(w http.ResponseWriter, r *http.Request) {
-		if r.Method != http.MethodPost {
-			http.Error(w, "method not supported", http.StatusBadRequest)
-			return
-		}
-
-		var data struct {
-			SessionID string `json:"session_id"`
-			Response  string `json:"response"`
-		}
-
-		err := decodePostRequest(r, &data)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
-			return
-		}
-
-		err = s.Store.StoreFreeTextResponse(data.SessionID, data.Response)
+		err = s.Store.UpdateSession(sess)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
