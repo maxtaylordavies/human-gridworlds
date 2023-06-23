@@ -134,8 +134,6 @@ func (s *Server) registerRoutes() {
 			return
 		}
 
-		fmt.Println(sess)
-
 		err = s.Store.UpdateSession(sess)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)

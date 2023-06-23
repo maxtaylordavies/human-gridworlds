@@ -136,20 +136,6 @@ export const currentLevelId = (expState) => {
 };
 
 export const isPlaying = (expState) => {
-  // const phase = currentPhase(expState);
-  // if (!phase) {
-  //   return false;
-  // }
-
-  // const ar = phase.agentReplays;
-  // if (
-  //   !ar ||
-  //   expState.agentIdx >= ar.length ||
-  //   expState.replayIdx >= ar[expState.agentIdx].replays.length
-  // ) {
-  //   return true;
-  // }
-  // return false;
   const ar = currentAgentReplay(expState);
   if (!ar || expState.replayIdx >= ar.replays.length) {
     return true;
@@ -171,18 +157,24 @@ export const currentAgentReplay = (expState) => {
 };
 
 export const currentAvatarImg = (expState) => {
-  let avi = "grey-smile";
+  const phiToColor = (phi) => {
+    if (phi === 0) {
+      return "red";
+    } else if (phi === 1) {
+      return "blue";
+    } else {
+      return "grey";
+    }
+  };
+
   const ar = currentAgentReplay(expState);
   if (ar) {
-    if (ar.agentPhi === 0) {
-      avi = "red";
-    } else if (ar.agentPhi === 1) {
-      avi = "blue";
-    } else {
-      avi = "grey";
-    }
+    return `custom/avatars/avi-${phiToColor(ar.agentPhi)}.png`;
   }
-  return `custom/avatars/avi-${avi}.png`;
+
+  return `custom/avatars/avi-${phiToColor(
+    expState.session.conditions.phi
+  )}-smile.png`;
 };
 
 export const currentReplay = (expState) => {

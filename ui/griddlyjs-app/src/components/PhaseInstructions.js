@@ -61,15 +61,33 @@ const phaseInstructionsContent = [
               same as for you.
             </b>
           </p>
+        </>
+      ),
+      buttonLabel: "Next",
+      buttonIcon: faHandPointRight,
+      buttonDelay: 5,
+    },
+    {
+      content: (
+        <>
           <p>
-            You should pay <b>close attention</b> to the choices they make, as
-            this information will be useful in the next phase.
+            You should pay <b>very close attention</b> to the choices each
+            character makes, as this information will be useful in the next
+            phase.
+          </p>
+          <p>
+            You will also be presented with a quiz after watching each
+            character. Unlike the quiz you just completed, you won't be told
+            whether you answered correctly. However,{" "}
+            <b>
+              correct answers will earn you points towards your final score.
+            </b>
           </p>
         </>
       ),
       buttonLabel: "Start phase",
       buttonIcon: faHandPointRight,
-      buttonDelay: 8,
+      buttonDelay: 5,
     },
   ],
   [
@@ -101,14 +119,13 @@ const phaseInstructionsContent = [
       content: (
         <>
           <p>
-            While you will not be able to see which item is inside each box, the{" "}
-            <b>two characters already know the contents of the boxes</b>, and
-            will choose whichever gives them the most points.
+            While you will not be able to see which item is inside each box,{" "}
+            <b>all characters already know the contents of the boxes</b>.
           </p>
           <p>
-            Also, the game will not tell you how many points you earned - but it
-            will still contribute to your final score, so you should try to pick
-            the box that gives you the most points!
+            Also, the game will not tell you how many points you earned - but
+            these points will still contribute to your final score, so you
+            should try to pick the box that gives you the most points!
           </p>
         </>
       ),
@@ -127,8 +144,10 @@ const phaseInstructionsContent = [
             observe each character make choices between items.
           </p>
           <p>
-            Like before, you should pay <b>close attention</b> to the choices
-            they make, as this information will be useful in the next phase.
+            Like before, you should pay <b>very close attention</b> to the
+            choices they make, as this information will be useful in the next
+            phase. Again, you will also be presented with a quiz after each new
+            character.
           </p>
         </>
       ),
