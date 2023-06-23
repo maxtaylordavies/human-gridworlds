@@ -21,7 +21,7 @@ const AgentPopup = ({ delay }) => {
 
   useEffect(() => {
     if (uiState.showAgentPopup) {
-      const _name = utils.getAgentName(expState);
+      const _name = utils.currentAgentName(expState);
       const _avatar = utils.currentAvatarImg(expState);
       setName(_name);
       setAvatar(_avatar);

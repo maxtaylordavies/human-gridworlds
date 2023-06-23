@@ -29,7 +29,7 @@ const InfoBar = () => {
   return (
     <div className="info-bar">
       <div className="info-bar-playing">
-        {playing ? "Playing" : `Observing: ${utils.getAgentName(expState)}`}
+        {playing ? "Playing" : `Observing: ${utils.currentAgentName(expState)}`}
       </div>
       <ScorePopup
         scoreDelta={scoreDelta}

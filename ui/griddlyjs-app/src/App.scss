@@ -132,36 +132,6 @@
   }
 }
 
-.instruction-modal-score-key {
-  display: flex;
-  margin-bottom: 1rem;
-}
-
-.instruction-modal-score-key-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  color: grey;
-  font-size: 20px;
-  font-weight: 500;
-
-  span {
-    margin-top: -3px;
-  }
-}
-
-.keyboard-key {
-  display: inline;
-  font-weight: normal;
-  border-radius: 3px;
-  padding: 0 3px 2px;
-  border: 1px solid #999;
-  background-color: rgb(209, 209, 209);
-  font-size: 14px;
-  opacity: 0.8;
-  color: #3b3b3b;
-}
-
 .agent-popup {
   min-width: 300px;
   z-index: 30;
@@ -337,6 +307,18 @@
   height: 600px;
   border-radius: 20px;
   z-index: 5;
+
+  .name-badge {
+    width: 70px;
+    height: 30px;
+    position: absolute;
+    background-color: #007458;
+    color: white;
+    border-radius: 5px;
+    z-index: 100;
+    font-size: 20px;
+    line-height: 25px;
+  }
 }
 
 .info-bar {

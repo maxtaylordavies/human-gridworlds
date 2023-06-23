@@ -1,6 +1,4 @@
-import create from "zustand";
-
-import * as utils from "./utils";
+import { create } from "zustand";
 
 export const useStore = create((set) => ({
   // general UI state
@@ -36,20 +34,6 @@ export const useStore = create((set) => ({
         };
       }
 
-      // if showQuiz is being set to false, increment phaseIdx and set showPhaseInstructions to true
-      if (!uist.showQuiz && state.uiState.showQuiz) {
-        return {
-          uiState: { ...uist, showPhaseInstructions: true },
-          expState: {
-            ...state.expState,
-            phaseIdx: state.expState.phaseIdx + 1,
-            agentIdx: 0,
-            replayIdx: 0,
-            levelIdx: 0,
-          },
-        };
-      }
-
       return { uiState: uist };
     }),
 
@@ -66,11 +50,15 @@ export const useStore = create((set) => ({
       let uist = { ...state.uiState };
 
       // if replayIdx is being incremented, check if we're at the end of the
-      // replays for the current agent - if so, increment agentIdx
+      // replays for the current agent - if so, show the quiz
       if (est.replayIdx > state.expState.replayIdx) {
         const phase = est.session.phases[est.phaseIdx];
         if (est.replayIdx >= phase.agentReplays[est.agentIdx].replays.length) {
-          est.agentIdx += 1;
+          if (phase.objectsHidden) {
+            est.agentIdx += 1;
+          } else {
+            uist.showQuiz = true;
+          }
         }
       }
 

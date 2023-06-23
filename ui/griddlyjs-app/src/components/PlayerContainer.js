@@ -82,13 +82,7 @@ const PlayerContainer = ({ griddlyjs }) => {
   }
 
   const nameBadgePos = computeNameBadgePos(gameState.agentPos);
-
   const replay = utils.currentReplay(expState);
-
-  let startPos = { x: 3, y: 3 };
-  if (replay && replay.startPos) {
-    startPos = replay.startPos;
-  }
 
   return (
     <motion.div className="game-container">
@@ -100,20 +94,13 @@ const PlayerContainer = ({ griddlyjs }) => {
         <InfoBar />
         <div>
           <div
+            className="name-badge"
             style={{
-              width: 70,
-              height: 30,
-              position: "absolute",
               left: nameBadgePos.left,
               top: nameBadgePos.top,
-              backgroundColor: "#007458",
-              color: "white",
-              borderRadius: 5,
-              zIndex: 100,
-              fontSize: 20,
             }}
           >
-            {gameState.playing ? "You" : utils.getAgentName(expState)}
+            {utils.currentAgentName(expState)}
           </div>
           <Player
             gdyHash={gameState.gdyHash}
@@ -130,7 +117,7 @@ const PlayerContainer = ({ griddlyjs }) => {
             onReward={updateScore}
             onLevelComplete={onLevelComplete}
             trajectoryString={replay?.trajectory || ""}
-            startPos={startPos}
+            startPos={utils.currentStartPos(expState)}
             waitToBeginPlayback={
               uiState.showPhaseInstructions || uiState.showAgentPopup
             }

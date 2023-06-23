@@ -64,6 +64,17 @@ const App = () => {
     }
   }, [uiState.showFinishedScreen]);
 
+  useEffect(() => {
+    // showQuiz being set to false
+    if (expState.session && !uiState.showQuiz) {
+      if (expState.phaseIdx === 0) {
+        setExpState({ ...expState, phaseIdx: 1 });
+      } else {
+        setExpState({ ...expState, agentIdx: expState.agentIdx + 1 });
+      }
+    }
+  }, [uiState.showQuiz]);
+
   // initialise griddly, create a session on the server, and
   // then store the session in local state
   const performSetUp = async () => {

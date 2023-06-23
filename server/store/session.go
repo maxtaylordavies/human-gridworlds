@@ -37,11 +37,11 @@ func CreateSession(experimentID string, isTest bool, context interface{}) Sessio
 	var phases []Phase
 
 	// exploration phase
-	phase := CreatePhase("exploration", []int{0, 1, 2, 3, 4, 6, 8, 10}, true, false)
+	phase := CreatePhase("exploration", []int{0, 1, 2, 3, 4, 6, 8, 10}, true, false, false)
 	phases = append(phases, phase)
 
 	// evidence phase 1
-	phase = CreatePhase("evidence 1", []int{4, 6, 8, 10}, false, false)
+	phase = CreatePhase("evidence 1", []int{4, 6, 8, 10}, false, false, false)
 
 	ar := AgentReplays{
 		AgentPhi:  -1,
@@ -67,21 +67,17 @@ func CreateSession(experimentID string, isTest bool, context interface{}) Sessio
 	phases = append(phases, phase)
 
 	// test phase 1
-	phase = CreatePhase("test 1", []int{4}, true, true)
+	phase = CreatePhase("test 1", []int{4}, true, true, true)
 	phase.AgentReplays = []AgentReplays{
 		{
 			AgentPhi:  -1,
 			AgentName: "Alice",
-			Replays: []Replay{
-				CreateReplay(4, "right", "A"),
-			},
+			Replays:   CreateReplaysPreference(4, "A"),
 		},
 		{
 			AgentPhi:  -1,
 			AgentName: "Bob",
-			Replays: []Replay{
-				CreateReplay(4, "left", "B"),
-			},
+			Replays:   CreateReplaysPreference(4, "B"),
 		},
 	}
 
@@ -89,7 +85,7 @@ func CreateSession(experimentID string, isTest bool, context interface{}) Sessio
 	phases = append(phases, phase)
 
 	// evidence phase 2
-	phase = CreatePhase("evidence 2", []int{4, 6, 8, 10}, false, false)
+	phase = CreatePhase("evidence 2", []int{4, 6, 8, 10}, false, false, false)
 
 	var replaysC []Replay
 	var replaysD []Replay
@@ -144,21 +140,17 @@ func CreateSession(experimentID string, isTest bool, context interface{}) Sessio
 	phases = append(phases, phase)
 
 	// test phase 2
-	phase = CreatePhase("test 2", []int{4}, true, true)
+	phase = CreatePhase("test 2", []int{4}, true, true, true)
 	phase.AgentReplays = []AgentReplays{
 		{
 			AgentPhi:  0,
 			AgentName: "Grace",
-			Replays: []Replay{
-				CreateReplay(4, "left", "B"),
-			},
+			Replays:   CreateReplaysPreference(4, "B"),
 		},
 		{
 			AgentPhi:  1,
 			AgentName: "Henry",
-			Replays: []Replay{
-				CreateReplay(4, "right", "A"),
-			},
+			Replays:   CreateReplaysPreference(4, "A"),
 		},
 	}
 

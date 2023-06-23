@@ -136,17 +136,22 @@ export const currentLevelId = (expState) => {
 };
 
 export const isPlaying = (expState) => {
-  const phase = currentPhase(expState);
-  if (!phase) {
-    return false;
-  }
+  // const phase = currentPhase(expState);
+  // if (!phase) {
+  //   return false;
+  // }
 
-  const ar = phase.agentReplays;
-  if (
-    !ar ||
-    expState.agentIdx >= ar.length ||
-    expState.replayIdx >= ar[expState.agentIdx].replays.length
-  ) {
+  // const ar = phase.agentReplays;
+  // if (
+  //   !ar ||
+  //   expState.agentIdx >= ar.length ||
+  //   expState.replayIdx >= ar[expState.agentIdx].replays.length
+  // ) {
+  //   return true;
+  // }
+  // return false;
+  const ar = currentAgentReplay(expState);
+  if (!ar || expState.replayIdx >= ar.replays.length) {
     return true;
   }
   return false;
@@ -154,7 +159,12 @@ export const isPlaying = (expState) => {
 
 export const currentAgentReplay = (expState) => {
   const phase = currentPhase(expState);
-  if (!phase || isPlaying(expState)) {
+  if (
+    !phase ||
+    !phase.agentReplays ||
+    phase.agentReplays.length === 0 ||
+    expState.agentIdx >= phase.agentReplays.length
+  ) {
     return null;
   }
   return phase.agentReplays[expState.agentIdx];
@@ -183,6 +193,18 @@ export const currentReplay = (expState) => {
   return ar.replays[expState.replayIdx];
 };
 
+export const currentStartPos = (expState) => {
+  const replay = currentReplay(expState);
+  if (replay) {
+    return replay.startPos;
+  }
+  const level = currentLevel(expState);
+  if (level && level.startPos) {
+    return level.startPos;
+  }
+  return { x: 3, y: 3 };
+};
+
 export const shouldHideGoals = (expState) => {
   const phase = currentPhase(expState);
   if (!phase) {
@@ -191,10 +213,10 @@ export const shouldHideGoals = (expState) => {
   return phase.objectsHidden;
 };
 
-export const getAgentName = (expState) => {
+export const currentAgentName = (expState) => {
   const ar = currentAgentReplay(expState);
   if (!ar) {
-    return "";
+    return "you";
   }
   return ar.agentName;
 };

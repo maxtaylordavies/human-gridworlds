@@ -3,22 +3,30 @@ import { motion } from "framer-motion";
 
 import { useStore } from "../store";
 import { Modal } from "./core/Modal";
+import * as utils from "../utils";
 
 const QuizModal = () => {
   const [uiState, setUIState] = useStore((state) => [
     state.uiState,
     state.setUIState,
   ]);
-  const session = useStore((state) => state.expState.session);
+  const expState = useStore((state) => state.expState);
 
+  const [name, setName] = useState("");
   const [expected, setExpected] = useState([-1, -1]);
   const [selected, setSelected] = useState([-1, -1]);
   const [showIfCorrect, setShowIfCorrect] = useState(false);
 
   useEffect(() => {
-    if (session) {
+    if (expState.session) {
+      setName(utils.currentAgentName(expState));
+    }
+  }, [expState]);
+
+  useEffect(() => {
+    if (expState.session) {
       const expctd = [];
-      const thetas = session.conditions.thetas;
+      const thetas = expState.session.conditions.thetas;
       for (let i = 0; i < 2; i++) {
         if (thetas[i][0] > thetas[i][1]) {
           expctd.push(0);
@@ -30,28 +38,29 @@ const QuizModal = () => {
       }
       setExpected(expctd);
     }
-  }, [session]);
+  }, [expState.session]);
 
   const disabled = selected.includes(-1);
 
-  const checkAnswers = () => {
-    setShowIfCorrect(true);
+  const onSubmitClicked = () => {
+    const checkAnswers = name === "you";
+    setShowIfCorrect(checkAnswers);
     setTimeout(() => {
-      setSelected([-1, -1]);
-      if (selected.every((s, i) => s === expected[i])) {
+      if (!checkAnswers || selected.every((s, i) => s === expected[i])) {
         setUIState({ ...uiState, showQuiz: false });
       }
+      setSelected([-1, -1]);
       setShowIfCorrect(false);
     }, 500);
   };
 
   return (
     <Modal open={uiState.showQuiz} className="quiz-modal">
-      <div className="quiz-modal-title">Quiz</div>
+      <div className="quiz-modal-title">Quiz: {name}</div>
       <div className="quiz-modal-body">
         <div className="quiz-modal-text">
-          1. Which item do you think would give you more points? If you think
-          they're equal, select the = option.
+          1. Which item do you think would give <b>{name}</b> more points? If
+          you think they're equal, select the = option.
         </div>
         <div className="quiz-modal-option-row">
           {["yellow", "green", "equal"].map((color, idx) => {
@@ -85,8 +94,8 @@ const QuizModal = () => {
           })}
         </div>
         <div className="quiz-modal-text">
-          2. Which item do you think would give you more points? If you think
-          they're equal, select the = option.
+          2. Which item do you think would give <b>{name}</b> more points? If
+          you think they're equal, select the = option.
         </div>
         <div className="quiz-modal-option-row">
           {["circle", "triangle", "equal"].map((shape, idx) => {
@@ -122,7 +131,7 @@ const QuizModal = () => {
       </div>
       <div className="quiz-modal-button-row">
         <motion.button
-          onClick={checkAnswers}
+          onClick={onSubmitClicked}
           className="quiz-modal-button"
           disabled={disabled}
           whileHover={{ scale: disabled ? 1 : 1.04 }}

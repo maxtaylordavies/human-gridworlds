@@ -35,6 +35,20 @@ type Phase struct {
 	ObjectsHidden bool           `json:"objectsHidden"`
 }
 
+func getStartPos(start string) Pos {
+	startPos := Pos{X: 3, Y: 3}
+	if start == "left" {
+		startPos.X = 1
+	} else if start == "right" {
+		startPos.X = 5
+	} else if start == "top" {
+		startPos.Y = 1
+	} else if start == "bottom" {
+		startPos.Y = 5
+	}
+	return startPos
+}
+
 func CreateReplay(levelId int, start string, dest string) Replay {
 	trajectory := ""
 	if dest == "A" { // top left corner
@@ -59,21 +73,10 @@ func CreateReplay(levelId int, start string, dest string) Replay {
 		}
 	}
 
-	startPos := Pos{X: 3, Y: 3}
-	if start == "left" {
-		startPos.X = 1
-	} else if start == "right" {
-		startPos.X = 5
-	} else if start == "top" {
-		startPos.Y = 1
-	} else if start == "bottom" {
-		startPos.Y = 5
-	}
-
 	return Replay{
 		LevelID:    levelId,
 		Trajectory: trajectory,
-		StartPos:   startPos,
+		StartPos:   getStartPos(start),
 	}
 }
 
@@ -115,10 +118,24 @@ func CreateReplaysNoPreference(levelId int) []Replay {
 	return replays
 }
 
-func CreatePhase(name string, levelIDs []int, interactive bool, objectsHidden bool) Phase {
+func CreatePhase(name string, levelIDs []int, interactive bool, objectsHidden bool, multipleStarts bool) Phase {
 	levels := []Level{}
 	for _, levelID := range levelIDs {
-		levels = append(levels, Level{ID: levelID, StartPos: Pos{X: 3, Y: 3}})
+		startPositions := []Pos{
+			getStartPos("center"),
+		}
+		if multipleStarts {
+			startPositions = append(startPositions, getStartPos("left"))
+			startPositions = append(startPositions, getStartPos("right"))
+		}
+
+		rand.Shuffle(len(startPositions), func(i, j int) {
+			startPositions[i], startPositions[j] = startPositions[j], startPositions[i]
+		})
+
+		for _, startPos := range startPositions {
+			levels = append(levels, Level{ID: levelID, StartPos: startPos})
+		}
 	}
 
 	return Phase{
