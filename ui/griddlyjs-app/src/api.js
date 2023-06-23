@@ -44,6 +44,14 @@ export const createSession = async (
     .catch((e) => onError(e));
 };
 
+export const updateSession = async (session, callback, onError) => {
+  post("update-session", session)
+    .then((response) => {
+      callback();
+    })
+    .catch((e) => onError(e));
+};
+
 export const loadGameSpec = async (specName, callback, onError) => {
   get(`game?id=${specName}`)
     .then((response) => {

@@ -6,15 +6,16 @@ import { Modal } from "./core/Modal";
 
 const PROLIFIC_CODE = "CAL3DWSD";
 
-const ExperimentCompleteModal = ({ submitResponse }) => {
+const ExperimentCompleteModal = () => {
   const show = useStore((state) => state.uiState.showFinishedScreen);
   const score = useStore((state) => state.score);
+  const saveTextResponse = useStore((state) => state.saveTextResponse);
 
   const [screenIdx, setScreenIdx] = useState(0);
   const [response, setResponse] = useState("");
 
   const onSubmitClicked = () => {
-    submitResponse(response);
+    saveTextResponse(response);
     setScreenIdx(1);
   };
 

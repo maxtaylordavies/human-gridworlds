@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 
 import { useStore } from "../store";
@@ -25,10 +25,7 @@ const PlayerContainer = ({ griddlyjs }) => {
     state.rendererState,
     state.setRendererState,
   ]);
-  const [trajectories, setTrajectories] = useStore((state) => [
-    state.trajectories,
-    state.setTrajectories,
-  ]);
+  const updateTrajectory = useStore((state) => state.updateTrajectory);
 
   const onPlaybackEnd = () => {
     setExpState({ ...expState, replayIdx: expState.replayIdx + 1 });
@@ -41,10 +38,6 @@ const PlayerContainer = ({ griddlyjs }) => {
     });
   };
 
-  const onPlaybackStart = () => {
-    // setGameState({ ...gameState, playing: false });
-  };
-
   const onTrajectoryStep = (step) => {
     if (uiState.showFinishedScreen) {
       return;
@@ -55,13 +48,7 @@ const PlayerContainer = ({ griddlyjs }) => {
       return;
     }
 
-    let traj = { ...trajectories };
-    if (!(levelId in traj)) {
-      traj[levelId] = [];
-    }
-
-    traj[levelId].push(step);
-    setTrajectories(traj);
+    updateTrajectory(expState.phaseIdx, expState.levelIdx, step);
   };
 
   const computeNameBadgePos = (agentPos) => {
@@ -121,7 +108,6 @@ const PlayerContainer = ({ griddlyjs }) => {
             waitToBeginPlayback={
               uiState.showPhaseInstructions || uiState.showAgentPopup
             }
-            onPlaybackStart={onPlaybackStart}
             onPlaybackEnd={onPlaybackEnd}
             beforePlaybackMs={INTER_SCENE_INTERVAL_MS}
             stepIntervalMs={replay?.stepInterval || INTER_STEP_INTERVAL_MS}

@@ -11,6 +11,7 @@ const QuizModal = () => {
     state.setUIState,
   ]);
   const expState = useStore((state) => state.expState);
+  const saveQuizResponse = useStore((state) => state.saveQuizResponse);
 
   const [name, setName] = useState("");
   const [expected, setExpected] = useState([-1, -1]);
@@ -43,6 +44,8 @@ const QuizModal = () => {
   const disabled = selected.includes(-1);
 
   const onSubmitClicked = () => {
+    saveQuizResponse(name, selected);
+
     const checkAnswers = name === "you";
     setShowIfCorrect(checkAnswers);
     setTimeout(() => {

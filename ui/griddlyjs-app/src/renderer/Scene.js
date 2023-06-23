@@ -46,7 +46,6 @@ export class PlayerScene extends Phaser.Scene {
       this.onPlayerPosChange = data.onPlayerPosChange;
       this.onReward = data.onReward;
       this.onLevelComplete = data.onLevelComplete;
-      this.onPlaybackStart = data.onPlaybackStart;
       this.onPlaybackEnd = data.onPlaybackEnd;
 
       this.setPlayerPosAndImage();
@@ -215,7 +214,6 @@ export class PlayerScene extends Phaser.Scene {
   };
 
   hideGoalItems = () => {
-    console.log("hiding goal items!");
     this.gdy.Objects.forEach((object, i) => {
       if (object.Name.includes("goal")) {
         this.gdy.Objects[i].Observers.Sprite2D[0].Image =
@@ -341,7 +339,6 @@ export class PlayerScene extends Phaser.Scene {
 
     this.trajectoryActionIdx = 0;
     this.resetLevel();
-    this.onPlaybackStart();
   };
 
   endPlayback = () => {
@@ -436,7 +433,8 @@ export class PlayerScene extends Phaser.Scene {
       return;
     }
 
-    this.onTrajectoryStep(action);
+    this.onTrajectoryStep(action[1]);
+
     const stepResult = this.griddlyjs.step(action);
     this.onReward(+stepResult.reward);
     this.currentState = this.griddlyjs.getState();

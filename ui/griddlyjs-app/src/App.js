@@ -5,7 +5,6 @@ import * as api from "./api";
 import * as utils from "./utils";
 import { useStore } from "./store";
 import { hashString } from "./hash";
-import { INTER_LEVEL_INTERVAL_MS, INTER_SCENE_INTERVAL_MS } from "./constants";
 import GriddlyJSCore from "./GriddlyJSCore";
 import PlayerContainer from "./components/PlayerContainer";
 import InitialInstructions from "./components/InitialInstructions";
@@ -34,7 +33,7 @@ const App = () => {
     state.rendererState,
     state.setRendererState,
   ]);
-  const trajectories = useStore((state) => state.trajectories);
+  const resultsState = useStore((state) => state.resultsState);
 
   // create and initialise an instance of the GriddlyJS core
   const [griddlyjs, setGriddlyjs] = useState(new GriddlyJSCore());
@@ -52,8 +51,7 @@ const App = () => {
 
   useEffect(() => {
     const onFinished = async () => {
-      await uploadTrajectories();
-      await uploadFinalScore();
+      // await uploadResults();
       utils.removeFromLocalStorage("sid");
     };
 
@@ -74,6 +72,12 @@ const App = () => {
       }
     }
   }, [uiState.showQuiz]);
+
+  useEffect(() => {
+    if (expState.session && resultsState) {
+      uploadResults();
+    }
+  }, [resultsState]);
 
   // initialise griddly, create a session on the server, and
   // then store the session in local state
@@ -170,21 +174,39 @@ const App = () => {
     });
   };
 
-  const uploadTrajectories = async () => {
-    let traj = { ...trajectories };
-    Object.keys(traj).forEach((k) => {
-      traj[k] = traj[k].map((x) => x[1]).join(",");
-    });
-    await api.storeTrajectories(expState.session, traj);
+  const uploadResults = async () => {
+    const trajectories = {};
+    for (let k1 in resultsState.trajectories) {
+      trajectories[k1] = {};
+      for (let k2 in resultsState.trajectories[k1]) {
+        trajectories[k1][k2] = resultsState.trajectories[k1][k2].join(",");
+      }
+    }
+    const sess = {
+      ...expState.session,
+      trajectories: trajectories,
+      finalScore: score,
+      quizResponses: resultsState.quizResponses,
+      textResponses: resultsState.textResponses,
+    };
+    await api.updateSession(sess, () => console.log("updated"), console.error);
   };
 
-  const uploadFinalScore = async () => {
-    await api.storeFinalScore(expState.session, score);
-  };
+  // const uploadTrajectories = async () => {
+  //   let traj = { ...trajectories };
+  //   Object.keys(traj).forEach((k) => {
+  //     traj[k] = traj[k].map((x) => x[1]).join(",");
+  //   });
+  //   await api.storeTrajectories(expState.session, traj);
+  // };
 
-  const uploadFreeTextResponse = async (response) => {
-    await api.storeFreeTextResponse(expState.session, response);
-  };
+  // const uploadFinalScore = async () => {
+  //   await api.storeFinalScore(expState.session, score);
+  // };
+
+  // const uploadFreeTextResponse = async (response) => {
+  //   await api.storeFreeTextResponse(expState.session, response);
+  // };
 
   const isLoading = () => {
     return !(expState.session && gameState.gdy);
@@ -202,7 +224,7 @@ const App = () => {
       <AgentPopup delay={250} />
       {/* <LevelPopup duration={INTER_LEVEL_INTERVAL_MS} delay={250} /> */}
       <QuizModal />
-      <ExperimentCompleteModal submitResponse={uploadFreeTextResponse} />
+      <ExperimentCompleteModal />
     </div>
   );
 };

@@ -27,52 +27,6 @@ func (s Store) CreateSession(experimentID string, isTest bool, context interface
 	return sess, err
 }
 
-func (s Store) StoreTrajectories(sessionID string, trajectories Trajectories) error {
-	// load session file
-	fp := s.GetSessionFilePath(sessionID)
-	var sess Session
-
-	err := ReadStructFromJSON(&sess, fp)
-	if err != nil {
-		return err
-	}
-
-	// write free text response
-	sess.Trajectories = trajectories
-	// re-save session file
-	return WriteStructToJSON(sess, fp)
-}
-
-func (s Store) StoreFreeTextResponse(sessionID string, response string) error {
-	// load session file
-	fp := s.GetSessionFilePath(sessionID)
-	var sess Session
-
-	err := ReadStructFromJSON(&sess, fp)
-	if err != nil {
-		return err
-	}
-
-	// write free text response
-	sess.TextResponses = append(sess.TextResponses, response)
-
-	// re-save session file
-	return WriteStructToJSON(sess, fp)
-}
-
-func (s Store) StoreFinalScore(sessionID string, score int) error {
-	// load session file
-	fp := s.GetSessionFilePath(sessionID)
-	var sess Session
-
-	err := ReadStructFromJSON(&sess, fp)
-	if err != nil {
-		return err
-	}
-
-	// write free text response
-	sess.FinalScore = score
-
-	// re-save session file
-	return WriteStructToJSON(sess, fp)
+func (s Store) UpdateSession(sess Session) error {
+	return WriteStructToJSON(sess, s.DataPath+"sessions/"+sess.ID+".json")
 }

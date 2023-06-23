@@ -145,6 +145,39 @@ export const useStore = create((set) => ({
   setRendererState: (rst) => set(() => ({ rendererState: rst })),
 
   // results state
-  trajectories: {},
-  setTrajectories: (traj) => set(() => ({ trajectories: traj })),
+  resultsState: {
+    trajectories: {},
+    quizResponses: {},
+    textResponses: [],
+  },
+  updateTrajectory: (phaseIdx, levelIdx, step) =>
+    set((state) => {
+      const trajectories = { ...state.resultsState.trajectories };
+      if (!(phaseIdx in trajectories)) {
+        trajectories[phaseIdx] = {};
+      }
+      if (!(levelIdx in trajectories[phaseIdx])) {
+        trajectories[phaseIdx][levelIdx] = [];
+      }
+      trajectories[phaseIdx][levelIdx].push(step);
+      return {
+        resultsState: { ...state.resultsState, trajectories: trajectories },
+      };
+    }),
+  saveQuizResponse: (agent, response) =>
+    set((state) => {
+      const quizResponses = { ...state.resultsState.quizResponses };
+      quizResponses[agent] = response;
+      return {
+        resultsState: { ...state.resultsState, quizResponses: quizResponses },
+      };
+    }),
+  saveTextResponse: (response) =>
+    set((state) => {
+      const resps = [...state.resultsState.textResponses];
+      resps.push(response);
+      return {
+        resultsState: { ...state.resultsState, textResponses: resps },
+      };
+    }),
 }));
