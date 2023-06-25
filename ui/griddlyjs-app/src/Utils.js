@@ -1,3 +1,5 @@
+import { OBJECT_FEATURE_MAP } from "./constants";
+
 export const getValueFromUrlOrLocalstorage = (key) => {
   const params = new URLSearchParams(window.location.search);
   return (
@@ -101,4 +103,131 @@ export const findCompatibleRenderers = (observers, objects) => {
   }
 
   return compatibleRenderers;
+};
+
+const currentPhase = (expState) => {
+  if (!expState || !expState.session || expState.phaseIdx < 0) {
+    return null;
+  }
+
+  return expState.session.phases[expState.phaseIdx];
+};
+
+const currentLevel = (expState) => {
+  const phase = currentPhase(expState);
+  if (!phase) {
+    return null;
+  }
+  return phase.levels[expState.levelIdx];
+};
+
+export const currentLevelId = (expState) => {
+  if (isPlaying(expState)) {
+    const level = currentLevel(expState);
+    return level ? level.id : null;
+  }
+
+  const ar = currentAgentReplay(expState);
+  if (!ar) {
+    return null;
+  }
+
+  return ar.replays[expState.replayIdx].levelId;
+};
+
+export const isPlaying = (expState) => {
+  const ar = currentAgentReplay(expState);
+  if (!ar || expState.replayIdx >= ar.replays.length) {
+    return true;
+  }
+  return false;
+};
+
+export const currentAgentReplay = (expState) => {
+  const phase = currentPhase(expState);
+  if (
+    !phase ||
+    !phase.agentReplays ||
+    phase.agentReplays.length === 0 ||
+    expState.agentIdx >= phase.agentReplays.length
+  ) {
+    return null;
+  }
+  return phase.agentReplays[expState.agentIdx];
+};
+
+export const currentAvatarImg = (expState) => {
+  const phiToColor = (phi) => {
+    if (phi === 0) {
+      return "red";
+    } else if (phi === 1) {
+      return "blue";
+    } else {
+      return "grey";
+    }
+  };
+
+  const ar = currentAgentReplay(expState);
+  if (ar) {
+    return `custom/avatars/avi-${phiToColor(ar.agentPhi)}.png`;
+  }
+
+  return `custom/avatars/avi-${phiToColor(
+    expState.session.conditions.phi
+  )}-smile.png`;
+};
+
+export const currentReplay = (expState) => {
+  const ar = currentAgentReplay(expState);
+  if (!ar) {
+    return null;
+  }
+  return ar.replays[expState.replayIdx];
+};
+
+export const currentStartPos = (expState) => {
+  const replay = currentReplay(expState);
+  if (replay) {
+    return replay.startPos;
+  }
+  const level = currentLevel(expState);
+  if (level && level.startPos) {
+    return level.startPos;
+  }
+  return { x: 3, y: 3 };
+};
+
+export const shouldHideGoals = (expState) => {
+  const phase = currentPhase(expState);
+  if (!phase) {
+    return false;
+  }
+  return phase.objectsHidden;
+};
+
+export const currentAgentName = (expState) => {
+  const ar = currentAgentReplay(expState);
+  if (!ar) {
+    return "you";
+  }
+  return ar.agentName;
+};
+
+export const getLevelImage = (expState) => {
+  const phase = currentPhase(expState);
+  const levelId = currentLevelId(expState);
+  if (phase === null || levelId === null) {
+    return "";
+  }
+  const fn = phase.objectsHidden ? "mystery" : levelId;
+  return `resources/images/custom/levels/${fn}.png`;
+};
+
+export const itemReward = (itemName, thetas) => {
+  const x = OBJECT_FEATURE_MAP[itemName];
+  let r = 0;
+  for (let i = 0; i < x.length; i++) {
+    r += thetas[i][x[i]];
+  }
+  return r;
 };

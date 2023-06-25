@@ -29,15 +29,13 @@ export const getSession = async (id, callback, onError) => {
 
 export const createSession = async (
   experimentId,
-  humanId,
   context,
   callback,
   onError
 ) => {
   post("session", {
     experimentId,
-    humanId,
-    isTest: false,
+    isTest: true,
     context,
   })
     .then((response) => {
@@ -46,8 +44,16 @@ export const createSession = async (
     .catch((e) => onError(e));
 };
 
-export const loadGameSpec = async (session, callback, onError) => {
-  get(`game?id=${session.gameId}`)
+export const updateSession = async (session, callback, onError) => {
+  post("update-session", session)
+    .then((response) => {
+      callback();
+    })
+    .catch((e) => onError(e));
+};
+
+export const loadGameSpec = async (specName, callback, onError) => {
+  get(`game?id=${specName}`)
     .then((response) => {
       callback(yaml.load(response.data));
     })

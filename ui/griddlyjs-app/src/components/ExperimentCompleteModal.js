@@ -1,40 +1,27 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 
-import { Modal } from "./Modal";
+import { useStore } from "../store";
+import { Modal } from "./core/Modal";
 
 const PROLIFIC_CODE = "CAL3DWSD";
 
-const ExperimentCompleteModal = ({
-  session,
-  visible,
-  score,
-  submitResponse,
-}) => {
+const ExperimentCompleteModal = () => {
+  const show = useStore((state) => state.uiState.showFinishedScreen);
+  const score = useStore((state) => state.score);
+  const saveTextResponse = useStore((state) => state.saveTextResponse);
+
   const [screenIdx, setScreenIdx] = useState(0);
   const [response, setResponse] = useState("");
 
   const onSubmitClicked = () => {
-    submitResponse(response);
+    saveTextResponse(response);
     setScreenIdx(1);
   };
 
   const onCopyCodeClicked = async () => {
     await navigator.clipboard.writeText(PROLIFIC_CODE);
   };
-
-  const questions =
-    session.agentIds.length === 2
-      ? [
-          "In the early levels (1-2), did you learn anything about the red and blue aliens from watching them?",
-          "In the dark levels (3-4), how did you decide which way to go?",
-          "In the last two levels (5-6) where the gems were unknown, how did you decide which one to collect?",
-        ]
-      : [
-          "In the early levels (1-2), did you learn anything about the red and blue aliens from watching them?",
-          "What about the yellow and pink aliens in levels 3-4?",
-          "In the last two levels (5-6), how did you decide which gem to collect?",
-        ];
 
   const content = [
     {
@@ -43,16 +30,11 @@ const ExperimentCompleteModal = ({
         <>
           <p>
             <b>
-              Please write a brief description (minimum 100 characters) of how
-              you decided what actions to take in the game. Consider the
-              following questions:
+              Please write a brief response (minimum 100 characters) to the
+              following question: how did you choose which of the mystery boxes
+              to collect in phase 3 and phase 5?
             </b>{" "}
           </p>
-          <ul>
-            {questions.map((q, i) => (
-              <li key={i}>{q}</li>
-            ))}
-          </ul>
           <textarea rows="5" onChange={(e) => setResponse(e.target.value)} />
         </>
       ),
@@ -80,7 +62,7 @@ const ExperimentCompleteModal = ({
 
   return (
     <Modal
-      open={visible}
+      open={show}
       className="experiment-complete-modal"
       key="experiment-complete-modal"
     >

@@ -1,0 +1,270 @@
+Version: '0.1'
+Environment:
+  Name: Blank
+  Description: >-
+    A template GDY environment where a block can move around and collect green
+    stuff
+  Observers:
+    Sprite2D:
+      TileSize: 60
+      BackgroundTile: custom/items/tile.png
+    Block2D:
+      TileSize: 60
+  Player:
+    Count: 1
+    Observer:
+      RotateWithAvatar: true
+      TrackAvatar: true
+      Height: 5
+      Width: 5
+      OffsetX: 0
+      OffsetY: 0
+    AvatarObject: player
+  Variables:
+    - Name: collected
+      InitialValue: 0
+    - Name: dead
+      InitialValue: 0
+  Termination:
+    Win:
+      - eq:
+          - collected
+          - 1
+    End:
+      - eq:
+          - dead
+          - 1
+  Levels:
+    - |
+      p   .   .   .   .   .   .   
+      .   .   .   .   .   .   .   
+      .   .   .   .   .   .   .   
+      .   .   .   .   .   .   .   
+      .   .   .   .   .   .   .   
+      .   .   .   .   .   .   .   
+      .   .   .   .   .   .   A
+    - |
+      B   .   .   .   .   .   .   
+      .   .   .   .   .   .   .   
+      .   .   .   .   .   .   .   
+      .   .   .   .   .   .   .   
+      .   .   .   .   .   .   .   
+      .   .   .   .   .   .   .   
+      .   .   .   .   .   .   p
+    - |
+      p   .   .   .   .   .   .   
+      .   .   .   .   .   .   .   
+      .   .   .   .   .   .   .   
+      .   .   .   .   .   .   .   
+      .   .   .   .   .   .   .   
+      .   .   .   .   .   .   .   
+      .   .   .   .   .   .   C
+    - |
+      D   .   .   .   .   .   .   
+      .   .   .   .   .   .   .   
+      .   .   .   .   .   .   .   
+      .   .   .   .   .   .   .   
+      .   .   .   .   .   .   .   
+      .   .   .   .   .   .   .   
+      .   .   .   .   .   .   p
+    - |
+      A   .   .   .   .   .   .   
+      .   .   .   .   .   .   .   
+      .   .   .   .   .   .   .   
+      .   .   .   p   .   .   .   
+      .   .   .   .   .   .   .   
+      .   .   .   .   .   .   .   
+      .   .   .   .   .   .   B
+    - |
+      B   .   .   .   .   .   .   
+      .   .   .   .   .   .   .   
+      .   .   .   .   .   .   .   
+      .   .   .   p   .   .   .   
+      .   .   .   .   .   .   .   
+      .   .   .   .   .   .   .   
+      .   .   .   .   .   .   A
+    - |
+      C   .   .   .   .   .   .   
+      .   .   .   .   .   .   .   
+      .   .   .   .   .   .   .   
+      .   .   .   p   .   .   .   
+      .   .   .   .   .   .   .   
+      .   .   .   .   .   .   .   
+      .   .   .   .   .   .   D
+    - |
+      D   .   .   .   .   .   .   
+      .   .   .   .   .   .   .   
+      .   .   .   .   .   .   .   
+      .   .   .   p   .   .   .   
+      .   .   .   .   .   .   .   
+      .   .   .   .   .   .   .   
+      .   .   .   .   .   .   C
+    - |
+      A   .   .   .   .   .   .   
+      .   .   .   .   .   .   .   
+      .   .   .   .   .   .   .   
+      .   .   .   p   .   .   .   
+      .   .   .   .   .   .   .   
+      .   .   .   .   .   .   .   
+      .   .   .   .   .   .   C
+    - |
+      C   .   .   .   .   .   .   
+      .   .   .   .   .   .   .   
+      .   .   .   .   .   .   .   
+      .   .   .   p   .   .   .   
+      .   .   .   .   .   .   .   
+      .   .   .   .   .   .   .   
+      .   .   .   .   .   .   A
+    - |
+      B   .   .   .   .   .   .   
+      .   .   .   .   .   .   .   
+      .   .   .   .   .   .   .   
+      .   .   .   p   .   .   .   
+      .   .   .   .   .   .   .   
+      .   .   .   .   .   .   .   
+      .   .   .   .   .   .   D
+    - |
+      D   .   .   .   .   .   .   
+      .   .   .   .   .   .   .   
+      .   .   .   .   .   .   .   
+      .   .   .   p   .   .   .   
+      .   .   .   .   .   .   .   
+      .   .   .   .   .   .   .   
+      .   .   .   .   .   .   B
+    - |
+      A   .   .   .   .   p   .   .   .   .   B   
+    - |
+      A   
+      .   
+      .   
+      .   
+      .   
+      p   
+      .   
+      .   
+      .   
+      .   
+      B   
+Actions:
+  - Name: move
+    Behaviours:
+      - Src:
+          Object: player
+          Commands:
+            - mov: _dest
+            - reward: -1
+        Dst:
+          Object: _empty
+      - Src:
+          Object: player
+          Commands:
+            - mov: _dest
+        Dst:
+          Object: fog
+      - Src:
+          Object: player
+          Commands:
+            - mov: _dest
+            - reward: 1
+        Dst:
+          Object: goalA
+          Commands:
+            - remove: true
+            - set: [ collected, 1 ]
+      - Src:
+          Object: player
+          Commands:
+            - mov: _dest
+            - reward: 1
+        Dst:
+          Object: goalB
+          Commands:
+            - remove: true
+            - set: [ collected, 1 ]
+      - Src:
+          Object: player
+          Commands:
+            - mov: _dest
+            - reward: 1
+        Dst:
+          Object: goalC
+          Commands:
+            - remove: true
+            - set: [ collected, 1 ]
+      - Src:
+          Object: player
+          Commands:
+            - mov: _dest
+            - reward: 1
+        Dst:
+          Object: goalD
+          Commands:
+            - remove: true
+            - set: [ collected, 1 ]
+Objects:
+  - Name: player
+    Z: 2
+    MapCharacter: p
+    Observers:
+      Sprite2D:
+        - Image: custom/avatars/avi-grey.png
+  - Name: ocean
+    MapCharacter: o
+    Observers:
+      Sprite2D:
+        - Image: sprite2d/water.png
+  - Name: wall
+    MapCharacter: w
+    Observers:
+      Sprite2D:
+        - TilingMode: WALL_16
+          Image:
+            - gvgai/oryx/wall3_0.png
+            - gvgai/oryx/wall3_1.png
+            - gvgai/oryx/wall3_2.png
+            - gvgai/oryx/wall3_3.png
+            - gvgai/oryx/wall3_4.png
+            - gvgai/oryx/wall3_5.png
+            - gvgai/oryx/wall3_6.png
+            - gvgai/oryx/wall3_7.png
+            - gvgai/oryx/wall3_8.png
+            - gvgai/oryx/wall3_9.png
+            - gvgai/oryx/wall3_10.png
+            - gvgai/oryx/wall3_11.png
+            - gvgai/oryx/wall3_12.png
+            - gvgai/oryx/wall3_13.png
+            - gvgai/oryx/wall3_14.png
+            - gvgai/oryx/wall3_15.png
+      Block2D:
+        - Shape: triangle
+          Color:
+            - 0.6
+            - 0.6
+            - 0.6
+          Scale: 0.9
+  - Name: goalA
+    MapCharacter: A
+    Observers:
+      Sprite2D:
+        - Image: custom/items/goalA.png
+  - Name: goalB
+    MapCharacter: B
+    Observers:
+      Sprite2D:
+        - Image: custom/items/goalB.png
+  - Name: goalC
+    MapCharacter: C
+    Observers:
+      Sprite2D:
+        - Image: custom/items/goalC.png
+  - Name: goalD
+    MapCharacter: D
+    Observers:
+      Sprite2D:
+        - Image: custom/items/goalD.png
+  - Name: fog
+    MapCharacter: F
+    Z: 10
+    Observers:
+      Sprite2D:
+        - Image: gvgai/oryx/space1.png

@@ -5,6 +5,6 @@ import (
 )
 
 func main() {
-	s := CreateServer()
+	s := CreateServer(8100)
 	log.Fatal(s.ListenAndServe())
 }
