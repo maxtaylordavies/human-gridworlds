@@ -45,6 +45,7 @@ class Player extends Component {
         onTrajectoryStep: this.props.onTrajectoryStep,
         onPlayerPosChange: this.props.onPlayerPosChange,
         onReward: this.props.onReward,
+        onGoalReached: this.props.onGoalReached,
         onLevelComplete: this.props.onLevelComplete,
         trajectoryString: this.props.trajectoryString,
         startPos: this.props.startPos,
@@ -52,6 +53,7 @@ class Player extends Component {
         onPlaybackEnd: this.props.onPlaybackEnd,
         beforePlaybackMs: this.props.beforePlaybackMs,
         stepIntervalMs: this.props.stepIntervalMs,
+        disableInput: this.props.disableInput,
       });
     }
   }
@@ -68,7 +70,8 @@ class Player extends Component {
         !this.posEqual(prevProps.startPos, this.props.startPos) ||
         prevProps.waitToBeginPlayback !== this.props.waitToBeginPlayback ||
         prevProps.beforePlaybackMs !== this.props.beforePlaybackMs ||
-        prevProps.stepIntervalMs !== this.props.stepIntervalMs
+        prevProps.stepIntervalMs !== this.props.stepIntervalMs ||
+        prevProps.disableInput !== this.props.disableInput
       ) {
         this.game.scene.getScene("PlayerScene").scene.restart({
           gdy: this.props.gdy,
@@ -80,6 +83,7 @@ class Player extends Component {
           onTrajectoryStep: this.props.onTrajectoryStep,
           onPlayerPosChange: this.props.onPlayerPosChange,
           onReward: this.props.onReward,
+          onGoalReached: this.props.onGoalReached,
           onLevelComplete: this.props.onLevelComplete,
           trajectoryString: this.props.trajectoryString,
           startPos: this.props.startPos,
@@ -87,6 +91,7 @@ class Player extends Component {
           onPlaybackEnd: this.props.onPlaybackEnd,
           beforePlaybackMs: this.props.beforePlaybackMs,
           stepIntervalMs: this.props.stepIntervalMs,
+          disableInput: this.props.disableInput,
         });
       }
     }

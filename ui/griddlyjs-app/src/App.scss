@@ -363,30 +363,63 @@
 
 .score-popup {
   position: absolute;
-  left: 320px;
-  color: white;
-  font-size: 20px;
-  font-weight: bold;
+  left: 240px;
+  top: 250px;
+  background-color: white;
   border-radius: 10px;
-  width: 160px;
-  height: 55px;
+  border: 2px solid black;
+  width: 320px;
+  height: 80px;
+  padding: 15px;
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
-  z-index: 1;
+  z-index: 100;
+
+  .score-popup-score {
+    display: flex;
+    align-items: center;
+
+    img {
+      margin-right: 7px;
+    }
+  }
+
+  .score-popup-score.high {
+    color: black;
+    font-weight: bold;
+    font-size: 26px;
+  }
+
+  .score-popup-score.medium {
+    color: #7f7f7f;
+    font-weight: normal;
+    font-size: 22px;
+  }
+
+  button {
+    width: 70px;
+    height: 30px;
+    border-radius: 20px;
+    font-size: 16px;
+    font-weight: 600;
+    background-color: black;
+    color: white;
+    border: none;
+  }
 }
 
-.score-popup.high {
-  background: #00C14D;
-}
+// .score-popup.high {
+//   background: #00C14D;
+// }
 
-.score-popup.medium {
- background: #FF9900; 
-}
+// .score-popup.medium {
+//  background: #FF9900; 
+// }
 
-.score-popup.low {
-  background: #FF0000;
-}
+// .score-popup.low {
+//   background: #FF0000;
+// }
 
 .button-panel {
   text-align: left;

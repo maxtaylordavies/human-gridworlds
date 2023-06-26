@@ -6,9 +6,9 @@ import { Modal } from "./core/Modal";
 import * as utils from "../utils";
 
 const QuizModal = () => {
-  const [uiState, setUIState] = useStore((state) => [
+  const [uiState, setUiState] = useStore((state) => [
     state.uiState,
-    state.setUIState,
+    state.setUiState,
   ]);
   const expState = useStore((state) => state.expState);
   const saveQuizResponse = useStore((state) => state.saveQuizResponse);
@@ -50,7 +50,7 @@ const QuizModal = () => {
     setShowIfCorrect(checkAnswers);
     setTimeout(() => {
       if (!checkAnswers || selected.every((s, i) => s === expected[i])) {
-        setUIState({ ...uiState, showQuiz: false });
+        setUiState({ ...uiState, showQuiz: false });
       }
       setSelected([-1, -1]);
       setShowIfCorrect(false);
@@ -58,7 +58,10 @@ const QuizModal = () => {
   };
 
   return (
-    <Modal open={uiState.showQuiz} className="quiz-modal">
+    <Modal
+      open={uiState.showQuiz && !uiState.showScorePopup}
+      className="quiz-modal"
+    >
       <div className="quiz-modal-title">Quiz: {name}</div>
       <div className="quiz-modal-body">
         <div className="quiz-modal-text">

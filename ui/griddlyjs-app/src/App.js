@@ -16,10 +16,7 @@ import "./App.scss";
 
 const App = () => {
   // get state from zustand store
-  const [uiState, setUIState] = useStore((state) => [
-    state.uiState,
-    state.setUIState,
-  ]);
+  const uiState = useStore((state) => state.uiState);
   const [expState, setExpState] = useStore((state) => [
     state.expState,
     state.setExpState,
@@ -28,11 +25,7 @@ const App = () => {
     state.gameState,
     state.setGameState,
   ]);
-  const score = useStore((state) => state.score);
-  const [rendererState, setRendererState] = useStore((state) => [
-    state.rendererState,
-    state.setRendererState,
-  ]);
+  const setRendererState = useStore((state) => state.setRendererState);
   const resultsState = useStore((state) => state.resultsState);
 
   // create and initialise an instance of the GriddlyJS core
@@ -185,28 +178,12 @@ const App = () => {
     const sess = {
       ...expState.session,
       trajectories: trajectories,
-      finalScore: score,
+      finalScore: gameState.score,
       quizResponses: resultsState.quizResponses,
       textResponses: resultsState.textResponses,
     };
-    await api.updateSession(sess, () => console.log("updated"), console.error);
+    await api.updateSession(sess, () => {}, console.error);
   };
-
-  // const uploadTrajectories = async () => {
-  //   let traj = { ...trajectories };
-  //   Object.keys(traj).forEach((k) => {
-  //     traj[k] = traj[k].map((x) => x[1]).join(",");
-  //   });
-  //   await api.storeTrajectories(expState.session, traj);
-  // };
-
-  // const uploadFinalScore = async () => {
-  //   await api.storeFinalScore(expState.session, score);
-  // };
-
-  // const uploadFreeTextResponse = async (response) => {
-  //   await api.storeFreeTextResponse(expState.session, response);
-  // };
 
   const isLoading = () => {
     return !(expState.session && gameState.gdy);
@@ -222,7 +199,6 @@ const App = () => {
       <InitialInstructions />
       <PhaseInstructions />
       <AgentPopup delay={250} />
-      {/* <LevelPopup duration={INTER_LEVEL_INTERVAL_MS} delay={250} /> */}
       <QuizModal />
       <ExperimentCompleteModal />
     </div>

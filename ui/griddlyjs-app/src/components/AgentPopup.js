@@ -7,9 +7,9 @@ import { DelayButton } from "./core/DelayButton";
 import * as utils from "../utils";
 
 const AgentPopup = ({ delay }) => {
-  const [uiState, setUIState] = useStore((state) => [
+  const [uiState, setUiState] = useStore((state) => [
     state.uiState,
-    state.setUIState,
+    state.setUiState,
   ]);
   const expState = useStore((state) => state.expState);
 
@@ -36,7 +36,7 @@ const AgentPopup = ({ delay }) => {
   }, [uiState, expState]);
 
   const onProceedClicked = () => {
-    setUIState({ ...uiState, showAgentPopup: false });
+    setUiState({ ...uiState, showAgentPopup: false });
   };
 
   return (

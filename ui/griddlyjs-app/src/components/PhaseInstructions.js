@@ -178,9 +178,9 @@ const phaseInstructionsContent = [
 ];
 
 const PhaseInstructions = () => {
-  const [uiState, setUIState] = useStore((state) => [
+  const [uiState, setUiState] = useStore((state) => [
     state.uiState,
-    state.setUIState,
+    state.setUiState,
   ]);
   const expState = useStore((state) => state.expState);
 
@@ -199,7 +199,7 @@ const PhaseInstructions = () => {
   }, [uiState.showPhaseInstructions]);
 
   const onFinish = () => {
-    setUIState({ ...uiState, showPhaseInstructions: false });
+    setUiState({ ...uiState, showPhaseInstructions: false });
   };
 
   const generateContentProp = () => {

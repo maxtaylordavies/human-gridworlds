@@ -105,7 +105,7 @@ export const findCompatibleRenderers = (observers, objects) => {
   return compatibleRenderers;
 };
 
-const currentPhase = (expState) => {
+export const currentPhase = (expState) => {
   if (!expState || !expState.session || expState.phaseIdx < 0) {
     return null;
   }
@@ -113,7 +113,7 @@ const currentPhase = (expState) => {
   return expState.session.phases[expState.phaseIdx];
 };
 
-const currentLevel = (expState) => {
+export const currentLevel = (expState) => {
   const phase = currentPhase(expState);
   if (!phase) {
     return null;
@@ -194,7 +194,7 @@ export const currentStartPos = (expState) => {
   if (level && level.startPos) {
     return level.startPos;
   }
-  return { x: 3, y: 3 };
+  return null;
 };
 
 export const shouldHideGoals = (expState) => {

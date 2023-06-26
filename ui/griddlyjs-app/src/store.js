@@ -7,10 +7,10 @@ export const useStore = create((set) => ({
     showPhaseInstructions: false,
     showQuiz: false,
     showAgentPopup: false,
-    showLevelPopup: false,
+    showScorePopup: false,
     showFinishedScreen: false,
   },
-  setUIState: (uist) =>
+  setUiState: (uist) =>
     set((state) => {
       // if showInitialInstructions is being set to false, set showPhaseInstructions to true
       if (
@@ -122,17 +122,30 @@ export const useStore = create((set) => ({
     gdyString: "",
     playing: true,
     agentPos: { x: 0, y: 0 },
+    score: 50,
+    lastGoalReached: null,
   },
   setGameState: (gst) =>
     set(() => {
       return { gameState: gst };
     }),
-  score: 50,
   updateScore: (delta) =>
     set((state) => {
-      const newScore = state.score + delta;
+      const newScore = state.gameState.score + delta;
       return {
-        score: newScore,
+        gameState: { ...state.gameState, score: newScore },
+      };
+    }),
+  updateAgentPos: (pos) =>
+    set((state) => {
+      return {
+        gameState: { ...state.gameState, agentPos: pos },
+      };
+    }),
+  updateLastGoalReached: (goal) =>
+    set((state) => {
+      return {
+        gameState: { ...state.gameState, lastGoalReached: goal },
       };
     }),
 
