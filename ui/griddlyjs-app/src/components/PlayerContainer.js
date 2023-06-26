@@ -6,6 +6,7 @@ import * as utils from "../utils";
 import { INTER_STEP_INTERVAL_MS, INTER_SCENE_INTERVAL_MS } from "../constants";
 import Player from "../renderer/Player";
 import InfoBar from "./InfoBar";
+import RewardHistory from "./RewardHistory";
 import ScorePopup from "./ScorePopup";
 
 const PlayerContainer = ({ griddlyjs }) => {
@@ -17,9 +18,7 @@ const PlayerContainer = ({ griddlyjs }) => {
   const gameState = useStore((state) => state.gameState);
   const updateScore = useStore((state) => state.updateScore);
   const updateAgentPos = useStore((state) => state.updateAgentPos);
-  const updateLastGoalReached = useStore(
-    (state) => state.updateLastGoalReached
-  );
+  const updateItemHistory = useStore((state) => state.updateItemHistory);
   const rendererState = useStore((state) => state.rendererState);
   const updateTrajectory = useStore((state) => state.updateTrajectory);
 
@@ -74,45 +73,49 @@ const PlayerContainer = ({ griddlyjs }) => {
         initial={{ opacity: 0 }}
         animate={{ opacity }}
         transition={{ duration: 0.1 }}
+        style={{ display: "flex" }}
       >
-        <InfoBar />
         <div>
-          <div
-            className="name-badge"
-            style={{
-              left: nameBadgePos.left,
-              top: nameBadgePos.top,
-            }}
-          >
-            {utils.currentAgentName(expState)}
+          <InfoBar />
+          <div>
+            <div
+              className="name-badge"
+              style={{
+                left: nameBadgePos.left,
+                top: nameBadgePos.top,
+              }}
+            >
+              {utils.currentAgentName(expState)}
+            </div>
+            <Player
+              gdyHash={gameState.gdyHash}
+              gdy={gameState.gdy}
+              levelId={utils.currentLevelId(expState)}
+              avatarPath={utils.currentAvatarImg(expState)}
+              hideGoals={utils.shouldHideGoals(expState)}
+              griddlyjs={griddlyjs}
+              rendererState={rendererState}
+              onTrajectoryStep={onTrajectoryStep}
+              onPlayerPosChange={updateAgentPos}
+              onReward={updateScore}
+              onGoalReached={updateItemHistory}
+              onLevelComplete={onLevelComplete}
+              trajectoryString={replay?.trajectory || ""}
+              startPos={utils.currentStartPos(expState)}
+              waitToBeginPlayback={
+                uiState.showPhaseInstructions ||
+                uiState.showAgentPopup ||
+                uiState.showQuiz ||
+                uiState.showScorePopup
+              }
+              onPlaybackEnd={onPlaybackEnd}
+              beforePlaybackMs={INTER_SCENE_INTERVAL_MS}
+              stepIntervalMs={replay?.stepInterval || INTER_STEP_INTERVAL_MS}
+              disableInput={uiState.showScorePopup || replay !== null}
+            />
           </div>
-          <Player
-            gdyHash={gameState.gdyHash}
-            gdy={gameState.gdy}
-            levelId={utils.currentLevelId(expState)}
-            avatarPath={utils.currentAvatarImg(expState)}
-            hideGoals={utils.shouldHideGoals(expState)}
-            griddlyjs={griddlyjs}
-            rendererState={rendererState}
-            onTrajectoryStep={onTrajectoryStep}
-            onPlayerPosChange={updateAgentPos}
-            onReward={updateScore}
-            onGoalReached={updateLastGoalReached}
-            onLevelComplete={onLevelComplete}
-            trajectoryString={replay?.trajectory || ""}
-            startPos={utils.currentStartPos(expState)}
-            waitToBeginPlayback={
-              uiState.showPhaseInstructions ||
-              uiState.showAgentPopup ||
-              uiState.showQuiz ||
-              uiState.showScorePopup
-            }
-            onPlaybackEnd={onPlaybackEnd}
-            beforePlaybackMs={INTER_SCENE_INTERVAL_MS}
-            stepIntervalMs={replay?.stepInterval || INTER_STEP_INTERVAL_MS}
-            disableInput={uiState.showScorePopup || replay !== null}
-          />
         </div>
+        <RewardHistory />
       </motion.div>
     </motion.div>
   );

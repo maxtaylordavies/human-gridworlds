@@ -1,5 +1,7 @@
 import { create } from "zustand";
 
+import * as utils from "./utils";
+
 export const useStore = create((set) => ({
   // general UI state
   uiState: {
@@ -123,7 +125,9 @@ export const useStore = create((set) => ({
     playing: true,
     agentPos: { x: 0, y: 0 },
     score: 50,
-    lastGoalReached: null,
+    rewardHistory: [],
+    itemHistory: [],
+    agentHistory: [],
   },
   setGameState: (gst) =>
     set(() => {
@@ -132,8 +136,22 @@ export const useStore = create((set) => ({
   updateScore: (delta) =>
     set((state) => {
       const newScore = state.gameState.score + delta;
+      const rh = [...state.gameState.rewardHistory];
+      const ah = [...state.gameState.agentHistory];
+      if (delta > 0) {
+        rh.push(delta);
+        ah.push({
+          name: utils.currentAgentName(state.expState),
+          color: utils.currentAgentColor(state.expState),
+        });
+      }
       return {
-        gameState: { ...state.gameState, score: newScore },
+        gameState: {
+          ...state.gameState,
+          score: newScore,
+          rewardHistory: rh,
+          agentHistory: ah,
+        },
       };
     }),
   updateAgentPos: (pos) =>
@@ -142,10 +160,13 @@ export const useStore = create((set) => ({
         gameState: { ...state.gameState, agentPos: pos },
       };
     }),
-  updateLastGoalReached: (goal) =>
+  updateItemHistory: (item) =>
     set((state) => {
       return {
-        gameState: { ...state.gameState, lastGoalReached: goal },
+        gameState: {
+          ...state.gameState,
+          itemHistory: [...state.gameState.itemHistory, item],
+        },
       };
     }),
 

@@ -15,27 +15,34 @@ const ScorePopup = () => {
   ]);
 
   const [show, setShow] = useState(false);
-  const [prevScore, setPrevScore] = useState(gameState.score);
-  const [delta, setDelta] = useState(0);
 
   useEffect(() => {
-    const delta = gameState.score - prevScore;
-    setDelta(delta);
-    setPrevScore(gameState.score);
-
-    if (delta > 0) {
+    if (gameState.playing && gameState.rewardHistory.length > 0) {
       setUiState({ ...uiState, showScorePopup: true });
     }
-  }, [gameState.score]);
+  }, [gameState.rewardHistory.length]);
 
   useEffect(() => {
-    if (!uiState.showScorePopup) {
-      setDelta(0);
-    }
-
     const phase = utils.currentPhase(expState);
     setShow(uiState.showScorePopup && phase && !phase.objectsHidden);
   }, [uiState.showScorePopup, expState]);
+
+  const reward = () => {
+    if (gameState.rewardHistory.length === 0) {
+      return 0;
+    }
+    return gameState.rewardHistory[gameState.rewardHistory.length - 1];
+  };
+
+  const item = () => {
+    if (gameState.itemHistory.length === 0) {
+      return "";
+    }
+    return gameState.itemHistory[gameState.itemHistory.length - 1];
+  };
+
+  const _reward = reward();
+  const _item = item();
 
   return (
     <Modal
@@ -44,12 +51,9 @@ const ScorePopup = () => {
       open={show}
       scoreHidden={uiState.scoreHidden}
     >
-      <div className={`score-popup-score ${delta > 10 ? "high" : "medium"}`}>
-        <img
-          src={`resources/images/custom/items/${gameState.lastGoalReached}.png`}
-          width={50}
-        />
-        = {delta} points
+      <div className={`score-popup-score ${_reward > 10 ? "high" : "medium"}`}>
+        <img src={`resources/images/custom/items/${_item}.png`} width={50} />={" "}
+        {_reward} points
       </div>
       <motion.button
         onClick={() => setUiState({ ...uiState, showScorePopup: false })}

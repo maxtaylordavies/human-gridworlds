@@ -381,6 +381,8 @@ export class PlayerScene extends Phaser.Scene {
       const action =
         this.currentTrajectoryBuffer.steps[this.trajectoryActionIdx++];
       const stepResult = this.griddlyjs.step(action);
+      this.onReward(+stepResult.reward);
+
       this.currentState = this.griddlyjs.getState();
 
       if (
