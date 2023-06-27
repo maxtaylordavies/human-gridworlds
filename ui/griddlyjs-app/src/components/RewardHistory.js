@@ -35,7 +35,8 @@ const RewardHistory = () => {
                   style={{ marginRight: 5 }}
                   width={30}
                 />
-                {h.agent.name === "you" && `(${h.reward} points)`}
+                {h.agent.name === "you" &&
+                  `(${h.item === "mystery-box" ? "?" : h.reward} points)`}
               </div>
             </div>
           );

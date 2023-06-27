@@ -162,6 +162,9 @@ export const useStore = create((set) => ({
     }),
   updateItemHistory: (item) =>
     set((state) => {
+      if (utils.shouldHideGoals(state.expState)) {
+        item = "mystery-box";
+      }
       return {
         gameState: {
           ...state.gameState,

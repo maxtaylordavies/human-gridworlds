@@ -14,18 +14,17 @@ const ScorePopup = () => {
     state.setUiState,
   ]);
 
-  const [show, setShow] = useState(false);
-
   useEffect(() => {
-    if (gameState.playing && gameState.rewardHistory.length > 0) {
+    const phase = utils.currentPhase(expState);
+    if (
+      phase &&
+      gameState.playing &&
+      gameState.rewardHistory.length > 0 &&
+      !phase.objectsHidden
+    ) {
       setUiState({ ...uiState, showScorePopup: true });
     }
   }, [gameState.rewardHistory.length]);
-
-  useEffect(() => {
-    const phase = utils.currentPhase(expState);
-    setShow(uiState.showScorePopup && phase && !phase.objectsHidden);
-  }, [uiState.showScorePopup, expState]);
 
   const reward = () => {
     if (gameState.rewardHistory.length === 0) {
@@ -48,7 +47,7 @@ const ScorePopup = () => {
     <Modal
       key="score-popup"
       className="score-popup"
-      open={show}
+      open={uiState.showScorePopup}
       scoreHidden={uiState.scoreHidden}
     >
       <div className={`score-popup-score ${_reward > 10 ? "high" : "medium"}`}>
