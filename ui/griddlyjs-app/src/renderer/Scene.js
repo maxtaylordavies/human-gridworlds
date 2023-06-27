@@ -40,13 +40,14 @@ export class PlayerScene extends Phaser.Scene {
 
       this.waitToBeginPlayback = data.waitToBeginPlayback;
       this.beforePlaybackMs = data.beforePlaybackMs;
+      this.afterPlaybackMs = data.afterPlaybackMs;
       this.stepIntervalMs = data.stepIntervalMs;
       this.disableInput = data.disableInput;
 
       this.onTrajectoryStep = data.onTrajectoryStep;
       this.onPlayerPosChange = data.onPlayerPosChange;
       this.onReward = data.onReward;
-      this.onGoalReached = data.onGoalReached;
+      this.onGoalReachedCallback = data.onGoalReached;
       this.onLevelComplete = data.onLevelComplete;
       this.onPlaybackEnd = data.onPlaybackEnd;
 
@@ -115,6 +116,13 @@ export class PlayerScene extends Phaser.Scene {
     console.warn(message, error);
   };
 
+  updateAvatar = (avatarPath) => {
+    this.gdy.Objects[0].Observers.Sprite2D[0].Image = avatarPath;
+    if (this.grenderer) {
+      this.grenderer.loadTemplates([this.gdy.Objects[0]]);
+    }
+  };
+
   setPlayerPosAndImage = () => {
     let rows;
 
@@ -152,11 +160,75 @@ export class PlayerScene extends Phaser.Scene {
     }
 
     // update the avatar image
-    this.gdy.Objects[0].Observers.Sprite2D[0].Image = this.avatarPath;
+    this.updateAvatar(this.avatarPath);
+  };
+
+  _addObject = (object) => {
+    this._removeObject(object.id);
+
+    const objectTemplateName = object.name + object.renderTileId;
+    const sprite = this.grenderer.addObject(
+      object.name,
+      objectTemplateName,
+      object.location.x,
+      object.location.y,
+      object.orientation
+    );
+
+    this.renderData.objects[object.id] = {
+      object,
+      sprite,
+    };
+  };
+
+  _updateObject = (object) => {
+    const objectTemplateName = object.name + object.renderTileId;
+    const currentObjectData = this.renderData.objects[object.id];
+
+    this.grenderer.updateObject(
+      currentObjectData.sprite,
+      object.name,
+      objectTemplateName,
+      object.location.x,
+      object.location.y,
+      object.orientation
+    );
+
+    this.renderData.objects[object.id] = {
+      ...currentObjectData,
+      object,
+    };
+  };
+
+  _removeObject = (id) => {
+    if (id in this.renderData.objects) {
+      this.renderData.objects[id].sprite.destroy();
+      delete this.renderData.objects[id];
+    }
   };
 
   updateState = (state) => {
     state = this.computeOcclusions(state);
+
+    state.objects.forEach((object, i) => {
+      if (object.name === "player") {
+        this.onPlayerPosChange(object.location);
+
+        let goalReached = "";
+        for (const k in this.goalLocations) {
+          const loc = this.goalLocations[k];
+          if (loc.x === object.location.x && loc.y === object.location.y) {
+            goalReached = k;
+          }
+        }
+
+        if (goalReached) {
+          this.onGoalReachedCallback(goalReached);
+        }
+      } else if (object.name.startsWith("goal")) {
+        this.goalLocations[object.name] = object.location;
+      }
+    });
 
     const newObjectIds = state.objects.map((object) => {
       return object.id;
@@ -169,60 +241,18 @@ export class PlayerScene extends Phaser.Scene {
 
     this.grenderer.beginUpdate(state.objects);
 
-    state.objects.forEach((object) => {
-      if (object.name === "player") {
-        this.onPlayerPosChange(object.location);
-
-        for (const k in this.goalLocations) {
-          const loc = this.goalLocations[k];
-          if (loc.x === object.location.x && loc.y === object.location.y) {
-            this.onGoalReached(k);
-          }
-        }
-      }
-
-      if (object.name.startsWith("goal")) {
-        this.goalLocations[object.name] = object.location;
-      }
-
-      const objectTemplateName = object.name + object.renderTileId;
+    state.objects.forEach((object, i) => {
       if (object.id in this.renderData.objects) {
-        const currentObjectData = this.renderData.objects[object.id];
-
-        this.grenderer.updateObject(
-          currentObjectData.sprite,
-          object.name,
-          objectTemplateName,
-          object.location.x,
-          object.location.y,
-          object.orientation
-        );
-
-        this.renderData.objects[object.id] = {
-          ...currentObjectData,
-          object,
-        };
+        this._updateObject(object);
       } else {
-        const sprite = this.grenderer.addObject(
-          object.name,
-          objectTemplateName,
-          object.location.x,
-          object.location.y,
-          object.orientation
-        );
-
-        this.renderData.objects[object.id] = {
-          object,
-          sprite,
-        };
+        this._addObject(object);
       }
     });
 
     for (const k in this.renderData.objects) {
       const id = this.renderData.objects[k].object.id;
       if (!newObjectIds.includes(id)) {
-        this.renderData.objects[k].sprite.destroy();
-        delete this.renderData.objects[k];
+        this._removeObject(k);
       }
     }
   };
@@ -390,7 +420,7 @@ export class PlayerScene extends Phaser.Scene {
         this.trajectoryActionIdx === this.currentTrajectoryBuffer.steps.length
       ) {
         this.cooldown = true;
-        setTimeout(() => this.endPlayback(), 1000);
+        setTimeout(() => this.endPlayback(), this.afterPlaybackMs);
       } else {
         setTimeout(() => {
           this.cooldown = false;

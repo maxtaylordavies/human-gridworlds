@@ -51,6 +51,9 @@ class RendererBase {
   };
 
   loadImage = (image, imagePath) => {
+    if (image.includes("player")) {
+      console.log(`Loading image ${image} from ${imagePath}`);
+    }
     if (
       image in this.scene.imagePaths &&
       this.scene.imagePaths[image] !== imagePath

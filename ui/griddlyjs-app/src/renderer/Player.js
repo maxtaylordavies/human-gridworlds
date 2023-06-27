@@ -52,6 +52,7 @@ class Player extends Component {
         waitToBeginPlayback: this.props.waitToBeginPlayback,
         onPlaybackEnd: this.props.onPlaybackEnd,
         beforePlaybackMs: this.props.beforePlaybackMs,
+        afterPlaybackMs: this.props.afterPlaybackMs,
         stepIntervalMs: this.props.stepIntervalMs,
         disableInput: this.props.disableInput,
       });
@@ -90,6 +91,7 @@ class Player extends Component {
           waitToBeginPlayback: this.props.waitToBeginPlayback,
           onPlaybackEnd: this.props.onPlaybackEnd,
           beforePlaybackMs: this.props.beforePlaybackMs,
+          afterPlaybackMs: this.props.afterPlaybackMs,
           stepIntervalMs: this.props.stepIntervalMs,
           disableInput: this.props.disableInput,
         });

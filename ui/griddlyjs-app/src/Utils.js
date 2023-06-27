@@ -156,9 +156,13 @@ export const currentAgentReplay = (expState) => {
   return phase.agentReplays[expState.agentIdx];
 };
 
-export const currentAgentColor = (expState) => {
+export const currentPhi = (expState) => {
   const ar = currentAgentReplay(expState);
-  const phi = ar ? ar.agentPhi : expState.session.conditions.phi;
+  return ar ? ar.agentPhi : expState.session.conditions.phi;
+};
+
+export const currentAgentColor = (expState) => {
+  const phi = currentPhi(expState);
 
   if (phi === 0) {
     return "red";
@@ -231,4 +235,16 @@ export const itemReward = (itemName, thetas) => {
     r += thetas[i][x[i]];
   }
   return r;
+};
+
+export const agentEmoji = (expState, itemName) => {
+  const x = OBJECT_FEATURE_MAP[itemName];
+  let corr = expState.session.conditions.correlation;
+  let phi = currentPhi(expState);
+  if (phi < 0) {
+    corr = 0;
+    phi = currentAgentName(expState) === "Alice" ? 0 : 1;
+  }
+
+  return x[corr] === phi ? "😀" : "🙁";
 };

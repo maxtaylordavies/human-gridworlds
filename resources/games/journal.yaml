@@ -208,6 +208,12 @@ Objects:
     Observers:
       Sprite2D:
         - Image: custom/avatars/avi-grey.png
+  - Name: player-smile
+    z: 10
+    MapCharacter: s
+    Observers:
+      Sprite2D:
+        - Image: custom/items/mystery-box.png
   - Name: ocean
     MapCharacter: o
     Observers:

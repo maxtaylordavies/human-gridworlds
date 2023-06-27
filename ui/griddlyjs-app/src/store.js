@@ -128,6 +128,7 @@ export const useStore = create((set) => ({
     rewardHistory: [],
     itemHistory: [],
     agentHistory: [],
+    agentEmoji: "",
   },
   setGameState: (gst) =>
     set(() => {
@@ -162,6 +163,10 @@ export const useStore = create((set) => ({
     }),
   updateItemHistory: (item) =>
     set((state) => {
+      let emoji = "";
+      if (!utils.isPlaying(state.expState)) {
+        emoji = utils.agentEmoji(state.expState, item);
+      }
       if (utils.shouldHideGoals(state.expState)) {
         item = "mystery-box";
       }
@@ -169,6 +174,16 @@ export const useStore = create((set) => ({
         gameState: {
           ...state.gameState,
           itemHistory: [...state.gameState.itemHistory, item],
+          agentEmoji: emoji,
+        },
+      };
+    }),
+  updateAgentEmoji: (emoji) =>
+    set((state) => {
+      return {
+        gameState: {
+          ...state.gameState,
+          agentEmoji: emoji,
         },
       };
     }),

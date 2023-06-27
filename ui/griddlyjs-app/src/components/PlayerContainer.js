@@ -3,11 +3,16 @@ import { motion } from "framer-motion";
 
 import { useStore } from "../store";
 import * as utils from "../utils";
-import { INTER_STEP_INTERVAL_MS, INTER_SCENE_INTERVAL_MS } from "../constants";
+import {
+  INTER_STEP_INTERVAL_MS,
+  INTER_SCENE_INTERVAL_MS,
+  LINGER_ON_GOAL_MS,
+} from "../constants";
 import Player from "../renderer/Player";
 import InfoBar from "./InfoBar";
 import RewardHistory from "./RewardHistory";
 import ScorePopup from "./ScorePopup";
+import { EmojiBubble } from "./EmojiBubble";
 
 const PlayerContainer = ({ griddlyjs }) => {
   const uiState = useStore((state) => state.uiState);
@@ -87,6 +92,12 @@ const PlayerContainer = ({ griddlyjs }) => {
             >
               {utils.currentAgentName(expState)}
             </div>
+            <EmojiBubble
+              pos={{
+                left: nameBadgePos.left + 60,
+                top: nameBadgePos.top - 45,
+              }}
+            />
             <Player
               gdyHash={gameState.gdyHash}
               gdy={gameState.gdy}
@@ -110,6 +121,7 @@ const PlayerContainer = ({ griddlyjs }) => {
               }
               onPlaybackEnd={onPlaybackEnd}
               beforePlaybackMs={INTER_SCENE_INTERVAL_MS}
+              afterPlaybackMs={LINGER_ON_GOAL_MS}
               stepIntervalMs={replay?.stepInterval || INTER_STEP_INTERVAL_MS}
               disableInput={uiState.showScorePopup || replay !== null}
             />
