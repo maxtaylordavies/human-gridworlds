@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React from "react";
 import { motion } from "framer-motion";
 
 import { useStore } from "../store";
@@ -6,25 +6,20 @@ import * as utils from "../utils";
 import { INTER_STEP_INTERVAL_MS, INTER_SCENE_INTERVAL_MS } from "../constants";
 import Player from "../renderer/Player";
 import InfoBar from "./InfoBar";
+import RewardHistory from "./RewardHistory";
+import ScorePopup from "./ScorePopup";
 
 const PlayerContainer = ({ griddlyjs }) => {
-  const [uiState, setUIState] = useStore((state) => [
-    state.uiState,
-    state.setUIState,
-  ]);
+  const uiState = useStore((state) => state.uiState);
   const [expState, setExpState] = useStore((state) => [
     state.expState,
     state.setExpState,
   ]);
-  const [gameState, setGameState] = useStore((state) => [
-    state.gameState,
-    state.setGameState,
-  ]);
+  const gameState = useStore((state) => state.gameState);
   const updateScore = useStore((state) => state.updateScore);
-  const [rendererState, setRendererState] = useStore((state) => [
-    state.rendererState,
-    state.setRendererState,
-  ]);
+  const updateAgentPos = useStore((state) => state.updateAgentPos);
+  const updateItemHistory = useStore((state) => state.updateItemHistory);
+  const rendererState = useStore((state) => state.rendererState);
   const updateTrajectory = useStore((state) => state.updateTrajectory);
 
   const onPlaybackEnd = () => {
@@ -58,14 +53,14 @@ const PlayerContainer = ({ griddlyjs }) => {
   };
 
   let opacity = 1;
-  if (
-    uiState.showPhaseInstructions ||
-    uiState.showFinishedScreen ||
-    uiState.showQuiz
-  ) {
+  if (uiState.showPhaseInstructions || uiState.showFinishedScreen) {
     opacity = 0;
-  } else if (uiState.showAgentPopup) {
-    opacity = 0.2;
+  } else if (
+    uiState.showQuiz ||
+    uiState.showAgentPopup ||
+    uiState.showScorePopup
+  ) {
+    opacity = 0.1;
   }
 
   const nameBadgePos = computeNameBadgePos(gameState.agentPos);
@@ -73,46 +68,54 @@ const PlayerContainer = ({ griddlyjs }) => {
 
   return (
     <motion.div className="game-container">
+      <ScorePopup />
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity }}
         transition={{ duration: 0.1 }}
+        style={{ display: "flex" }}
       >
-        <InfoBar />
         <div>
-          <div
-            className="name-badge"
-            style={{
-              left: nameBadgePos.left,
-              top: nameBadgePos.top,
-            }}
-          >
-            {utils.currentAgentName(expState)}
+          <InfoBar />
+          <div>
+            <div
+              className="name-badge"
+              style={{
+                left: nameBadgePos.left,
+                top: nameBadgePos.top,
+              }}
+            >
+              {utils.currentAgentName(expState)}
+            </div>
+            <Player
+              gdyHash={gameState.gdyHash}
+              gdy={gameState.gdy}
+              levelId={utils.currentLevelId(expState)}
+              avatarPath={utils.currentAvatarImg(expState)}
+              hideGoals={utils.shouldHideGoals(expState)}
+              griddlyjs={griddlyjs}
+              rendererState={rendererState}
+              onTrajectoryStep={onTrajectoryStep}
+              onPlayerPosChange={updateAgentPos}
+              onReward={updateScore}
+              onGoalReached={updateItemHistory}
+              onLevelComplete={onLevelComplete}
+              trajectoryString={replay?.trajectory || ""}
+              startPos={utils.currentStartPos(expState)}
+              waitToBeginPlayback={
+                uiState.showPhaseInstructions ||
+                uiState.showAgentPopup ||
+                uiState.showQuiz ||
+                uiState.showScorePopup
+              }
+              onPlaybackEnd={onPlaybackEnd}
+              beforePlaybackMs={INTER_SCENE_INTERVAL_MS}
+              stepIntervalMs={replay?.stepInterval || INTER_STEP_INTERVAL_MS}
+              disableInput={uiState.showScorePopup || replay !== null}
+            />
           </div>
-          <Player
-            gdyHash={gameState.gdyHash}
-            gdy={gameState.gdy}
-            levelId={utils.currentLevelId(expState)}
-            avatarPath={utils.currentAvatarImg(expState)}
-            hideGoals={utils.shouldHideGoals(expState)}
-            griddlyjs={griddlyjs}
-            rendererState={rendererState}
-            onTrajectoryStep={onTrajectoryStep}
-            onPlayerPosChange={(pos) => {
-              setGameState({ ...gameState, agentPos: pos });
-            }}
-            onReward={updateScore}
-            onLevelComplete={onLevelComplete}
-            trajectoryString={replay?.trajectory || ""}
-            startPos={utils.currentStartPos(expState)}
-            waitToBeginPlayback={
-              uiState.showPhaseInstructions || uiState.showAgentPopup
-            }
-            onPlaybackEnd={onPlaybackEnd}
-            beforePlaybackMs={INTER_SCENE_INTERVAL_MS}
-            stepIntervalMs={replay?.stepInterval || INTER_STEP_INTERVAL_MS}
-          />
         </div>
+        <RewardHistory />
       </motion.div>
     </motion.div>
   );

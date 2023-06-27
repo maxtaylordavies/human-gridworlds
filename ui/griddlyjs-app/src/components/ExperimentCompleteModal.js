@@ -8,7 +8,7 @@ const PROLIFIC_CODE = "CAL3DWSD";
 
 const ExperimentCompleteModal = () => {
   const show = useStore((state) => state.uiState.showFinishedScreen);
-  const score = useStore((state) => state.score);
+  const score = useStore((state) => state.gameState.score);
   const saveTextResponse = useStore((state) => state.saveTextResponse);
 
   const [screenIdx, setScreenIdx] = useState(0);

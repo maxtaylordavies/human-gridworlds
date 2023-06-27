@@ -105,7 +105,7 @@ export const findCompatibleRenderers = (observers, objects) => {
   return compatibleRenderers;
 };
 
-const currentPhase = (expState) => {
+export const currentPhase = (expState) => {
   if (!expState || !expState.session || expState.phaseIdx < 0) {
     return null;
   }
@@ -113,7 +113,7 @@ const currentPhase = (expState) => {
   return expState.session.phases[expState.phaseIdx];
 };
 
-const currentLevel = (expState) => {
+export const currentLevel = (expState) => {
   const phase = currentPhase(expState);
   if (!phase) {
     return null;
@@ -156,25 +156,26 @@ export const currentAgentReplay = (expState) => {
   return phase.agentReplays[expState.agentIdx];
 };
 
-export const currentAvatarImg = (expState) => {
-  const phiToColor = (phi) => {
-    if (phi === 0) {
-      return "red";
-    } else if (phi === 1) {
-      return "blue";
-    } else {
-      return "grey";
-    }
-  };
-
+export const currentAgentColor = (expState) => {
   const ar = currentAgentReplay(expState);
-  if (ar) {
-    return `custom/avatars/avi-${phiToColor(ar.agentPhi)}.png`;
+  const phi = ar ? ar.agentPhi : expState.session.conditions.phi;
+
+  if (phi === 0) {
+    return "red";
+  } else if (phi === 1) {
+    return "blue";
   }
 
-  return `custom/avatars/avi-${phiToColor(
-    expState.session.conditions.phi
-  )}-smile.png`;
+  return "grey";
+};
+
+export const currentAvatarImg = (expState) => {
+  const color = currentAgentColor(expState);
+  const filename = isPlaying(expState)
+    ? `avi-${color}-smile.png`
+    : `avi-${color}.png`;
+
+  return `custom/avatars/${filename}`;
 };
 
 export const currentReplay = (expState) => {
@@ -194,7 +195,7 @@ export const currentStartPos = (expState) => {
   if (level && level.startPos) {
     return level.startPos;
   }
-  return { x: 3, y: 3 };
+  return null;
 };
 
 export const shouldHideGoals = (expState) => {

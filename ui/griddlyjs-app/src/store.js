@@ -1,5 +1,7 @@
 import { create } from "zustand";
 
+import * as utils from "./utils";
+
 export const useStore = create((set) => ({
   // general UI state
   uiState: {
@@ -7,10 +9,10 @@ export const useStore = create((set) => ({
     showPhaseInstructions: false,
     showQuiz: false,
     showAgentPopup: false,
-    showLevelPopup: false,
+    showScorePopup: false,
     showFinishedScreen: false,
   },
-  setUIState: (uist) =>
+  setUiState: (uist) =>
     set((state) => {
       // if showInitialInstructions is being set to false, set showPhaseInstructions to true
       if (
@@ -122,17 +124,52 @@ export const useStore = create((set) => ({
     gdyString: "",
     playing: true,
     agentPos: { x: 0, y: 0 },
+    score: 50,
+    rewardHistory: [],
+    itemHistory: [],
+    agentHistory: [],
   },
   setGameState: (gst) =>
     set(() => {
       return { gameState: gst };
     }),
-  score: 50,
   updateScore: (delta) =>
     set((state) => {
-      const newScore = state.score + delta;
+      const newScore = state.gameState.score + delta;
+      const rh = [...state.gameState.rewardHistory];
+      const ah = [...state.gameState.agentHistory];
+      if (delta > 0) {
+        rh.push(delta);
+        ah.push({
+          name: utils.currentAgentName(state.expState),
+          color: utils.currentAgentColor(state.expState),
+        });
+      }
       return {
-        score: newScore,
+        gameState: {
+          ...state.gameState,
+          score: newScore,
+          rewardHistory: rh,
+          agentHistory: ah,
+        },
+      };
+    }),
+  updateAgentPos: (pos) =>
+    set((state) => {
+      return {
+        gameState: { ...state.gameState, agentPos: pos },
+      };
+    }),
+  updateItemHistory: (item) =>
+    set((state) => {
+      if (utils.shouldHideGoals(state.expState)) {
+        item = "mystery-box";
+      }
+      return {
+        gameState: {
+          ...state.gameState,
+          itemHistory: [...state.gameState.itemHistory, item],
+        },
       };
     }),
 

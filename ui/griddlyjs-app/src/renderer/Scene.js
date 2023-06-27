@@ -36,20 +36,23 @@ export class PlayerScene extends Phaser.Scene {
       this.levelId = data.levelId;
       this.avatarPath = data.avatarPath;
       this.trajectoryString = data.trajectoryString;
-      this.startPos = data.startPos;
+      this.playerPos = data.startPos;
 
       this.waitToBeginPlayback = data.waitToBeginPlayback;
       this.beforePlaybackMs = data.beforePlaybackMs;
       this.stepIntervalMs = data.stepIntervalMs;
+      this.disableInput = data.disableInput;
 
       this.onTrajectoryStep = data.onTrajectoryStep;
       this.onPlayerPosChange = data.onPlayerPosChange;
       this.onReward = data.onReward;
+      this.onGoalReached = data.onGoalReached;
       this.onLevelComplete = data.onLevelComplete;
       this.onPlaybackEnd = data.onPlaybackEnd;
 
       this.setPlayerPosAndImage();
       this.avatarObject = this.gdy.Environment.Player.AvatarObject;
+      this.goalLocations = {};
 
       this.occlusionWindow = -1;
       this.occlusionPositions = [];
@@ -118,12 +121,12 @@ export class PlayerScene extends Phaser.Scene {
     // if this is the first time this function is being called for
     // this level, we need to store the original location so we can
     // recover it when the demonstration phase is over
-    if (this.startPos === undefined) {
+    if (this.playerPos === undefined) {
       rows = this.gdy.Environment.Levels[this.levelId].split("\n");
       rows.forEach((row, i) => {
         const j = row.indexOf("p");
         if (j !== -1) {
-          this.startPos = { y: i, x: j / (row.length / this.gridWidth) };
+          this.playerPos = { y: i, x: j / (row.length / this.gridWidth) };
         }
       });
     }
@@ -133,9 +136,9 @@ export class PlayerScene extends Phaser.Scene {
       .replace("p", ".")
       .split("\n");
 
-    const tmp = rows[this.startPos.y].split("");
-    tmp[this.startPos.x * (tmp.length / this.gridWidth)] = "p";
-    rows[this.startPos.y] = tmp.join("");
+    const tmp = rows[this.playerPos.y].split("");
+    tmp[this.playerPos.x * (tmp.length / this.gridWidth)] = "p";
+    rows[this.playerPos.y] = tmp.join("");
 
     const levelStr = rows.join("\n");
 
@@ -143,9 +146,9 @@ export class PlayerScene extends Phaser.Scene {
     this.gdy.Environment.Levels[this.levelId] = levelStr;
 
     // if this is the last time this function is being called
-    // for this level, then set this.startPos back to undefined
-    if (this.startPos && !this.trajectoryString) {
-      this.startPos = undefined;
+    // for this level, then set this.playerPos back to undefined
+    if (this.playerPos && !this.trajectoryString) {
+      this.playerPos = undefined;
     }
 
     // update the avatar image
@@ -169,6 +172,17 @@ export class PlayerScene extends Phaser.Scene {
     state.objects.forEach((object) => {
       if (object.name === "player") {
         this.onPlayerPosChange(object.location);
+
+        for (const k in this.goalLocations) {
+          const loc = this.goalLocations[k];
+          if (loc.x === object.location.x && loc.y === object.location.y) {
+            this.onGoalReached(k);
+          }
+        }
+      }
+
+      if (object.name.startsWith("goal")) {
+        this.goalLocations[object.name] = object.location;
       }
 
       const objectTemplateName = object.name + object.renderTileId;
@@ -367,6 +381,8 @@ export class PlayerScene extends Phaser.Scene {
       const action =
         this.currentTrajectoryBuffer.steps[this.trajectoryActionIdx++];
       const stepResult = this.griddlyjs.step(action);
+      this.onReward(+stepResult.reward);
+
       this.currentState = this.griddlyjs.getState();
 
       if (
@@ -443,7 +459,7 @@ export class PlayerScene extends Phaser.Scene {
       setTimeout(() => {
         this.onLevelComplete();
         this.resetLevel();
-      }, 1000);
+      }, 100);
     }
   };
 
@@ -460,7 +476,11 @@ export class PlayerScene extends Phaser.Scene {
   };
 
   processUserKeydown = (event) => {
-    if (this.isRunningTrajectory || this.trajectoryString.length > 0) {
+    if (
+      this.disableInput ||
+      this.isRunningTrajectory ||
+      this.trajectoryString.length > 0
+    ) {
       return;
     }
 
@@ -470,7 +490,11 @@ export class PlayerScene extends Phaser.Scene {
   };
 
   processUserKeyup = (event) => {
-    if (this.isRunningTrajectory || this.trajectoryString.length > 0) {
+    if (
+      this.disableInput ||
+      this.isRunningTrajectory ||
+      this.trajectoryString.length > 0
+    ) {
       return;
     }
 

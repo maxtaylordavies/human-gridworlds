@@ -5,9 +5,9 @@ import { useStore } from "../store";
 import { MultiScreenModal } from "./core/MultiScreenModal";
 
 const InitialInstructions = () => {
-  const [uiState, setUIState] = useStore((state) => [
+  const [uiState, setUiState] = useStore((state) => [
     state.uiState,
-    state.setUIState,
+    state.setUiState,
   ]);
   const [expState, setExpState] = useStore((state) => [
     state.expState,
@@ -15,7 +15,7 @@ const InitialInstructions = () => {
   ]);
 
   const finishInstructions = () => {
-    setUIState({ ...uiState, showInitialInstructions: false });
+    setUiState({ ...uiState, showInitialInstructions: false });
     setExpState({ ...expState, phaseIdx: 0 });
   };
 

@@ -1,43 +1,68 @@
 import React, { useEffect, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 
-const ScorePopup = ({ scoreDelta, clearDelta, scoreHidden }) => {
-  const [open, setOpen] = useState(false);
-  const [delta, setDelta] = useState(scoreDelta);
-  const [timeoutId, setTimeoutId] = useState(null);
+import { useStore } from "../store";
+import { Modal } from "./core/Modal";
+
+import * as utils from "../utils";
+
+const ScorePopup = () => {
+  const expState = useStore((state) => state.expState);
+  const gameState = useStore((state) => state.gameState);
+  const [uiState, setUiState] = useStore((state) => [
+    state.uiState,
+    state.setUiState,
+  ]);
 
   useEffect(() => {
-    if (!open) {
-      setDelta(scoreDelta);
+    const phase = utils.currentPhase(expState);
+    if (
+      phase &&
+      gameState.playing &&
+      gameState.rewardHistory.length > 0 &&
+      !phase.objectsHidden
+    ) {
+      setUiState({ ...uiState, showScorePopup: true });
     }
+  }, [gameState.rewardHistory.length]);
 
-    if (scoreDelta <= 0) return;
+  const reward = () => {
+    if (gameState.rewardHistory.length === 0) {
+      return 0;
+    }
+    return gameState.rewardHistory[gameState.rewardHistory.length - 1];
+  };
 
-    setOpen(true);
-    clearTimeout(timeoutId);
-    setTimeoutId(
-      setTimeout(() => {
-        setOpen(false);
-        clearDelta();
-      }, 1000)
-    );
-  }, [scoreDelta]);
+  const item = () => {
+    if (gameState.itemHistory.length === 0) {
+      return "";
+    }
+    return gameState.itemHistory[gameState.itemHistory.length - 1];
+  };
+
+  const _reward = reward();
+  const _item = item();
 
   return (
-    <AnimatePresence>
-      {open && !scoreHidden && (
-        <motion.div
-          key="score-popup"
-          className={`score-popup ${delta > 10 ? "high" : "medium"}`}
-          initial={{ opacity: 0, top: 10 }}
-          animate={{ opacity: 1, top: -70 }}
-          exit={{ opacity: 0, top: 0 }}
-          transition={{ duration: 0.4 }}
-        >
-          +{delta} points
-        </motion.div>
-      )}
-    </AnimatePresence>
+    <Modal
+      key="score-popup"
+      className="score-popup"
+      open={uiState.showScorePopup}
+      scoreHidden={uiState.scoreHidden}
+    >
+      <div className={`score-popup-score ${_reward > 10 ? "high" : "medium"}`}>
+        <img src={`resources/images/custom/items/${_item}.png`} width={50} />={" "}
+        {_reward} points
+      </div>
+      <motion.button
+        onClick={() => setUiState({ ...uiState, showScorePopup: false })}
+        whileHover={{ scale: 1.04 }}
+        whileTap={{ scale: 0.96 }}
+        transition={{ duration: 0.2 }}
+      >
+        Okay
+      </motion.button>
+    </Modal>
   );
 };
 
