@@ -11,9 +11,8 @@ const phaseInstructionsContent = [
         <>
           <p>
             This is an interactive phase. In this phase, you will{" "}
-            <b>use your arrow keys</b> to control an avatar in a 2D grid world.
-            You earn <b>points</b> by collecting <b>items</b> that appear in
-            corners of the grid.
+            <b>use your arrow keys</b> to control an avatar in a 2D game. The
+            aim of the game is to earn <b>points</b> by collecting <b>items</b>.
           </p>
         </>
       ),
@@ -25,13 +24,30 @@ const phaseInstructionsContent = [
       content: (
         <>
           <p>
-            <b>Different items are worth different amounts of points.</b> Every
-            time you collect an item, the game will show you how many points you
-            earned. These points contribute to your final score.
+            There are four different types of item in the game.{" "}
+            <b>Different types may be worth different numbers of points</b>, but
+            the number of points you earn for a particular type will <b>not</b>{" "}
+            change during the experiment.
           </p>
           <p>
-            A high final score means you will earn a bonus payment, so you
-            should try to get as many points as possible!
+            Every time you collect an item, the game will show you how many
+            points you earned. You should pay close attention to this
+            information, and{" "}
+            <b>try to determine which items are worth the most points.</b>
+          </p>
+        </>
+      ),
+      buttonLabel: "Next",
+      buttonIcon: faHandPointRight,
+      buttonDelay: 4,
+    },
+    {
+      content: (
+        <>
+          <p>
+            All points you earn will contribute to your final score. A high
+            final score means you will earn a bonus payment, so you should try
+            to get as many points as possible!
           </p>
           <p>
             <b>Note: every time you move your avatar, you will lose 1 point.</b>
@@ -40,7 +56,7 @@ const phaseInstructionsContent = [
       ),
       buttonLabel: "Start phase",
       buttonIcon: faHandPointRight,
-      buttonDelay: 8,
+      buttonDelay: 4,
     },
   ],
   [
@@ -48,19 +64,21 @@ const phaseInstructionsContent = [
       content: (
         <>
           <p>
-            This is an observation phase. In this phase, you will not interact
-            with the game yourself - instead, you will watch{" "}
+            This is an <b>observation phase</b>. In this phase, you will not
+            interact with the game yourself - instead, you will watch{" "}
             <b>two other characters</b> as they navigate the grid to collect
-            items.
+            items for themselves.
           </p>
           <p>
-            Characters also earn points by collecting items, and lose points
-            when they move.{" "}
+            Characters also earn points by collecting items.{" "}
             <b>
-              However, the points they earn for different items may not be the
-              same as for you.
-            </b>
+              However, the number of points they earn for a particular item type
+              may not be the same as for you
+            </b>{" "}
+            - so they <i>might</i> not always make the same choices that you
+            would.
           </p>
+          <p>Also, like you, every character loses points by moving.</p>
         </>
       ),
       buttonLabel: "Next",
@@ -80,8 +98,9 @@ const phaseInstructionsContent = [
             character. Unlike the quiz you just completed, you won't be told
             whether you answered correctly. However,{" "}
             <b>
-              correct answers will earn you points towards your final score.
+              correct responses will earn you points towards your final score.
             </b>
+            , so you should think carefully about your answers.
           </p>
         </>
       ),
@@ -95,10 +114,10 @@ const phaseInstructionsContent = [
       content: (
         <>
           <p>
-            This phase combines both observation and interaction. You will first
-            watch the two characters from the previous phase make a choice
-            between two items - you will then have to choose between the same
-            two items yourself.
+            This phase combines <b>both observation and interaction</b>. You
+            will first watch the same two characters from the previous phase
+            choose between two items - you will then have to choose between the{" "}
+            <b>same</b> two items yourself.
           </p>
           <p>
             In this phase however, each item will be{" "}
@@ -120,12 +139,16 @@ const phaseInstructionsContent = [
         <>
           <p>
             While you will not be able to see which item is inside each box,{" "}
-            <b>all characters already know the contents of the boxes</b>.
+            <b>all characters already know what is inside each box</b>.
           </p>
           <p>
-            Also, the game will not tell you how many points you earned - but
-            these points will still contribute to your final score, so you
-            should try to pick the box that gives you the most points!
+            Furthermore, this time the game will <b>not</b> tell you how many
+            points you earned - but these points will still contribute to your
+            final score.
+          </p>
+          <p>
+            From watching the characters, you should think carefully about which
+            box is likely to give you more points!
           </p>
         </>
       ),
@@ -141,7 +164,7 @@ const phaseInstructionsContent = [
           <p>
             This is another observation phase. In this phase you will be
             introduced to <b>four new characters</b>; as in phase 2, you will
-            observe each character make choices between items.
+            observe each character choose between different items.
           </p>
           <p>
             Like before, you should pay <b>very close attention</b> to the
@@ -166,7 +189,11 @@ const phaseInstructionsContent = [
           </p>
           <p>
             Unlike phase 3, <b>you have not seen these characters before</b> in
-            any previous phase.
+            any previous phase - they are <b>completely new</b>.
+          </p>
+          <p>
+            From watching the characters, you should think carefully about which
+            box is likely to give you more points.
           </p>
         </>
       ),
