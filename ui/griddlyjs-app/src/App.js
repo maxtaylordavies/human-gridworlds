@@ -87,19 +87,19 @@ const App = () => {
       // check for existing session_id in url or localstorage
       // if we find one, then get the corresponding session from
       // the server (rather than creating a new session)
-      const sid = utils.getValueFromUrlOrLocalstorage("sid");
-      if (sid) {
-        api.getSession(sid, onSession, console.Error);
-      } else {
-        // otherwise, we create a new session on the server, passing
-        // in existing experiment_id and human_id if they exist
-        api.createSession(
-          utils.getValueFromUrlOrLocalstorage("eid"),
-          utils.getProlificMetadata(),
-          onSession,
-          console.error
-        );
-      }
+      // const sid = utils.getValueFromUrlOrLocalstorage("sid");
+      // if (sid) {
+      //   api.getSession(sid, onSession, console.Error);
+      // } else {
+      // otherwise, we create a new session on the server, passing
+      // in existing experiment_id and human_id if they exist
+      api.createSession(
+        utils.getValueFromUrlOrLocalstorage("eid"),
+        utils.getProlificMetadata(),
+        onSession,
+        console.error
+      );
+      // }
     });
   };
 
