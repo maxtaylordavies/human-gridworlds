@@ -63,7 +63,8 @@ const PlayerContainer = ({ griddlyjs }) => {
   } else if (
     uiState.showQuiz ||
     uiState.showAgentPopup ||
-    uiState.showScorePopup
+    uiState.showScorePopup ||
+    uiState.showTextResponseModal
   ) {
     opacity = 0.1;
   }
@@ -117,7 +118,8 @@ const PlayerContainer = ({ griddlyjs }) => {
                 uiState.showPhaseInstructions ||
                 uiState.showAgentPopup ||
                 uiState.showQuiz ||
-                uiState.showScorePopup
+                uiState.showScorePopup ||
+                uiState.showTextResponseModal
               }
               onPlaybackEnd={onPlaybackEnd}
               beforePlaybackMs={INTER_SCENE_INTERVAL_MS}

@@ -10,6 +10,7 @@ export const useStore = create((set) => ({
     showQuiz: false,
     showAgentPopup: false,
     showScorePopup: false,
+    showTextResponseModal: false,
     showFinishedScreen: false,
   },
   setUiState: (uist) =>
@@ -33,6 +34,21 @@ export const useStore = create((set) => ({
           },
           expState: exp,
           gameState: { ...state.gameState, playing: playing },
+        };
+      }
+
+      // if showTextResponseModal is being set to false, show either phaseInstructions or experimentFinished
+      if (!uist.showTextResponseModal && state.uiState.showTextResponseModal) {
+        if (
+          state.expState.phaseIdx >=
+          state.expState.session.phases.length - 1
+        ) {
+          return {
+            uiState: { ...uist, showFinishedScreen: true },
+          };
+        }
+        return {
+          uiState: { ...uist, showPhaseInstructions: true },
         };
       }
 
@@ -105,13 +121,22 @@ export const useStore = create((set) => ({
       // reached the end of the experiment - otherwise reset
       // levelIdx to 0 and set showPhaseInstructions to true
       if (est.phaseIdx > state.expState.phaseIdx) {
+        est = { ...est, levelIdx: 0, agentIdx: 0, replayIdx: 0 };
         if (est.phaseIdx >= est.session.phases.length) {
-          return { uiState: { ...state.uiState, showFinishedScreen: true } };
+          return {
+            uiState: { ...state.uiState, showTextResponseModal: true },
+          };
+        } else if (est.phaseIdx === 3) {
+          return {
+            uiState: { ...state.uiState, showTextResponseModal: true },
+            expState: est,
+          };
+        } else {
+          return {
+            uiState: { ...state.uiState, showPhaseInstructions: true },
+            expState: est,
+          };
         }
-        return {
-          uiState: { ...state.uiState, showPhaseInstructions: true },
-          expState: { ...est, levelIdx: 0, agentIdx: 0, replayIdx: 0 },
-        };
       }
 
       return { expState: est, uiState: uist };

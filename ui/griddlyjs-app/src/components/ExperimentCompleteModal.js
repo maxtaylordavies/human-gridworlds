@@ -9,39 +9,14 @@ const PROLIFIC_CODE = "CAL3DWSD";
 const ExperimentCompleteModal = () => {
   const show = useStore((state) => state.uiState.showFinishedScreen);
   const score = useStore((state) => state.gameState.score);
-  const saveTextResponse = useStore((state) => state.saveTextResponse);
 
   const [screenIdx, setScreenIdx] = useState(0);
-  const [response, setResponse] = useState("");
-
-  const onSubmitClicked = () => {
-    saveTextResponse(response);
-    setScreenIdx(1);
-  };
 
   const onCopyCodeClicked = async () => {
     await navigator.clipboard.writeText(PROLIFIC_CODE);
   };
 
   const content = [
-    {
-      title: "Free text response",
-      content: (
-        <>
-          <p>
-            <b>
-              Please write a brief response (minimum 100 characters) to the
-              following question: how did you choose which of the mystery boxes
-              to collect in phase 3 and phase 5?
-            </b>{" "}
-          </p>
-          <textarea rows="5" onChange={(e) => setResponse(e.target.value)} />
-        </>
-      ),
-      buttonLabel: "Submit",
-      buttonDisabled: () => response.length < 100,
-      onClick: onSubmitClicked,
-    },
     {
       title: "Experiment complete",
       content: (

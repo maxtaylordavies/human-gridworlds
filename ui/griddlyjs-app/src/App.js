@@ -12,6 +12,7 @@ import PhaseInstructions from "./components/PhaseInstructions";
 import ExperimentCompleteModal from "./components/ExperimentCompleteModal";
 import AgentPopup from "./components/AgentPopup";
 import QuizModal from "./components/QuizModal";
+import TextResponseModal from "./components/TextResponseModal";
 import "./App.scss";
 
 const App = () => {
@@ -200,6 +201,7 @@ const App = () => {
       <PhaseInstructions />
       <AgentPopup delay={250} />
       <QuizModal />
+      <TextResponseModal />
       <ExperimentCompleteModal />
     </div>
   );

@@ -489,7 +489,7 @@ export class PlayerScene extends Phaser.Scene {
       setTimeout(() => {
         this.onLevelComplete();
         this.resetLevel();
-      }, 100);
+      }, 500);
     }
   };
 
