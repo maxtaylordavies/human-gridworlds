@@ -125,7 +125,14 @@ const PlayerContainer = ({ griddlyjs }) => {
               beforePlaybackMs={INTER_SCENE_INTERVAL_MS}
               afterPlaybackMs={LINGER_ON_GOAL_MS}
               stepIntervalMs={replay?.stepInterval || INTER_STEP_INTERVAL_MS}
-              disableInput={uiState.showScorePopup || replay !== null}
+              disableInput={
+                uiState.showPhaseInstructions ||
+                uiState.showAgentPopup ||
+                uiState.showQuiz ||
+                uiState.showScorePopup ||
+                uiState.showTextResponseModal ||
+                replay !== null
+              }
             />
           </div>
         </div>
