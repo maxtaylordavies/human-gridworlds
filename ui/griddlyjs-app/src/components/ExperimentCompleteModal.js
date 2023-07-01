@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { useStore } from "../store";
 import { Modal } from "./core/Modal";
 
-const PROLIFIC_CODE = "CAL3DWSD";
+const PROLIFIC_CODE = "CFUMOENE";
 
 const ExperimentCompleteModal = () => {
   const show = useStore((state) => state.uiState.showFinishedScreen);
