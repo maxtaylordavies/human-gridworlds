@@ -10,9 +10,10 @@ type Replay struct {
 }
 
 type AgentReplays struct {
-	AgentPhi  int      `json:"agentPhi"`
-	AgentName string   `json:"agentName"`
-	Replays   []Replay `json:"replays"`
+	AgentPhi    int      `json:"agentPhi"`
+	AgentThetas Thetas   `json:"agentThetas"`
+	AgentName   string   `json:"agentName"`
+	Replays     []Replay `json:"replays"`
 }
 
 // maps start position + dest position to trajectory
@@ -99,7 +100,7 @@ func CreateEvidenceReplays(colorPref string, shapePref string, repeats int) []Re
 func CreateTestReplays(colorPref string, shapePref string, repeats int) []Replay {
 	var replays []Replay
 
-	starts := []string{"center", "W", "E"}
+	starts := []string{"centre", "W", "E"}
 	var dests []string
 
 	if colorPref == "yellow" {

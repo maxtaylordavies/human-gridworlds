@@ -24,15 +24,34 @@ type Session struct {
 	TextResponses   []string         `json:"textResponses"`
 }
 
+type Thetas [][]int
+
+var YellowThetas = Thetas{
+	{10, 0},
+	{10, 10},
+}
+
+var GreenThetas = Thetas{
+	{0, 10},
+	{10, 10},
+}
+
+var CircleThetas = Thetas{
+	{10, 10},
+	{10, 0},
+}
+
+var TriangleThetas = Thetas{
+	{10, 10},
+	{0, 10},
+}
+
 func CreateSession(experimentID string, isTest bool, context interface{}) Session {
 	conditions := Conditions{
 		// "phi":         SampleFromSliceInt([]int{-1, 0}, 1)[0],
-		"phi":         0,
+		"phi":         -1,
 		"correlation": SampleFromSliceInt([]int{0, 1}, 1)[0],
-		"thetas": [][]int{
-			{10, 0},
-			{10, 10},
-		},
+		"thetas":      YellowThetas,
 	}
 
 	var phases []Phase
@@ -45,31 +64,35 @@ func CreateSession(experimentID string, isTest bool, context interface{}) Sessio
 	phase = CreatePhase("evidence 1", []int{8}, false, false, nil)
 	phase.AgentReplays = []AgentReplays{
 		{
-			AgentPhi:  -1,
-			AgentName: "Alice",
-			Replays:   CreateEvidenceReplays("yellow", "", 2),
+			AgentPhi:    -1,
+			AgentThetas: YellowThetas,
+			AgentName:   "Alice",
+			Replays:     CreateEvidenceReplays("yellow", "", 2),
 		},
 		{
-			AgentPhi:  -1,
-			AgentName: "Bob",
-			Replays:   CreateEvidenceReplays("green", "", 2),
+			AgentPhi:    -1,
+			AgentThetas: GreenThetas,
+			AgentName:   "Bob",
+			Replays:     CreateEvidenceReplays("green", "", 2),
 		},
 	}
 	shuffleAgentReplays(phase.AgentReplays)
 	phases = append(phases, phase)
 
 	// test phase 1
-	phase = CreatePhase("test 1", []int{9}, true, true, []string{"center", "W", "E"})
+	phase = CreatePhase("test 1", []int{9}, true, true, []string{"centre", "W", "E"})
 	phase.AgentReplays = []AgentReplays{
 		{
-			AgentPhi:  -1,
-			AgentName: "Alice",
-			Replays:   CreateTestReplays("yellow", "", 1),
+			AgentPhi:    -1,
+			AgentThetas: YellowThetas,
+			AgentName:   "Alice",
+			Replays:     CreateTestReplays("yellow", "", 1),
 		},
 		{
-			AgentPhi:  -1,
-			AgentName: "Bob",
-			Replays:   CreateTestReplays("green", "", 1),
+			AgentPhi:    -1,
+			AgentThetas: GreenThetas,
+			AgentName:   "Bob",
+			Replays:     CreateTestReplays("green", "", 1),
 		},
 	}
 	shuffleAgentReplays(phase.AgentReplays)

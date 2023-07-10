@@ -156,6 +156,11 @@ export const currentAgentReplay = (expState) => {
   return phase.agentReplays[expState.agentIdx];
 };
 
+export const currentThetas = (expState) => {
+  const ar = currentAgentReplay(expState);
+  return ar ? ar.agentThetas : expState.session.conditions.thetas;
+};
+
 export const currentPhi = (expState) => {
   const ar = currentAgentReplay(expState);
   return ar ? ar.agentPhi : expState.session.conditions.phi;

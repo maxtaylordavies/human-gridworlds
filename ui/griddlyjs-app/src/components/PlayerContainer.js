@@ -131,8 +131,8 @@ const PlayerContainer = ({ griddlyjs }) => {
             />
           </div>
         </div>
-        <RewardHistory />
       </motion.div>
+      <RewardHistory />
     </motion.div>
   );
 };
