@@ -196,7 +196,12 @@ export const currentStartPos = (expState) => {
     return replay.startPos;
   }
   const level = currentLevel(expState);
-  if (level && level.startPos) {
+  if (
+    level &&
+    level.startPos &&
+    level.startPos.x !== -1 &&
+    level.startPos.y !== -1
+  ) {
     return level.startPos;
   }
   return null;
@@ -247,4 +252,31 @@ export const agentEmoji = (expState, itemName) => {
   }
 
   return x[corr] === phi ? "😀" : "🙁";
+};
+
+export const computeNameBadgePos = (expState, gameState) => {
+  const pos = { left: 0, top: 0 };
+
+  if (!gameState.gdy) {
+    return pos;
+  }
+
+  const levelId = currentLevelId(expState);
+  if (levelId === null) {
+    return pos;
+  }
+
+  let rows = gameState.gdy.Environment.Levels[levelId]
+    .split("\n")
+    .filter((r) => r.length > 0);
+  const gridHeight = rows.length * 60;
+  const gridWidth = (rows[0].length / 4) * 60;
+
+  pos.left = 0.5 * (800 - gridWidth) - 5; // set to top left corner of grid
+  pos.left += 60 * gameState.agentPos.x; // add offset for current x position
+
+  pos.top = 0.5 * (500 - gridHeight) + 30; // set to top left corner of grid
+  pos.top += 60 * gameState.agentPos.y; // add offset for current y position
+
+  return pos;
 };

@@ -16,6 +16,8 @@ class Player extends Component {
   };
 
   posEqual = (pos1, pos2) => {
+    if (!pos1 && !pos2) return true;
+    if (!pos1 || !pos2) return false;
     return pos1.x === pos2.x && pos1.y === pos2.y;
   };
 
@@ -68,6 +70,7 @@ class Player extends Component {
         prevProps.avatarPath !== this.props.avatarPath ||
         prevProps.hideGoals !== this.props.hideGoals ||
         prevProps.trajectoryString !== this.props.trajectoryString ||
+        prevProps.replayIdx !== this.props.replayIdx ||
         !this.posEqual(prevProps.startPos, this.props.startPos) ||
         prevProps.waitToBeginPlayback !== this.props.waitToBeginPlayback ||
         prevProps.beforePlaybackMs !== this.props.beforePlaybackMs ||

@@ -37,13 +37,11 @@ export class PlayerScene extends Phaser.Scene {
       this.avatarPath = data.avatarPath;
       this.trajectoryString = data.trajectoryString;
       this.playerPos = data.startPos;
-
       this.waitToBeginPlayback = data.waitToBeginPlayback;
       this.beforePlaybackMs = data.beforePlaybackMs;
       this.afterPlaybackMs = data.afterPlaybackMs;
       this.stepIntervalMs = data.stepIntervalMs;
       this.disableInput = data.disableInput;
-
       this.onTrajectoryStep = data.onTrajectoryStep;
       this.onPlayerPosChange = data.onPlayerPosChange;
       this.onReward = data.onReward;
@@ -129,7 +127,7 @@ export class PlayerScene extends Phaser.Scene {
     // if this is the first time this function is being called for
     // this level, we need to store the original location so we can
     // recover it when the demonstration phase is over
-    if (this.playerPos === undefined) {
+    if (!this.playerPos) {
       rows = this.gdy.Environment.Levels[this.levelId].split("\n");
       rows.forEach((row, i) => {
         const j = row.indexOf("p");
@@ -410,9 +408,9 @@ export class PlayerScene extends Phaser.Scene {
 
       const action =
         this.currentTrajectoryBuffer.steps[this.trajectoryActionIdx++];
+
       const stepResult = this.griddlyjs.step(action);
       this.onReward(+stepResult.reward);
-
       this.currentState = this.griddlyjs.getState();
 
       if (
