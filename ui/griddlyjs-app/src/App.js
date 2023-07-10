@@ -38,34 +38,19 @@ const App = () => {
 
   useEffect(() => {
     if (expState.session) {
-      // fetch data
       fetchData();
     }
   }, [expState.session]);
 
   useEffect(() => {
     const onFinished = async () => {
-      // await uploadResults();
       utils.removeFromLocalStorage("sid");
     };
 
-    // if gameplay is showFinishedScreen, we can upload the trajectories and final score
-    // and remove the session id from localstorage
     if (uiState.showFinishedScreen) {
       onFinished();
     }
   }, [uiState.showFinishedScreen]);
-
-  useEffect(() => {
-    // showQuiz being set to false
-    if (expState.session && !uiState.showQuiz) {
-      if (expState.phaseIdx === 0) {
-        setExpState({ ...expState, phaseIdx: 1 });
-      } else {
-        setExpState({ ...expState, agentIdx: expState.agentIdx + 1 });
-      }
-    }
-  }, [uiState.showQuiz]);
 
   useEffect(() => {
     if (expState.session && resultsState) {

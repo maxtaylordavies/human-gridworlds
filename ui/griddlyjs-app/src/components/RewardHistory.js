@@ -5,6 +5,7 @@ import { useStore } from "../store";
 
 const RewardHistory = () => {
   const gameState = useStore((state) => state.gameState);
+  const uiState = useStore((state) => state.uiState);
   const [history, setHistory] = useState([]);
 
   useEffect(() => {
@@ -19,8 +20,27 @@ const RewardHistory = () => {
     setHistory(h);
   }, [gameState]);
 
+  let opacity = 1;
+  if (
+    uiState.showInitialInstructions ||
+    uiState.showPhaseInstructions ||
+    uiState.showFinishedScreen
+  ) {
+    opacity = 0;
+  } else if (
+    uiState.showAgentPopup ||
+    uiState.showScorePopup ||
+    uiState.showTextResponseModal
+  ) {
+    opacity = 0.1;
+  }
+
   return (
-    <motion.div className="reward-history">
+    <motion.div
+      className="reward-history"
+      initial={{ opacity: 0 }}
+      animate={{ opacity }}
+    >
       <div className="reward-history-title">History</div>
       <div className="reward-history-list">
         {history.map((h, i) => {

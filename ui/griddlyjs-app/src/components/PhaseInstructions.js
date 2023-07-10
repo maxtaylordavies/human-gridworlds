@@ -8,11 +8,36 @@ const phaseInstructionsContent = [
   [
     {
       content: (
+        <p>
+          This is an interactive phase. In this phase, you will{" "}
+          <b>use your arrow keys</b> to control a <b>character</b> in a 2D game.
+          The aim of the game is to earn <b>points</b> by collecting{" "}
+          <b>items</b>.
+        </p>
+      ),
+      buttonLabel: "Next",
+      buttonIcon: faHandPointRight,
+      buttonDelay: 2,
+    },
+    {
+      content: (
+        <p>
+          There are four different types of item in the game.{" "}
+          <b>Your character likes some types of item more than others.</b> Items
+          that your character likes more are worth more points.
+        </p>
+      ),
+      buttonLabel: "Next",
+      buttonIcon: faHandPointRight,
+      buttonDelay: 2,
+    },
+    {
+      content: (
         <>
           <p>
-            This is an interactive phase. In this phase, you will{" "}
-            <b>use your arrow keys</b> to control an avatar in a 2D game. The
-            aim of the game is to earn <b>points</b> by collecting <b>items</b>.
+            Each time you collect an item, the game will show you how many
+            points you earned. You should use this information to{" "}
+            <b>try and determine which types of item your character prefers.</b>
           </p>
         </>
       ),
@@ -24,89 +49,58 @@ const phaseInstructionsContent = [
       content: (
         <>
           <p>
-            There are four different types of item in the game.{" "}
-            <b>Different types may be worth different numbers of points</b>, but
-            the number of points you earn for a particular type will <b>not</b>{" "}
-            change during the experiment.
+            All points you earn during the experiment will contribute to your
+            final score. A high final score means you will earn a bonus payment,
+            so you should try to get as many points as possible!
           </p>
-          <p>
-            Every time you collect an item, the game will show you how many
-            points you earned. You should pay close attention to this
-            information, and{" "}
-            <b>try to determine which items are worth the most points.</b>
-          </p>
-        </>
-      ),
-      buttonLabel: "Next",
-      buttonIcon: faHandPointRight,
-      buttonDelay: 4,
-    },
-    {
-      content: (
-        <>
-          <p>
-            All points you earn will contribute to your final score. A high
-            final score means you will earn a bonus payment, so you should try
-            to get as many points as possible!
-          </p>
-          <p>
-            <b>Note: every time you move your avatar, you will lose 1 point.</b>
-          </p>
+          <p>Note: every time your character moves, you will lose 1 point.</p>
         </>
       ),
       buttonLabel: "Start phase",
       buttonIcon: faHandPointRight,
-      buttonDelay: 4,
+      buttonDelay: 2,
     },
   ],
   [
     {
       content: (
-        <>
-          <p>
-            This is an <b>observation phase</b>. In this phase, you will not
-            interact with the game yourself - instead, you will watch{" "}
-            <b>two other characters</b> as they navigate the grid to collect
-            items for themselves.
-          </p>
-          <p>
-            Characters also earn points by collecting items.{" "}
-            <b>
-              However, the number of points they earn for a particular item type
-              may not be the same as for you
-            </b>{" "}
-            - so they <i>might</i> not always make the same choices that you
-            would.
-          </p>
-          <p>Also, like you, every character loses points by moving.</p>
-        </>
+        <p>
+          This is an <b>observation phase</b>. In this phase, you will not
+          interact with the game yourself - instead, you will watch{" "}
+          <b>two other characters</b> as they navigate the grid to collect items
+          for themselves.
+        </p>
       ),
       buttonLabel: "Next",
       buttonIcon: faHandPointRight,
-      buttonDelay: 5,
+      buttonDelay: 2,
     },
     {
       content: (
         <>
           <p>
-            You should pay <b>very close attention</b> to the choices each
-            character makes, as this information will be useful in the next
-            phase.
+            Other characters also earn points by collecting items, and like some
+            types of item more than others -{" "}
+            <b>but their preferences might be different to yours!</b>
           </p>
-          <p>
-            You will also be presented with a quiz after watching each
-            character. Unlike the quiz you just completed, you won't be told
-            whether you answered correctly. However,{" "}
-            <b>
-              correct responses will earn you points towards your final score.
-            </b>
-            , so you should think carefully about your answers.
-          </p>
+          <p>Like you, they also lose points by moving.</p>
         </>
+      ),
+      buttonLabel: "Next",
+      buttonIcon: faHandPointRight,
+      buttonDelay: 3,
+    },
+    {
+      content: (
+        <p>
+          Just like you did in the previous phase, you should try to figure out
+          which types of item each character prefers.{" "}
+          <i>This information may be useful to you in the next phase.</i>
+        </p>
       ),
       buttonLabel: "Start phase",
       buttonIcon: faHandPointRight,
-      buttonDelay: 5,
+      buttonDelay: 3,
     },
   ],
   [
@@ -119,6 +113,15 @@ const phaseInstructionsContent = [
             choose between two items - you will then have to choose between the{" "}
             <b>same</b> two items yourself.
           </p>
+        </>
+      ),
+      buttonLabel: "Next",
+      buttonIcon: faHandPointRight,
+      buttonDelay: 2,
+    },
+    {
+      content: (
+        <>
           <p>
             In this phase however, each item will be{" "}
             <b>hidden inside a mystery box</b>:
@@ -132,29 +135,56 @@ const phaseInstructionsContent = [
       ),
       buttonLabel: "Next",
       buttonIcon: faHandPointRight,
-      buttonDelay: 5,
+      buttonDelay: 2,
     },
     {
       content: (
         <>
           <p>
-            While you will not be able to see which item is inside each box,{" "}
-            <b>all characters already know what is inside each box</b>.
+            While you will not be able to see inside the boxes,{" "}
+            <b>
+              the other characters already know which item type each box
+              contains,
+            </b>{" "}
+            so you should pay close attention to what they do.
           </p>
           <p>
             Furthermore, this time the game will <b>not</b> tell you how many
             points you earned - but these points will still contribute to your
             final score.
           </p>
-          <p>
-            From watching the characters, you should think carefully about which
-            box is likely to give you more points!
-          </p>
         </>
       ),
       buttonLabel: "Start phase",
       buttonIcon: faHandPointRight,
-      buttonDelay: 5,
+      buttonDelay: 3,
+    },
+  ],
+  [
+    {
+      content: (
+        <p>
+          This is another observation phase. In this phase you will be
+          introduced to <b>four new characters</b>; as in phase 2, you will
+          observe each character choose between different items.
+        </p>
+      ),
+      buttonLabel: "Next",
+      buttonIcon: faHandPointRight,
+      buttonDelay: 2,
+    },
+    {
+      content: (
+        <p>
+          Like before, you should pay <b>close attention</b> to the choices they
+          make, and try to figure out which types of item each character
+          prefers.{" "}
+          <i>This information may be useful to you in the next phase.</i>
+        </p>
+      ),
+      buttonLabel: "Start phase",
+      buttonIcon: faHandPointRight,
+      buttonDelay: 3,
     },
   ],
   [
@@ -162,34 +192,16 @@ const phaseInstructionsContent = [
       content: (
         <>
           <p>
-            This is another observation phase. In this phase you will be
-            introduced to <b>four new characters</b>; as in phase 2, you will
-            observe each character choose between different items.
-          </p>
-          <p>
-            Like before, you should pay <b>very close attention</b> to the
-            choices they make, as this information will be useful in the next
-            phase. Again, you will also be presented with a quiz after each new
-            character.
-          </p>
-        </>
-      ),
-      buttonLabel: "Start phase",
-      buttonIcon: faHandPointRight,
-      buttonDelay: 5,
-    },
-  ],
-  [
-    {
-      content: (
-        <>
-          <p>
-            This is the final phase. Like phase 3, this phase involves choosing
-            between hidden items after watching what two characters do.{" "}
+            This is the <b>final phase.</b> Like phase 3, this phase involves
+            choosing between hidden items after watching what two characters do.{" "}
           </p>
           <p>
             Unlike phase 3, <b>you have not seen these characters before</b> in
-            any previous phase - they are <b>completely new</b>.
+            any previous phase - they are{" "}
+            <i>
+              <b>completely new</b>
+            </i>
+            .
           </p>
           <p>
             From watching the characters, you should think carefully about which

@@ -149,7 +149,7 @@ export const useStore = create((set) => ({
     gdyString: "",
     playing: true,
     agentPos: { x: 0, y: 0 },
-    score: 50,
+    score: 0,
     rewardHistory: [],
     itemHistory: [],
     agentHistory: [],

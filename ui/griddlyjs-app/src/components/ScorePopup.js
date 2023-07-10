@@ -50,7 +50,7 @@ const ScorePopup = () => {
       open={uiState.showScorePopup}
       scoreHidden={uiState.scoreHidden}
     >
-      <div className={`score-popup-score ${_reward > 10 ? "high" : "medium"}`}>
+      <div className="score-popup-score high">
         <img src={`resources/images/custom/items/${_item}.png`} width={50} />={" "}
         {_reward} points
       </div>

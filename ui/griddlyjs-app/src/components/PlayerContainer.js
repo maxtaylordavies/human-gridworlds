@@ -51,12 +51,6 @@ const PlayerContainer = ({ griddlyjs }) => {
     updateTrajectory(expState.phaseIdx, expState.levelIdx, step);
   };
 
-  const computeNameBadgePos = (agentPos) => {
-    const left = 185 + agentPos.x * 60;
-    const top = 65 + agentPos.y * 60;
-    return { left, top };
-  };
-
   let opacity = 1;
   if (uiState.showPhaseInstructions || uiState.showFinishedScreen) {
     opacity = 0;
@@ -69,7 +63,7 @@ const PlayerContainer = ({ griddlyjs }) => {
     opacity = 0.1;
   }
 
-  const nameBadgePos = computeNameBadgePos(gameState.agentPos);
+  const nameBadgePos = utils.computeNameBadgePos(expState, gameState);
   const replay = utils.currentReplay(expState);
 
   return (
@@ -114,6 +108,7 @@ const PlayerContainer = ({ griddlyjs }) => {
               onLevelComplete={onLevelComplete}
               trajectoryString={replay?.trajectory || ""}
               startPos={utils.currentStartPos(expState)}
+              replayIdx={expState.replayIdx}
               waitToBeginPlayback={
                 uiState.showPhaseInstructions ||
                 uiState.showAgentPopup ||
@@ -136,8 +131,8 @@ const PlayerContainer = ({ griddlyjs }) => {
             />
           </div>
         </div>
-        <RewardHistory />
       </motion.div>
+      <RewardHistory />
     </motion.div>
   );
 };

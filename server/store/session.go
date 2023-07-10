@@ -24,139 +24,152 @@ type Session struct {
 	TextResponses   []string         `json:"textResponses"`
 }
 
+type Thetas [][]int
+
+var YellowThetas = Thetas{
+	{10, 0},
+	{10, 10},
+}
+
+var GreenThetas = Thetas{
+	{0, 10},
+	{10, 10},
+}
+
+var CircleThetas = Thetas{
+	{10, 10},
+	{10, 0},
+}
+
+var TriangleThetas = Thetas{
+	{10, 10},
+	{0, 10},
+}
+
 func CreateSession(experimentID string, isTest bool, context interface{}) Session {
 	conditions := Conditions{
 		// "phi":         SampleFromSliceInt([]int{-1, 0}, 1)[0],
-		"phi":         0,
+		"phi":         -1,
 		"correlation": SampleFromSliceInt([]int{0, 1}, 1)[0],
-		"thetas": [][]int{
-			{10, 0},
-			{10, 10},
-		},
+		"thetas":      YellowThetas,
 	}
 
 	var phases []Phase
 
 	// exploration phase
-	phase := CreatePhase("exploration", []int{0, 1, 2, 3, 4, 6, 8, 10}, true, false, false)
+	phase := CreatePhase("exploration", []int{0, 1, 2, 3, 4, 5, 6, 7}, true, false, nil)
 	phases = append(phases, phase)
 
 	// evidence phase 1
-	phase = CreatePhase("evidence 1", []int{4, 6, 8, 10}, false, false, false)
-
-	ar := AgentReplays{
-		AgentPhi:  -1,
-		AgentName: "Alice",
+	phase = CreatePhase("evidence 1", []int{8}, false, false, nil)
+	phase.AgentReplays = []AgentReplays{
+		{
+			AgentPhi:    -1,
+			AgentThetas: YellowThetas,
+			AgentName:   "Alice",
+			Replays:     CreateEvidenceReplays("yellow", "", 2),
+		},
+		{
+			AgentPhi:    -1,
+			AgentThetas: GreenThetas,
+			AgentName:   "Bob",
+			Replays:     CreateEvidenceReplays("green", "", 2),
+		},
 	}
-	ar.Replays = append(ar.Replays, CreateReplaysPreference(4, "A")...)
-	ar.Replays = append(ar.Replays, CreateReplaysPreference(7, "B")...)
-	ar.Replays = append(ar.Replays, CreateReplaysNoPreference(8)...)
-	ar.Replays = append(ar.Replays, CreateReplaysNoPreference(10)...)
-	phase.AgentReplays = append(phase.AgentReplays, ar)
-
-	ar = AgentReplays{
-		AgentPhi:  -1,
-		AgentName: "Bob",
-	}
-	ar.Replays = append(ar.Replays, CreateReplaysPreference(4, "B")...)
-	ar.Replays = append(ar.Replays, CreateReplaysPreference(7, "A")...)
-	ar.Replays = append(ar.Replays, CreateReplaysNoPreference(8)...)
-	ar.Replays = append(ar.Replays, CreateReplaysNoPreference(10)...)
-	phase.AgentReplays = append(phase.AgentReplays, ar)
-
 	shuffleAgentReplays(phase.AgentReplays)
 	phases = append(phases, phase)
 
 	// test phase 1
-	phase = CreatePhase("test 1", []int{4}, true, true, true)
+	phase = CreatePhase("test 1", []int{9}, true, true, []string{"centre", "W", "E"})
 	phase.AgentReplays = []AgentReplays{
 		{
-			AgentPhi:  -1,
-			AgentName: "Alice",
-			Replays:   CreateReplaysPreference(4, "A"),
+			AgentPhi:    -1,
+			AgentThetas: YellowThetas,
+			AgentName:   "Alice",
+			Replays:     CreateTestReplays("yellow", "", 1),
 		},
 		{
-			AgentPhi:  -1,
-			AgentName: "Bob",
-			Replays:   CreateReplaysPreference(4, "B"),
+			AgentPhi:    -1,
+			AgentThetas: GreenThetas,
+			AgentName:   "Bob",
+			Replays:     CreateTestReplays("green", "", 1),
 		},
 	}
-
 	shuffleAgentReplays(phase.AgentReplays)
 	phases = append(phases, phase)
 
-	// evidence phase 2
-	phase = CreatePhase("evidence 2", []int{4, 6, 8, 10}, false, false, false)
+	// // evidence phase 2
+	// phase = CreatePhase("evidence 2", []int{4, 6, 8, 10}, false, false, false)
 
-	var replaysC []Replay
-	var replaysD []Replay
-	if conditions["correlation"].(int) == 0 {
-		// phi correlates to item color, not shape. so we will have C prefer yellow,
-		// D prefer green and both be indifferent to shape
-		replaysC = append(replaysC, CreateReplaysPreference(4, "A")...)
-		replaysC = append(replaysC, CreateReplaysPreference(7, "B")...)
-		replaysC = append(replaysC, CreateReplaysNoPreference(8)...)
-		replaysC = append(replaysC, CreateReplaysNoPreference(10)...)
-		replaysD = append(replaysD, CreateReplaysPreference(4, "B")...)
-		replaysD = append(replaysD, CreateReplaysPreference(7, "A")...)
-		replaysD = append(replaysD, CreateReplaysNoPreference(8)...)
-		replaysD = append(replaysD, CreateReplaysNoPreference(10)...)
-	} else {
-		// phi correlates to item shape, not color. so we will have C prefer circle,
-		// D prefer triangle and both be indifferent to color
-		replaysC = append(replaysC, CreateReplaysNoPreference(4)...)
-		replaysC = append(replaysC, CreateReplaysNoPreference(7)...)
-		replaysC = append(replaysC, CreateReplaysPreference(8, "A")...)
-		replaysC = append(replaysC, CreateReplaysPreference(11, "B")...)
-		replaysD = append(replaysD, CreateReplaysNoPreference(4)...)
-		replaysD = append(replaysD, CreateReplaysNoPreference(7)...)
-		replaysD = append(replaysD, CreateReplaysPreference(8, "B")...)
-		replaysD = append(replaysD, CreateReplaysPreference(11, "A")...)
-	}
+	// var replaysC []Replay
+	// var replaysD []Replay
+	// if conditions["correlation"].(int) == 0 {
+	// 	// phi correlates to item color, not shape. so we will have C prefer yellow,
+	// 	// D prefer green and both be indifferent to shape
+	// 	replaysC = append(replaysC, CreateReplaysPreference(4, "A")...)
+	// 	replaysC = append(replaysC, CreateReplaysPreference(7, "B")...)
+	// 	replaysC = append(replaysC, CreateReplaysNoPreference(8)...)
+	// 	replaysC = append(replaysC, CreateReplaysNoPreference(10)...)
+	// 	replaysD = append(replaysD, CreateReplaysPreference(4, "B")...)
+	// 	replaysD = append(replaysD, CreateReplaysPreference(7, "A")...)
+	// 	replaysD = append(replaysD, CreateReplaysNoPreference(8)...)
+	// 	replaysD = append(replaysD, CreateReplaysNoPreference(10)...)
+	// } else {
+	// 	// phi correlates to item shape, not color. so we will have C prefer circle,
+	// 	// D prefer triangle and both be indifferent to color
+	// 	replaysC = append(replaysC, CreateReplaysNoPreference(4)...)
+	// 	replaysC = append(replaysC, CreateReplaysNoPreference(7)...)
+	// 	replaysC = append(replaysC, CreateReplaysPreference(8, "A")...)
+	// 	replaysC = append(replaysC, CreateReplaysPreference(11, "B")...)
+	// 	replaysD = append(replaysD, CreateReplaysNoPreference(4)...)
+	// 	replaysD = append(replaysD, CreateReplaysNoPreference(7)...)
+	// 	replaysD = append(replaysD, CreateReplaysPreference(8, "B")...)
+	// 	replaysD = append(replaysD, CreateReplaysPreference(11, "A")...)
+	// }
 
-	phase.AgentReplays = []AgentReplays{
-		{
-			AgentPhi:  0,
-			AgentName: "Carol",
-			Replays:   replaysC,
-		},
-		{
-			AgentPhi:  1,
-			AgentName: "Dan",
-			Replays:   replaysD,
-		},
-		{
-			AgentPhi:  0,
-			AgentName: "Erin",
-			Replays:   replaysC,
-		},
-		{
-			AgentPhi:  1,
-			AgentName: "Frank",
-			Replays:   replaysD,
-		},
-	}
+	// phase.AgentReplays = []AgentReplays{
+	// 	{
+	// 		AgentPhi:  0,
+	// 		AgentName: "Carol",
+	// 		Replays:   replaysC,
+	// 	},
+	// 	{
+	// 		AgentPhi:  1,
+	// 		AgentName: "Dan",
+	// 		Replays:   replaysD,
+	// 	},
+	// 	{
+	// 		AgentPhi:  0,
+	// 		AgentName: "Erin",
+	// 		Replays:   replaysC,
+	// 	},
+	// 	{
+	// 		AgentPhi:  1,
+	// 		AgentName: "Frank",
+	// 		Replays:   replaysD,
+	// 	},
+	// }
 
-	shuffleAgentReplays(phase.AgentReplays)
-	phases = append(phases, phase)
+	// shuffleAgentReplays(phase.AgentReplays)
+	// phases = append(phases, phase)
 
-	// test phase 2
-	phase = CreatePhase("test 2", []int{4}, true, true, true)
-	phase.AgentReplays = []AgentReplays{
-		{
-			AgentPhi:  0,
-			AgentName: "Grace",
-			Replays:   CreateReplaysPreference(4, "B"),
-		},
-		{
-			AgentPhi:  1,
-			AgentName: "Henry",
-			Replays:   CreateReplaysPreference(4, "A"),
-		},
-	}
+	// // test phase 2
+	// phase = CreatePhase("test 2", []int{4}, true, true, true)
+	// phase.AgentReplays = []AgentReplays{
+	// 	{
+	// 		AgentPhi:  0,
+	// 		AgentName: "Grace",
+	// 		Replays:   CreateReplaysPreference(4, "B"),
+	// 	},
+	// 	{
+	// 		AgentPhi:  1,
+	// 		AgentName: "Henry",
+	// 		Replays:   CreateReplaysPreference(4, "A"),
+	// 	},
+	// }
 
-	shuffleAgentReplays(phase.AgentReplays)
-	phases = append(phases, phase)
+	// shuffleAgentReplays(phase.AgentReplays)
+	// phases = append(phases, phase)
 
 	return Session{
 		ID:              GenerateID("s-"),
