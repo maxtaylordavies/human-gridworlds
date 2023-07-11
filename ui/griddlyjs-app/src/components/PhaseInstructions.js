@@ -53,8 +53,8 @@ const phaseInstructionsContent = [
         <>
           <p>
             All points you earn during the experiment will contribute to your
-            final score. A high final score means you will earn a bonus payment,
-            so you should try to get as many points as possible!
+            final score. Your final score will determine the bonus payment you
+            receive, so you should try to get as many points as possible!
           </p>
           <p>Note: every time your character moves, you will lose 1 point.</p>
         </>
@@ -180,18 +180,23 @@ const phaseInstructionsContent = [
     },
     {
       content: (
-        <>
-          <p>
-            While you will not be able to see inside the boxes,{" "}
-            <b>Alice and Bob already know what each box contains,</b> so you
-            should pay close attention to what they do!
-          </p>
-          <p>
-            Furthermore, this time the game will <b>not</b> tell you how many
-            points you earned - but these points{" "}
-            <u>will still contribute to your final score.</u>
-          </p>
-        </>
+        <p>
+          While you will not be able to see inside the boxes,{" "}
+          <b>Alice and Bob already know what each box contains</b>, so you
+          should pay close attention to which box they each choose!
+        </p>
+      ),
+      buttonLabel: "Next",
+      buttonIcon: faHandPointRight,
+      buttonDelay: 3,
+    },
+    {
+      content: (
+        <p>
+          When you collect a hidden item, the game will <b>not</b> tell you how
+          many points you earned. But these points <u>will</u> still contribute
+          to your final score (and your bonus payment!)
+        </p>
       ),
       buttonLabel: "Start phase",
       buttonIcon: faHandPointRight,

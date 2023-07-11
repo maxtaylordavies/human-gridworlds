@@ -161,13 +161,17 @@ export const useStore = create((set) => ({
     }),
   updateScore: (delta) =>
     set((state) => {
-      const newScore = state.gameState.score + delta;
       const rh = [...state.gameState.rewardHistory];
       const ah = [...state.gameState.agentHistory];
+
+      const name = utils.currentAgentName(state.expState);
+      const newScore =
+        name === "you" ? state.gameState.score + delta : state.gameState.score;
+
       if (delta > 0) {
         rh.push(delta);
         ah.push({
-          name: utils.currentAgentName(state.expState),
+          name,
           color: utils.currentAgentColor(state.expState),
         });
       }
