@@ -9,27 +9,30 @@ const phaseInstructionsContent = [
     {
       content: (
         <p>
-          This is an interactive phase. In this phase, you will{" "}
-          <b>use your arrow keys</b> to control a <b>character</b> in a 2D game.
-          The aim of the game is to earn <b>points</b> by collecting{" "}
-          <b>items</b>.
+          This is an{" "}
+          <u>
+            <b>interactive phase</b>
+          </u>
+          . In this phase, you will <b>use your arrow keys</b> to control a{" "}
+          <b>character</b> in a 2D game. The aim of the game is to earn{" "}
+          <b>points</b> by collecting <b>items</b>.
         </p>
       ),
       buttonLabel: "Next",
       buttonIcon: faHandPointRight,
-      buttonDelay: 2,
+      buttonDelay: 3,
     },
     {
       content: (
         <p>
           There are four different types of item in the game.{" "}
           <b>Your character likes some types of item more than others.</b> Items
-          that your character likes more are worth more points.
+          that your character likes more will give you more points.
         </p>
       ),
       buttonLabel: "Next",
       buttonIcon: faHandPointRight,
-      buttonDelay: 2,
+      buttonDelay: 3,
     },
     {
       content: (
@@ -43,7 +46,7 @@ const phaseInstructionsContent = [
       ),
       buttonLabel: "Next",
       buttonIcon: faHandPointRight,
-      buttonDelay: 2,
+      buttonDelay: 3,
     },
     {
       content: (
@@ -58,33 +61,21 @@ const phaseInstructionsContent = [
       ),
       buttonLabel: "Start phase",
       buttonIcon: faHandPointRight,
-      buttonDelay: 2,
+      buttonDelay: 3,
     },
   ],
   [
     {
       content: (
         <p>
-          This is an <b>observation phase</b>. In this phase, you will not
-          interact with the game yourself - instead, you will watch{" "}
-          <b>two other characters</b> as they navigate the grid to collect items
-          for themselves.
+          This is an{" "}
+          <u>
+            <b>observation phase</b>
+          </u>
+          . So far, you have only seen your own character. But the game also
+          contains <b>other characters</b> - in this phase, you will begin to be
+          introduced to them.
         </p>
-      ),
-      buttonLabel: "Next",
-      buttonIcon: faHandPointRight,
-      buttonDelay: 2,
-    },
-    {
-      content: (
-        <>
-          <p>
-            Other characters also earn points by collecting items, and like some
-            types of item more than others -{" "}
-            <b>but their preferences might be different to yours!</b>
-          </p>
-          <p>Like you, they also lose points by moving.</p>
-        </>
       ),
       buttonLabel: "Next",
       buttonIcon: faHandPointRight,
@@ -93,10 +84,57 @@ const phaseInstructionsContent = [
     {
       content: (
         <p>
-          Just like you did in the previous phase, you should try to figure out
-          which types of item each character prefers.{" "}
-          <i>This information may be useful to you in the next phase.</i>
+          You will not be able to control these characters - instead you will
+          watch them as they navigate the grid to collect items for themselves.
+          After watching each character, you will complete a quiz, similar to
+          the one you completed for yourself in the previous phase.
         </p>
+      ),
+      buttonLabel: "Next",
+      buttonIcon: faHandPointRight,
+      buttonDelay: 3,
+    },
+    {
+      content: (
+        <>
+          <p>
+            Every character has their own preferences regarding item types. Just
+            like in the real world, different characters might agree on which
+            item types are best, or they might disagree!
+          </p>
+        </>
+      ),
+      buttonLabel: "Next",
+      buttonIcon: faHandPointRight,
+      buttonDelay: 3,
+    },
+    {
+      content: (
+        <>
+          <p>
+            <b>
+              This means that any character you see might choose the same items
+              that you would choose - or they might choose different items.
+            </b>
+          </p>
+          <p>Like you, other characters also lose points for moving.</p>
+        </>
+      ),
+      buttonLabel: "Next",
+      buttonIcon: faHandPointRight,
+      buttonDelay: 3,
+    },
+    {
+      content: (
+        <>
+          <p>
+            By watching what each character does, you should try to figure out
+            which types of item they prefer.
+          </p>
+          <p>
+            <i>This information may be useful to you in the next phase.</i>
+          </p>
+        </>
       ),
       buttonLabel: "Start phase",
       buttonIcon: faHandPointRight,
@@ -108,16 +146,19 @@ const phaseInstructionsContent = [
       content: (
         <>
           <p>
-            This phase combines <b>both observation and interaction</b>. You
-            will first watch the same two characters from the previous phase
-            choose between two items - you will then have to choose between the{" "}
-            <b>same</b> two items yourself.
+            This phase combines{" "}
+            <u>
+              <b>both observation and interaction</b>
+            </u>
+            . You will first watch the same characters you just met (Alice and
+            Bob) choose between two items - you will then have to choose between
+            the two items yourself.
           </p>
         </>
       ),
       buttonLabel: "Next",
       buttonIcon: faHandPointRight,
-      buttonDelay: 2,
+      buttonDelay: 3,
     },
     {
       content: (
@@ -135,23 +176,20 @@ const phaseInstructionsContent = [
       ),
       buttonLabel: "Next",
       buttonIcon: faHandPointRight,
-      buttonDelay: 2,
+      buttonDelay: 3,
     },
     {
       content: (
         <>
           <p>
             While you will not be able to see inside the boxes,{" "}
-            <b>
-              the other characters already know which item type each box
-              contains,
-            </b>{" "}
-            so you should pay close attention to what they do.
+            <b>Alice and Bob already know what each box contains,</b> so you
+            should pay close attention to what they do!
           </p>
           <p>
             Furthermore, this time the game will <b>not</b> tell you how many
-            points you earned - but these points will still contribute to your
-            final score.
+            points you earned - but these points{" "}
+            <u>will still contribute to your final score.</u>
           </p>
         </>
       ),
@@ -164,14 +202,18 @@ const phaseInstructionsContent = [
     {
       content: (
         <p>
-          This is another observation phase. In this phase you will be
-          introduced to <b>four new characters</b>; as in phase 2, you will
-          observe each character choose between different items.
+          This is another{" "}
+          <u>
+            <b>observation phase</b>
+          </u>
+          . In this phase you will be introduced to <b>four new characters</b>{" "}
+          that you have not seen before. As in phase 2, you will observe each
+          character choose between different items.
         </p>
       ),
       buttonLabel: "Next",
       buttonIcon: faHandPointRight,
-      buttonDelay: 2,
+      buttonDelay: 3,
     },
     {
       content: (
@@ -192,11 +234,15 @@ const phaseInstructionsContent = [
       content: (
         <>
           <p>
-            This is the <b>final phase.</b> Like phase 3, this phase involves
-            choosing between hidden items after watching what two characters do.{" "}
+            This is the{" "}
+            <u>
+              <b>final phase</b>
+            </u>
+            . Like phase 3, this phase involves choosing between hidden items
+            after watching what two characters do.{" "}
           </p>
           <p>
-            Unlike phase 3, <b>you have not seen these characters before</b> in
+            Unlike phase 3, <b>you have NOT seen these characters before</b> in
             any previous phase - they are{" "}
             <i>
               <b>completely new</b>
