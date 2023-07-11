@@ -9,22 +9,24 @@ type Trajectories map[int]map[int]string // maps phase index and level index to 
 
 type Conditions map[string]interface{}
 
-type Session struct {
-	ID              string           `json:"id"`
-	ExperimentID    string           `json:"experimentId"`
-	CreatedAt       int64            `json:"createdAt"` // unix timestamp
-	IsTest          bool             `json:"isTest"`
-	GriddlySpecName string           `json:"griddlySpecName"`
-	Phases          []Phase          `json:"phases"`
-	Conditions      Conditions       `json:"conditions"`
-	Context         interface{}      `json:"context"`
-	Trajectories    Trajectories     `json:"trajectories"`
-	QuizResponses   map[string][]int `json:"quizResponses"`
-	FinalScore      int              `json:"finalScore"`
-	TextResponses   []string         `json:"textResponses"`
-}
-
 type Thetas [][]int
+
+type QuizResponse []int
+
+type Session struct {
+	ID              string                    `json:"id"`
+	ExperimentID    string                    `json:"experimentId"`
+	CreatedAt       int64                     `json:"createdAt"` // unix timestamp
+	IsTest          bool                      `json:"isTest"`
+	GriddlySpecName string                    `json:"griddlySpecName"`
+	Phases          []Phase                   `json:"phases"`
+	Conditions      Conditions                `json:"conditions"`
+	Context         interface{}               `json:"context"`
+	Trajectories    Trajectories              `json:"trajectories"`
+	QuizResponses   map[string][]QuizResponse `json:"quizResponses"`
+	FinalScore      int                       `json:"finalScore"`
+	TextResponses   []string                  `json:"textResponses"`
+}
 
 var YellowThetas = Thetas{
 	{10, 0},

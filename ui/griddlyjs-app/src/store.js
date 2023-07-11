@@ -243,10 +243,13 @@ export const useStore = create((set) => ({
     }),
   saveQuizResponse: (agent, response) =>
     set((state) => {
-      const quizResponses = { ...state.resultsState.quizResponses };
-      quizResponses[agent] = response;
+      const qr = { ...state.resultsState.quizResponses };
+      if (!(agent in qr)) {
+        qr[agent] = [];
+      }
+      qr[agent].push(response);
       return {
-        resultsState: { ...state.resultsState, quizResponses: quizResponses },
+        resultsState: { ...state.resultsState, quizResponses: qr },
       };
     }),
   saveTextResponse: (response) =>
