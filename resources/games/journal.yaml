@@ -101,16 +101,14 @@ Environment:
       A   
       .   
       .   
-      .   
-      .   
-      p   
-      .   
+      .    
+      p     
       .   
       .   
       .   
-      B   
+      B
     - |
-      C   .   .   .   .   p   .   .   .   .   D   
+      C   .   .   .   .   p   .   .   .   .   D
     - |
       C   
       .   
@@ -122,9 +120,9 @@ Environment:
       .   
       .   
       .   
-      D 
+      D
     - |
-      A   .   .   .   .   p   .   .   .   .   C   
+      A   .   .   .   .   p   .   .   .   .   C
     - |
       A   
       .   
@@ -136,9 +134,9 @@ Environment:
       .   
       .   
       .   
-      C 
+      C
     - |
-      B   .   .   .   .   p   .   .   .   .   D   
+      B   .   .   .   .   p   .   .   .   .   D
     - |
       B   
       .   
@@ -150,7 +148,7 @@ Environment:
       .   
       .   
       .   
-      D 
+      D
 Actions:
   - Name: move
     Behaviours:

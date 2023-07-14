@@ -132,7 +132,7 @@ export class PlayerScene extends Phaser.Scene {
       rows.forEach((row, i) => {
         const j = row.indexOf("p");
         if (j !== -1) {
-          this.playerPos = { y: i, x: j / (row.length / this.gridWidth) };
+          this.playerPos = { y: i, x: j / 4 };
         }
       });
     }
@@ -143,7 +143,8 @@ export class PlayerScene extends Phaser.Scene {
       .split("\n");
 
     const tmp = rows[this.playerPos.y].split("");
-    tmp[this.playerPos.x * (tmp.length / this.gridWidth)] = "p";
+
+    tmp[this.playerPos.x * 4] = "p";
     rows[this.playerPos.y] = tmp.join("");
 
     const levelStr = rows.join("\n");

@@ -280,7 +280,7 @@ export const computeNameBadgePos = (expState, gameState) => {
   pos.left = 0.5 * (800 - gridWidth) - 5; // set to top left corner of grid
   pos.left += 60 * gameState.agentPos.x; // add offset for current x position
 
-  pos.top = 0.5 * (500 - gridHeight) + 30; // set to top left corner of grid
+  pos.top = 0.5 * (600 - gridHeight) + 30; // set to top left corner of grid
   pos.top += 60 * gameState.agentPos.y; // add offset for current y position
 
   return pos;

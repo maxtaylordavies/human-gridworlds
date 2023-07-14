@@ -8,7 +8,7 @@ class Player extends Component {
     super(props);
     this.divElement = React.createRef();
     this.width = 800;
-    this.height = 500;
+    this.height = 600;
   }
 
   updateCanvasSize = () => {
@@ -70,6 +70,7 @@ class Player extends Component {
         prevProps.avatarPath !== this.props.avatarPath ||
         prevProps.hideGoals !== this.props.hideGoals ||
         prevProps.trajectoryString !== this.props.trajectoryString ||
+        prevProps.levelIdx !== this.props.levelIdx ||
         prevProps.replayIdx !== this.props.replayIdx ||
         !this.posEqual(prevProps.startPos, this.props.startPos) ||
         prevProps.waitToBeginPlayback !== this.props.waitToBeginPlayback ||

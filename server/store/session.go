@@ -51,15 +51,29 @@ var TriangleThetas = Thetas{
 func CreateSession(experimentID string, isTest bool, context interface{}) Session {
 	conditions := Conditions{
 		// "phi":         SampleFromSliceInt([]int{-1, 0}, 1)[0],
-		"phi":         -1,
-		"correlation": SampleFromSliceInt([]int{0, 1}, 1)[0],
+		"phi": 0,
+		// "correlation": SampleFromSliceInt([]int{0, 1}, 1)[0],
+		"correlation": 0,
 		"thetas":      YellowThetas,
+	}
+
+	// set preferences for the two agent groups
+	colorPrefs := []string{"", ""}
+	shapePrefs := []string{"", ""}
+	var thetas []Thetas
+
+	if conditions["correlation"].(int) == 0 {
+		colorPrefs[0], colorPrefs[1] = "yellow", "green"
+		thetas = []Thetas{YellowThetas, GreenThetas}
+	} else {
+		shapePrefs[0], shapePrefs[1] = "circle", "triangle"
+		thetas = []Thetas{CircleThetas, TriangleThetas}
 	}
 
 	var phases []Phase
 
 	// exploration phase
-	phase := CreatePhase("exploration", []int{0, 1, 2, 3, 4, 5, 6, 7}, true, false, nil)
+	phase := CreatePhase("exploration", []int{0, 1, 2, 3}, true, false, nil)
 	phases = append(phases, phase)
 
 	// evidence phase 1
@@ -78,100 +92,62 @@ func CreateSession(experimentID string, isTest bool, context interface{}) Sessio
 			Replays:     CreateEvidenceReplays("green", "", 2),
 		},
 	}
-	shuffleAgentReplays(phase.AgentReplays)
 	phases = append(phases, phase)
 
 	// test phase 1
-	phase = CreatePhase("test 1", []int{9}, true, true, []string{"centre", "W", "E"})
+	phase = CreatePhase("test 1", []int{9}, true, true, []string{"centre_horizontal", "centre_horizontal", "W", "E"})
 	phase.AgentReplays = []AgentReplays{
 		{
 			AgentPhi:    -1,
 			AgentThetas: YellowThetas,
 			AgentName:   "Alice",
-			Replays:     CreateTestReplays("yellow", "", 1),
+			Replays:     CreateTestReplays("horizontal", "yellow", "", 1),
 		},
 		{
 			AgentPhi:    -1,
 			AgentThetas: GreenThetas,
 			AgentName:   "Bob",
-			Replays:     CreateTestReplays("green", "", 1),
+			Replays:     CreateTestReplays("horizontal", "green", "", 1),
 		},
 	}
-	shuffleAgentReplays(phase.AgentReplays)
 	phases = append(phases, phase)
 
-	// // evidence phase 2
-	// phase = CreatePhase("evidence 2", []int{4, 6, 8, 10}, false, false, false)
+	// evidence phase 2
+	phase = CreatePhase("evidence 2", []int{8}, false, false, nil)
+	phase.AgentReplays = []AgentReplays{
+		{AgentPhi: 0, AgentName: "Carol"},
+		{AgentPhi: 1, AgentName: "Dan"},
+		{AgentPhi: 0, AgentName: "Erin"},
+		{AgentPhi: 1, AgentName: "Frank"},
+	}
+	for i, ar := range phase.AgentReplays {
+		phase.AgentReplays[i].AgentThetas = thetas[ar.AgentPhi]
+		phase.AgentReplays[i].Replays = CreateEvidenceReplays(colorPrefs[ar.AgentPhi], shapePrefs[ar.AgentPhi], 2)
+	}
+	phases = append(phases, phase)
 
-	// var replaysC []Replay
-	// var replaysD []Replay
-	// if conditions["correlation"].(int) == 0 {
-	// 	// phi correlates to item color, not shape. so we will have C prefer yellow,
-	// 	// D prefer green and both be indifferent to shape
-	// 	replaysC = append(replaysC, CreateReplaysPreference(4, "A")...)
-	// 	replaysC = append(replaysC, CreateReplaysPreference(7, "B")...)
-	// 	replaysC = append(replaysC, CreateReplaysNoPreference(8)...)
-	// 	replaysC = append(replaysC, CreateReplaysNoPreference(10)...)
-	// 	replaysD = append(replaysD, CreateReplaysPreference(4, "B")...)
-	// 	replaysD = append(replaysD, CreateReplaysPreference(7, "A")...)
-	// 	replaysD = append(replaysD, CreateReplaysNoPreference(8)...)
-	// 	replaysD = append(replaysD, CreateReplaysNoPreference(10)...)
-	// } else {
-	// 	// phi correlates to item shape, not color. so we will have C prefer circle,
-	// 	// D prefer triangle and both be indifferent to color
-	// 	replaysC = append(replaysC, CreateReplaysNoPreference(4)...)
-	// 	replaysC = append(replaysC, CreateReplaysNoPreference(7)...)
-	// 	replaysC = append(replaysC, CreateReplaysPreference(8, "A")...)
-	// 	replaysC = append(replaysC, CreateReplaysPreference(11, "B")...)
-	// 	replaysD = append(replaysD, CreateReplaysNoPreference(4)...)
-	// 	replaysD = append(replaysD, CreateReplaysNoPreference(7)...)
-	// 	replaysD = append(replaysD, CreateReplaysPreference(8, "B")...)
-	// 	replaysD = append(replaysD, CreateReplaysPreference(11, "A")...)
-	// }
+	// test phase 2
+	phase = CreatePhase("test 2", []int{10}, true, true, []string{"centre_vertical", "centre_vertical", "N", "S"})
+	phase.AgentReplays = []AgentReplays{
+		{
+			AgentPhi:    0,
+			AgentName:   "Grace",
+			AgentThetas: thetas[0],
+			Replays:     CreateTestReplays("vertical", colorPrefs[0], shapePrefs[0], 1),
+		},
+		{
+			AgentPhi:    1,
+			AgentName:   "Henry",
+			AgentThetas: thetas[1],
+			Replays:     CreateTestReplays("vertical", colorPrefs[1], shapePrefs[1], 1),
+		},
+	}
+	phases = append(phases, phase)
 
-	// phase.AgentReplays = []AgentReplays{
-	// 	{
-	// 		AgentPhi:  0,
-	// 		AgentName: "Carol",
-	// 		Replays:   replaysC,
-	// 	},
-	// 	{
-	// 		AgentPhi:  1,
-	// 		AgentName: "Dan",
-	// 		Replays:   replaysD,
-	// 	},
-	// 	{
-	// 		AgentPhi:  0,
-	// 		AgentName: "Erin",
-	// 		Replays:   replaysC,
-	// 	},
-	// 	{
-	// 		AgentPhi:  1,
-	// 		AgentName: "Frank",
-	// 		Replays:   replaysD,
-	// 	},
-	// }
-
-	// shuffleAgentReplays(phase.AgentReplays)
-	// phases = append(phases, phase)
-
-	// // test phase 2
-	// phase = CreatePhase("test 2", []int{4}, true, true, true)
-	// phase.AgentReplays = []AgentReplays{
-	// 	{
-	// 		AgentPhi:  0,
-	// 		AgentName: "Grace",
-	// 		Replays:   CreateReplaysPreference(4, "B"),
-	// 	},
-	// 	{
-	// 		AgentPhi:  1,
-	// 		AgentName: "Henry",
-	// 		Replays:   CreateReplaysPreference(4, "A"),
-	// 	},
-	// }
-
-	// shuffleAgentReplays(phase.AgentReplays)
-	// phases = append(phases, phase)
+	// shuffle replays
+	for i := range phases {
+		shuffleAgentReplays(phases[i].AgentReplays)
+	}
 
 	return Session{
 		ID:              GenerateID("s-"),
