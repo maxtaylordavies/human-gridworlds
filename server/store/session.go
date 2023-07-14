@@ -73,7 +73,7 @@ func CreateSession(experimentID string, isTest bool, context interface{}) Sessio
 	var phases []Phase
 
 	// exploration phase
-	phase := CreatePhase("exploration", []int{0, 1, 2, 3}, true, false, nil)
+	phase := CreatePhase("exploration", []int{0, 1, 2, 3, 4, 5, 6, 7}, true, false, nil)
 	phases = append(phases, phase)
 
 	// evidence phase 1
