@@ -82,7 +82,7 @@ func CreateSession(experimentID string, isTest bool, context interface{}) Sessio
 		{
 			AgentPhi:    -1,
 			AgentThetas: YellowThetas,
-			AgentName:   "Alice",
+			AgentName:   "Alex",
 			Replays:     CreateEvidenceReplays("yellow", "", 2),
 		},
 		{
@@ -100,7 +100,7 @@ func CreateSession(experimentID string, isTest bool, context interface{}) Sessio
 		{
 			AgentPhi:    -1,
 			AgentThetas: YellowThetas,
-			AgentName:   "Alice",
+			AgentName:   "Alex",
 			Replays:     CreateTestReplays("horizontal", "yellow", "", 1),
 		},
 		{
@@ -115,9 +115,9 @@ func CreateSession(experimentID string, isTest bool, context interface{}) Sessio
 	// evidence phase 2
 	phase = CreatePhase("evidence 2", []int{8}, false, false, nil)
 	phase.AgentReplays = []AgentReplays{
-		{AgentPhi: 0, AgentName: "Carol"},
+		{AgentPhi: 0, AgentName: "Carl"},
 		{AgentPhi: 1, AgentName: "Dan"},
-		{AgentPhi: 0, AgentName: "Erin"},
+		{AgentPhi: 0, AgentName: "Eric"},
 		{AgentPhi: 1, AgentName: "Frank"},
 	}
 	for i, ar := range phase.AgentReplays {
@@ -131,7 +131,7 @@ func CreateSession(experimentID string, isTest bool, context interface{}) Sessio
 	phase.AgentReplays = []AgentReplays{
 		{
 			AgentPhi:    0,
-			AgentName:   "Grace",
+			AgentName:   "George",
 			AgentThetas: thetas[0],
 			Replays:     CreateTestReplays("vertical", colorPrefs[0], shapePrefs[0], 1),
 		},

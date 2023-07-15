@@ -253,7 +253,7 @@ export const agentEmoji = (expState, itemName) => {
   let phi = currentPhi(expState);
   if (phi < 0) {
     corr = 0;
-    phi = currentAgentName(expState) === "Alice" ? 0 : 1;
+    phi = currentAgentName(expState) === "Alex" ? 0 : 1;
   }
 
   return x[corr] === phi ? "😀" : "🙁";

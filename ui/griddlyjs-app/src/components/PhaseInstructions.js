@@ -83,12 +83,17 @@ const phaseInstructionsContent = [
     },
     {
       content: (
-        <p>
-          You will not be able to control these characters - instead you will
-          watch them as they navigate the grid to collect items for themselves.
-          After watching each character, you will complete a quiz, similar to
-          the one you completed for yourself in the previous phase.
-        </p>
+        <>
+          <p>
+            You will not be able to control these characters - instead you will
+            watch them as they navigate the grid to collect items for
+            themselves.
+          </p>
+          <p>
+            After watching each character, you will complete a quiz, similar to
+            the one you completed for yourself in the previous phase.
+          </p>
+        </>
       ),
       buttonLabel: "Next",
       buttonIcon: faHandPointRight,
@@ -98,9 +103,11 @@ const phaseInstructionsContent = [
       content: (
         <>
           <p>
-            Every character has their own preferences regarding item types. Just
-            like in the real world, different characters might agree on which
-            item types are best, or they might disagree!
+            Every character has their own preferences regarding item types.{" "}
+            <b>
+              Just like in the real world, different characters can agree or
+              disagree on which item types are best!
+            </b>
           </p>
         </>
       ),
@@ -117,7 +124,7 @@ const phaseInstructionsContent = [
               that you would choose - or they might choose different items.
             </b>
           </p>
-          <p>Like you, other characters also lose points for moving.</p>
+          <p>(Like you, the other characters also lose points for moving.)</p>
         </>
       ),
       buttonLabel: "Next",
@@ -132,7 +139,7 @@ const phaseInstructionsContent = [
             which types of item they prefer.
           </p>
           <p>
-            <i>This information may be useful to you in the next phase.</i>
+            <b>This information may be useful to you in the next phase.</b>
           </p>
         </>
       ),
@@ -150,7 +157,7 @@ const phaseInstructionsContent = [
             <u>
               <b>both observation and interaction</b>
             </u>
-            . You will first watch the same characters you just met (Alice and
+            . You will first watch the same characters you just met (Alex and
             Bob) choose between two items - you will then have to choose between
             the two items yourself.
           </p>
@@ -182,8 +189,8 @@ const phaseInstructionsContent = [
       content: (
         <p>
           While you will not be able to see inside the boxes,{" "}
-          <b>Alice and Bob already know what each box contains</b>, so you
-          should pay close attention to which box they each choose!
+          <b>Alex and Bob already know what each box contains</b>, so you should
+          pay close attention to which box they each choose!
         </p>
       ),
       buttonLabel: "Next",
@@ -226,7 +233,7 @@ const phaseInstructionsContent = [
           Like before, you should pay <b>close attention</b> to the choices they
           make, and try to figure out which types of item each character
           prefers.{" "}
-          <i>This information may be useful to you in the next phase.</i>
+          <b>This information may be useful to you in the next phase.</b>
         </p>
       ),
       buttonLabel: "Start phase",
@@ -247,12 +254,9 @@ const phaseInstructionsContent = [
             after watching what two characters do.{" "}
           </p>
           <p>
-            Unlike phase 3, <b>you have NOT seen these characters before</b> in
-            any previous phase - they are{" "}
-            <i>
-              <b>completely new</b>
-            </i>
-            .
+            Unlike phase 3, <b>you have NOT seen these two characters before</b>{" "}
+            in any previous phase. However, things you learned in previous
+            phases may still be useful to you.
           </p>
           <p>
             From watching the characters, you should think carefully about which
