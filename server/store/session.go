@@ -1,7 +1,6 @@
 package store
 
 import (
-	"math/rand"
 	"time"
 )
 
@@ -51,7 +50,7 @@ var TriangleThetas = Thetas{
 func CreateSession(experimentID string, isTest bool, context interface{}) Session {
 	conditions := Conditions{
 		// "phi":         SampleFromSliceInt([]int{-1, 0}, 1)[0],
-		"phi": 0,
+		"phi": -1,
 		// "correlation": SampleFromSliceInt([]int{0, 1}, 1)[0],
 		"correlation": 0,
 		"thetas":      YellowThetas,
@@ -162,7 +161,7 @@ func CreateSession(experimentID string, isTest bool, context interface{}) Sessio
 }
 
 func shuffleAgentReplays(agentReplays []AgentReplays) {
-	rand.Shuffle(len(agentReplays), func(i, j int) {
+	RNG().Shuffle(len(agentReplays), func(i, j int) {
 		agentReplays[i], agentReplays[j] = agentReplays[j], agentReplays[i]
 	})
 }
