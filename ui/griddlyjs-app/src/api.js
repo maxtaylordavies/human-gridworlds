@@ -29,13 +29,16 @@ export const getSession = async (id, callback, onError) => {
 
 export const createSession = async (
   experimentId,
+  isTest,
+  condition,
   context,
   callback,
   onError
 ) => {
   post("session", {
     experimentId,
-    isTest: true,
+    isTest,
+    condition,
     context,
   })
     .then((response) => {
@@ -71,24 +74,3 @@ export const loadAgentPaths = async (session, callback, onError) => {
     })
     .catch((e) => onError(e));
 };
-
-// export const storeTrajectories = async (session, trajectories) => {
-//   return post("trajectories", {
-//     session_id: session.id,
-//     trajectories,
-//   });
-// };
-
-// export const storeFreeTextResponse = async (session, response) => {
-//   return post("freeTextResponse", {
-//     session_id: session.id,
-//     response,
-//   });
-// };
-
-// export const storeFinalScore = async (session, score) => {
-//   return post("finalScore", {
-//     session_id: session.id,
-//     score,
-//   });
-// };

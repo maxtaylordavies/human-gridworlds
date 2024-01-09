@@ -12,7 +12,6 @@ import Player from "../renderer/Player";
 import InfoBar from "./InfoBar";
 import RewardHistory from "./RewardHistory";
 import ScorePopup from "./ScorePopup";
-// import { EmojiBubble } from "./EmojiBubble";
 
 const PlayerContainer = ({ griddlyjs }) => {
   const uiState = useStore((state) => state.uiState);
@@ -88,12 +87,6 @@ const PlayerContainer = ({ griddlyjs }) => {
             >
               {utils.currentAgentName(expState)}
             </div>
-            {/* <EmojiBubble
-              pos={{
-                left: nameBadgePos.left + 60,
-                top: nameBadgePos.top - 45,
-              }}
-            /> */}
             <Player
               gdyHash={gameState.gdyHash}
               gdy={gameState.gdy}

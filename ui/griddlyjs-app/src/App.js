@@ -72,19 +72,30 @@ const App = () => {
       // check for existing session_id in url or localstorage
       // if we find one, then get the corresponding session from
       // the server (rather than creating a new session)
-      // const sid = utils.getValueFromUrlOrLocalstorage("sid");
-      // if (sid) {
-      //   api.getSession(sid, onSession, console.Error);
-      // } else {
-      // otherwise, we create a new session on the server, passing
-      // in existing experiment_id and human_id if they exist
-      api.createSession(
-        utils.getValueFromUrlOrLocalstorage("eid"),
-        utils.getProlificMetadata(),
-        onSession,
-        console.error
-      );
-      // }
+      const sid = utils.getValueFromUrlOrLocalstorage("sid");
+      if (sid) {
+        api.getSession(sid, onSession, console.Error);
+      } else {
+        // otherwise, we need to create a new session
+        // first, get the condition from the url (or localstorage)
+        const condition = {
+          phisRelevant:
+            utils.getValueFromUrlOrLocalstorage("factor1") === "true",
+          participantPhiType: utils.getValueFromUrlOrLocalstorage("factor2"),
+        };
+
+        console.log("condition: ", condition);
+
+        // then, create the session on the server
+        api.createSession(
+          utils.getValueFromUrlOrLocalstorage("eid"), // experiment id
+          true, // isTest
+          condition,
+          utils.getProlificMetadata(), // context
+          onSession,
+          console.error
+        );
+      }
     });
   };
 
@@ -103,15 +114,13 @@ const App = () => {
   };
 
   const setRewards = (gdy) => {
-    const thetas = expState.session.conditions.thetas;
-
     gdy.Actions[0].Behaviours = gdy.Actions[0].Behaviours.map((b) => {
       let src = {
         ...b.Src,
         Commands: b.Src.Commands.map((cmd) => {
           const item = b.Dst.Object;
           return item.includes("goal") && cmd.reward !== undefined
-            ? { reward: utils.itemReward(item, thetas) }
+            ? { reward: utils.itemReward(item, expState.session.thetas) }
             : cmd;
         }),
       };

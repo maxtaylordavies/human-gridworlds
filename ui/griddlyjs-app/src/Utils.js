@@ -158,12 +158,12 @@ export const currentAgentReplay = (expState) => {
 
 export const currentThetas = (expState) => {
   const ar = currentAgentReplay(expState);
-  return ar ? ar.agentThetas : expState.session.conditions.thetas;
+  return ar ? ar.agentThetas : expState.session.thetas;
 };
 
 export const currentPhi = (expState) => {
   const ar = currentAgentReplay(expState);
-  return ar ? ar.agentPhi : expState.session.conditions.phi;
+  return ar ? ar.agentPhi : expState.session.phi;
 };
 
 export const currentAgentColor = (expState) => {
@@ -245,18 +245,6 @@ export const itemReward = (itemName, thetas) => {
     r += thetas[i][x[i]];
   }
   return r;
-};
-
-export const agentEmoji = (expState, itemName) => {
-  const x = OBJECT_FEATURE_MAP[itemName];
-  let corr = expState.session.conditions.correlation;
-  let phi = currentPhi(expState);
-  if (phi < 0) {
-    corr = 0;
-    phi = currentAgentName(expState) === "Alex" ? 0 : 1;
-  }
-
-  return x[corr] === phi ? "😀" : "🙁";
 };
 
 export const computeNameBadgePos = (expState, gameState) => {

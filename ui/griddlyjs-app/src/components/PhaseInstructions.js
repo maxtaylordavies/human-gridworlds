@@ -133,15 +133,10 @@ const phaseInstructionsContent = [
     },
     {
       content: (
-        <>
-          <p>
-            By watching what each character does, you should try to figure out
-            which types of item they prefer.
-          </p>
-          <p>
-            <b>This information may be useful to you in the next phase.</b>
-          </p>
-        </>
+        <p>
+          By watching what each character does, you should try to figure out
+          which types of item they prefer.
+        </p>
       ),
       buttonLabel: "Start phase",
       buttonIcon: faHandPointRight,
@@ -190,7 +185,7 @@ const phaseInstructionsContent = [
         <p>
           While you will not be able to see inside the boxes,{" "}
           <b>Alex and Bob already know what each box contains</b>, so you should
-          pay close attention to which box they each choose!
+          pay attention to which box they each choose!
         </p>
       ),
       buttonLabel: "Next",
@@ -233,7 +228,6 @@ const phaseInstructionsContent = [
           Like before, you should pay <b>close attention</b> to the choices they
           make, and try to figure out which types of item each character
           prefers.{" "}
-          <b>This information may be useful to you in the next phase.</b>
         </p>
       ),
       buttonLabel: "Start phase",
@@ -258,10 +252,10 @@ const phaseInstructionsContent = [
             in any previous phase. However, things you learned in previous
             phases may still be useful to you.
           </p>
-          <p>
+          {/* <p>
             From watching the characters, you should think carefully about which
             box is likely to give you more points.
-          </p>
+          </p> */}
         </>
       ),
       buttonLabel: "Start phase",
