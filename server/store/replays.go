@@ -1,6 +1,8 @@
 package store
 
-import "math/rand"
+import (
+	"math/rand"
+)
 
 type Replay struct {
 	LevelID      int    `json:"levelId"`
@@ -85,7 +87,6 @@ var Coords = map[string]Pos{
 
 func CreateEvidenceReplays(colorPref string, shapePref string, repeats int) []Replay {
 	var replays []Replay
-
 	starts := []string{"NW", "NE", "SW", "SE"}
 	var dests []string
 

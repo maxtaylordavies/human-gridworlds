@@ -98,10 +98,11 @@ func (s *Server) registerRoutes() {
 			http.ServeFile(w, r, s.Store.GetSessionFilePath(id))
 		} else if r.Method == http.MethodPost {
 			var data struct {
-				ExperimentID string      `json:"experimentId"`
-				HumanID      string      `json:"humanId"`
-				IsTest       bool        `json:"isTest"`
-				Context      interface{} `json:"context"`
+				ExperimentID string          `json:"experimentId"`
+				HumanID      string          `json:"humanId"`
+				IsTest       bool            `json:"isTest"`
+				Condition    store.Condition `json:"condition"`
+				Context      interface{}     `json:"context"`
 			}
 
 			err := decodePostRequest(r, &data)
@@ -110,7 +111,7 @@ func (s *Server) registerRoutes() {
 				return
 			}
 
-			sess, err := s.Store.CreateSession(data.ExperimentID, data.IsTest, data.Context)
+			sess, err := s.Store.CreateSession(data.ExperimentID, data.IsTest, data.Condition, data.Context)
 			if err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
