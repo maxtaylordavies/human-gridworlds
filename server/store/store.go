@@ -15,7 +15,7 @@ func (s Store) GetGameSpecFilePath(id string) string {
 }
 
 func (s Store) GetSessionFilePath(id string) string {
-	return s.DataPath + "sessions_test/" + id + ".json"
+	return s.DataPath + "sessions/" + id + ".json"
 }
 
 func (s Store) CreateSession(experimentID string, isTest bool, condition Condition, context interface{}) (Session, error) {
@@ -26,10 +26,10 @@ func (s Store) CreateSession(experimentID string, isTest bool, condition Conditi
 	}
 
 	// save session to file and return
-	err = WriteStructToJSON(sess, s.DataPath+"sessions_test/"+sess.ID+".json")
+	err = WriteStructToJSON(sess, s.DataPath+"sessions/"+sess.ID+".json")
 	return sess, err
 }
 
 func (s Store) UpdateSession(sess Session) error {
-	return WriteStructToJSON(sess, s.DataPath+"sessions_test/"+sess.ID+".json")
+	return WriteStructToJSON(sess, s.DataPath+"sessions/"+sess.ID+".json")
 }
