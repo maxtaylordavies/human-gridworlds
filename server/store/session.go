@@ -7,7 +7,7 @@ import (
 
 type Condition struct {
 	PhisRelevant       bool   `json:"phisRelevant"`
-	ParticipantPhiType string `json:"participantPhiType"` // "none", "random", "matched", "mismatched"
+	ParticipantPhiType string `json:"participantPhiType"` // "hidden", "arbitrary", "matched", "mismatched"
 }
 
 type Thetas [][]int
@@ -73,13 +73,13 @@ func CreateSession(experimentID string, isTest bool, condition Condition, contex
 	}
 
 	// then, set the participant's phi depending on both factors
-	if condition.ParticipantPhiType == "none" {
+	if condition.ParticipantPhiType == "hidden" {
 		sess.Phi = -1
 	} else if condition.PhisRelevant && condition.ParticipantPhiType == "matched" {
 		sess.Phi = 0
 	} else if condition.PhisRelevant && condition.ParticipantPhiType == "mismatched" {
 		sess.Phi = 1
-	} else if !condition.PhisRelevant && condition.ParticipantPhiType == "random" {
+	} else if !condition.PhisRelevant && condition.ParticipantPhiType == "arbitrary" {
 		sess.Phi = SampleFromSliceInt([]int{0, 1}, 1)[0]
 	} else {
 		return Session{}, errors.New("condition invalid or not allowed")
