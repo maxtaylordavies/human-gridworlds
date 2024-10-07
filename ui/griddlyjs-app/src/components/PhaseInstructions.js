@@ -40,7 +40,11 @@ const phaseInstructionsContent = [
           <p>
             Each time you collect an item, the game will show you how many
             points you earned. You should use this information to{" "}
-            <b>try and determine which types of item your character prefers.</b>
+            <b>try and determine which types of item your character prefers</b>.
+          </p>
+          <p>
+            The item types your character prefers will be the same throughout
+            the experiment.
           </p>
         </>
       ),
