@@ -13,14 +13,14 @@ type Level struct {
 }
 
 type Phase struct {
-	Name          string         `json:"name"`
-	AgentReplays  []AgentReplays `json:"agentReplays"`
-	Levels        []Level        `json:"levels"`
-	Interactive   bool           `json:"interactive"`
-	ObjectsHidden bool           `json:"objectsHidden"`
+	Name          string  `json:"name"`
+	Levels        []Level `json:"levels"`
+	Agents        []Agent `json:"agents"`
+	Interactive   bool    `json:"interactive"`
+	ObjectsHidden bool    `json:"objectsHidden"`
 }
 
-func CreatePhase(name string, levelIDs []int, interactive bool, objectsHidden bool, starts []string) Phase {
+func CreatePhase(name string, levelIDs []int, interactive bool, objectsHidden bool, starts []string, agents []Agent) Phase {
 	levels := []Level{}
 	for _, levelID := range levelIDs {
 		if starts == nil {
@@ -36,9 +36,17 @@ func CreatePhase(name string, levelIDs []int, interactive bool, objectsHidden bo
 		}
 	}
 
+	// shuffle the agents
+	agentsCopy := make([]Agent, len(agents))
+	copy(agentsCopy, agents)
+	rand.Shuffle(len(agentsCopy), func(i, j int) {
+		agentsCopy[i], agentsCopy[j] = agentsCopy[j], agentsCopy[i]
+	})
+
 	return Phase{
 		Name:          name,
 		Levels:        levels,
+		Agents:        agentsCopy,
 		Interactive:   interactive,
 		ObjectsHidden: objectsHidden,
 	}

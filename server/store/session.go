@@ -7,10 +7,8 @@ import (
 
 type Condition struct {
 	PhisRelevant       bool   `json:"phisRelevant"`
-	ParticipantPhiType string `json:"participantPhiType"` // "hidden", "arbitrary", "matched", "mismatched"
+	ParticipantPhiType string `json:"participantPhiType"` // "neutral", "arbitrary", "matched", "mismatched"
 }
-
-type Thetas [][]int
 
 type QuizResponse []int
 
@@ -24,33 +22,13 @@ type Session struct {
 	GriddlySpecName string                    `json:"griddlySpecName"`
 	Phases          []Phase                   `json:"phases"`
 	Condition       Condition                 `json:"condition"`
-	Thetas          Thetas                    `json:"thetas"`
-	Phi             int                       `json:"phi"`
+	Theta           ThetaType                 `json:"theta"`
+	Phi             PhiType                   `json:"phi"`
 	Context         interface{}               `json:"context"`
 	Trajectories    Trajectories              `json:"trajectories"`
 	QuizResponses   map[string][]QuizResponse `json:"quizResponses"`
 	FinalScore      int                       `json:"finalScore"`
 	TextResponses   []string                  `json:"textResponses"`
-}
-
-var YellowThetas = Thetas{
-	{10, 0},
-	{10, 10},
-}
-
-var GreenThetas = Thetas{
-	{0, 10},
-	{10, 10},
-}
-
-var CircleThetas = Thetas{
-	{10, 10},
-	{10, 0},
-}
-
-var TriangleThetas = Thetas{
-	{10, 10},
-	{0, 10},
 }
 
 func CreateSession(experimentID string, isTest bool, condition Condition, context interface{}) (Session, error) {
@@ -64,146 +42,80 @@ func CreateSession(experimentID string, isTest bool, condition Condition, contex
 		Context:         context,
 	}
 
-	// first, randomly assign the participant to care about either color or shape
-	participantDimension := SampleFromSliceString([]string{"color", "shape"}, 1)[0]
-	if participantDimension == "color" {
-		sess.Thetas = YellowThetas
+	// first, sample the participant's utility function
+	participantDim := SampleFromSliceString([]string{"color", "shape"}, 1)[0]
+	if participantDim == "color" {
+		sess.Theta = SampleTheta(0.9, 0.5, 0.01, 0.01)
 	} else {
-		sess.Thetas = CircleThetas
+		sess.Theta = SampleTheta(0.5, 0.9, 0.01, 0.01)
 	}
 
-	// then, set the participant's phi depending on both factors
-	if condition.ParticipantPhiType == "hidden" {
-		sess.Phi = -1
+	// then, sample the participant's phi based on the condition
+	if condition.ParticipantPhiType == "neutral" {
+		sess.Phi = NEUTRAL_PHI
 	} else if condition.PhisRelevant && condition.ParticipantPhiType == "matched" {
-		sess.Phi = 0
+		sess.Phi = RED_PHI
 	} else if condition.PhisRelevant && condition.ParticipantPhiType == "mismatched" {
-		sess.Phi = 1
+		sess.Phi = BLUE_PHI
 	} else if !condition.PhisRelevant && condition.ParticipantPhiType == "arbitrary" {
-		sess.Phi = SampleFromSliceInt([]int{0, 1}, 1)[0]
+		if RNG().Float64() < 0.5 {
+			sess.Phi = RED_PHI
+		} else {
+			sess.Phi = BLUE_PHI
+		}
 	} else {
 		return Session{}, errors.New("condition invalid or not allowed")
 	}
 
-	// the known (non-group) agents will always care about the same dimension as the participant
-	knownAgentColorPrefs := []string{"", ""}
-	knownAgentShapePrefs := []string{"", ""}
-	var knownAgentThetas []Thetas
-	if participantDimension == "color" {
-		knownAgentColorPrefs[0], knownAgentColorPrefs[1] = "yellow", "green"
-		knownAgentThetas = []Thetas{YellowThetas, GreenThetas}
+	// create the agents
+	baselineParams := GroupParams{
+		MuTheta:     []float64{0.5, 0.5},
+		SigmaTheta:  []float64{0.1, 0.1},
+		MuPhiPos:    0.5,
+		SigmaPhiPos: 0.1,
+	}
+
+	var knownAgentParams []GroupParams
+	for i := 0; i < 2; i++ {
+		tmp := baselineParams
+		if participantDim == "color" {
+			tmp.MuTheta = MU_THETA_COLORS[i]
+		} else {
+			tmp.MuTheta = MU_THETA_SHAPES[i]
+		}
+		knownAgentParams = append(knownAgentParams, tmp)
+	}
+	knownAgents := SampleAgents([]int{0, 1}, knownAgentParams)
+
+	var groupDim string
+	if condition.PhisRelevant {
+		groupDim = participantDim
+	} else if participantDim == "color" {
+		groupDim = "shape"
 	} else {
-		knownAgentShapePrefs[0], knownAgentShapePrefs[1] = "circle", "triangle"
-		knownAgentThetas = []Thetas{CircleThetas, TriangleThetas}
+		groupDim = "color"
 	}
-
-	// then, set up the two agent groups depending on factor 1 and the participant's dimension
-	groupColorPrefs := []string{"", ""}
-	groupShapePrefs := []string{"", ""}
-	var groupThetas []Thetas
-	var agentGroupDimension string
-
-	if participantDimension == "color" && condition.PhisRelevant {
-		agentGroupDimension = "color"
-	} else if participantDimension == "color" && !condition.PhisRelevant {
-		agentGroupDimension = "shape"
-	} else if participantDimension == "shape" && condition.PhisRelevant {
-		agentGroupDimension = "shape"
-	} else if participantDimension == "shape" && !condition.PhisRelevant {
-		agentGroupDimension = "color"
+	var groupParams []GroupParams
+	for i := 0; i < 2; i++ {
+		tmp := baselineParams
+		tmp.MuPhiPos = MU_PHI_POS[i]
+		if groupDim == "color" {
+			tmp.MuTheta = MU_THETA_COLORS[i]
+		} else {
+			tmp.MuTheta = MU_THETA_SHAPES[i]
+		}
+		groupParams = append(groupParams, tmp)
 	}
+	groupAgents := SampleAgents([]int{0, 1, 0, 1, 0, 1}, groupParams)
 
-	if agentGroupDimension == "color" {
-		groupColorPrefs[0], groupColorPrefs[1] = "yellow", "green"
-		groupThetas = []Thetas{YellowThetas, GreenThetas}
-	} else {
-		groupShapePrefs[0], groupShapePrefs[1] = "circle", "triangle"
-		groupThetas = []Thetas{CircleThetas, TriangleThetas}
-	}
-
-	// now, create the phases
-	// exploration phase
-	phase := CreatePhase("exploration", []int{0, 1, 2, 3, 4, 5, 6, 7}, true, false, nil)
-	sess.Phases = append(sess.Phases, phase)
-
-	// known agents phase - evidence
-	phase = CreatePhase("evidence 1", []int{8}, false, false, nil)
-	phase.AgentReplays = []AgentReplays{
-		{
-			AgentPhi:    -1,
-			AgentThetas: knownAgentThetas[0],
-			AgentName:   "Alex",
-			Replays:     CreateEvidenceReplays(knownAgentColorPrefs[0], knownAgentShapePrefs[0], 2),
-		},
-		{
-			AgentPhi:    -1,
-			AgentThetas: knownAgentThetas[1],
-			AgentName:   "Bob",
-			Replays:     CreateEvidenceReplays(knownAgentColorPrefs[1], knownAgentShapePrefs[1], 2),
-		},
-	}
-	sess.Phases = append(sess.Phases, phase)
-
-	// known agents phase - test
-	phase = CreatePhase("test 1", []int{9}, true, true, []string{"centre_horizontal", "centre_horizontal", "W", "E"})
-	phase.AgentReplays = []AgentReplays{
-		{
-			AgentPhi:    -1,
-			AgentThetas: knownAgentThetas[0],
-			AgentName:   "Alex",
-			Replays:     CreateTestReplays("horizontal", knownAgentColorPrefs[0], knownAgentShapePrefs[0], 1),
-		},
-		{
-			AgentPhi:    -1,
-			AgentThetas: knownAgentThetas[1],
-			AgentName:   "Bob",
-			Replays:     CreateTestReplays("horizontal", knownAgentColorPrefs[1], knownAgentShapePrefs[1], 1),
-		},
-	}
-	sess.Phases = append(sess.Phases, phase)
-
-	// unknown agents phase - evidence
-	phase = CreatePhase("evidence 2", []int{8}, false, false, nil)
-	phase.AgentReplays = []AgentReplays{
-		{AgentPhi: 0, AgentName: "Carl"},
-		{AgentPhi: 1, AgentName: "Dan"},
-		{AgentPhi: 0, AgentName: "Eric"},
-		{AgentPhi: 1, AgentName: "Frank"},
-	}
-	for i, ar := range phase.AgentReplays {
-		phase.AgentReplays[i].AgentThetas = groupThetas[ar.AgentPhi]
-		phase.AgentReplays[i].Replays = CreateEvidenceReplays(groupColorPrefs[ar.AgentPhi], groupShapePrefs[ar.AgentPhi], 2)
-	}
-	sess.Phases = append(sess.Phases, phase)
-
-	// unknown agents phase - test
-	phase = CreatePhase("test 2", []int{10}, true, true, []string{"centre_vertical", "centre_vertical", "N", "S"})
-	phase.AgentReplays = []AgentReplays{
-		{
-			AgentPhi:    0,
-			AgentName:   "George",
-			AgentThetas: groupThetas[0],
-			Replays:     CreateTestReplays("vertical", groupColorPrefs[0], groupShapePrefs[0], 1),
-		},
-		{
-			AgentPhi:    1,
-			AgentName:   "Henry",
-			AgentThetas: groupThetas[1],
-			Replays:     CreateTestReplays("vertical", groupColorPrefs[1], groupShapePrefs[1], 1),
-		},
-	}
-	sess.Phases = append(sess.Phases, phase)
-
-	// shuffle replays
-	for i := range sess.Phases {
-		shuffleAgentReplays(sess.Phases[i].AgentReplays)
+	// finally, create the phases
+	sess.Phases = []Phase{
+		CreatePhase("exploration", []int{0, 1, 2, 3, 4, 5, 6, 7}, true, false, nil, []Agent{}),
+		CreatePhase("evidence 1", []int{8}, false, false, nil, knownAgents),
+		CreatePhase("test 1", []int{9}, true, true, []string{"centre_horizontal", "centre_horizontal", "W", "E"}, knownAgents),
+		CreatePhase("evidence 2", []int{10}, false, false, nil, groupAgents[0:4]),
+		CreatePhase("test 2", []int{11}, true, true, []string{"centre_horizontal", "centre_horizontal", "W", "E"}, groupAgents[4:6]),
 	}
 
 	return sess, nil
-}
-
-func shuffleAgentReplays(agentReplays []AgentReplays) {
-	RNG().Shuffle(len(agentReplays), func(i, j int) {
-		agentReplays[i], agentReplays[j] = agentReplays[j], agentReplays[i]
-	})
 }

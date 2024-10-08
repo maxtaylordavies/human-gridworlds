@@ -12,10 +12,10 @@ type Replay struct {
 }
 
 type AgentReplays struct {
-	AgentPhi    int      `json:"agentPhi"`
-	AgentThetas Thetas   `json:"agentThetas"`
-	AgentName   string   `json:"agentName"`
-	Replays     []Replay `json:"replays"`
+	AgentPhi    int       `json:"agentPhi"`
+	AgentThetas ThetaType `json:"agentThetas"`
+	AgentName   string    `json:"agentName"`
+	Replays     []Replay  `json:"replays"`
 }
 
 // maps start position + dest position to trajectory

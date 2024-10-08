@@ -18,6 +18,23 @@ func RNG() *rand.Rand {
 	return rand.New(rand.NewSource(time.Now().UnixNano()))
 }
 
+func Sum(s []float64) float64 {
+	sum := 0.0
+	for _, v := range s {
+		sum += v
+	}
+	return sum
+}
+
+func Normalise(s []float64) []float64 {
+	var out []float64
+	sum := Sum(s)
+	for _, v := range s {
+		out = append(out, v/sum)
+	}
+	return out
+}
+
 func SampleFromSliceInt(s []int, n int) []int {
 	perm, res := RNG().Perm(len(s)), []int{}
 
@@ -26,6 +43,19 @@ func SampleFromSliceInt(s []int, n int) []int {
 	}
 
 	return res
+}
+
+func Gaussian(mu float64, sigma float64) float64 {
+	return RNG().NormFloat64()*sigma + mu
+}
+
+func Clip(x float64, low float64, high float64) float64 {
+	if x < low {
+		return low
+	} else if x > high {
+		return high
+	}
+	return x
 }
 
 func SampleFromSliceString(s []string, n int) []string {
