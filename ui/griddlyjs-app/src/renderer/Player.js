@@ -49,12 +49,12 @@ class Player extends Component {
         onReward: this.props.onReward,
         onGoalReached: this.props.onGoalReached,
         onLevelComplete: this.props.onLevelComplete,
-        trajectoryString: this.props.trajectoryString,
         startPos: this.props.startPos,
-        waitToBeginPlayback: this.props.waitToBeginPlayback,
-        onPlaybackEnd: this.props.onPlaybackEnd,
-        beforePlaybackMs: this.props.beforePlaybackMs,
-        afterPlaybackMs: this.props.afterPlaybackMs,
+        simAgent: this.props.simAgent,
+        waitToBeginSimulation: this.props.waitToBeginSimulation,
+        onSimulationEnd: this.props.onSimulationEnd,
+        beforeSimulationMs: this.props.beforeSimulationMs,
+        afterSimulationMs: this.props.afterSimulationMs,
         stepIntervalMs: this.props.stepIntervalMs,
         disableInput: this.props.disableInput,
       });
@@ -69,12 +69,11 @@ class Player extends Component {
         prevProps.gdyHash !== this.props.gdyHash ||
         prevProps.avatarPath !== this.props.avatarPath ||
         prevProps.hideGoals !== this.props.hideGoals ||
-        prevProps.trajectoryString !== this.props.trajectoryString ||
         prevProps.levelIdx !== this.props.levelIdx ||
-        prevProps.replayIdx !== this.props.replayIdx ||
         !this.posEqual(prevProps.startPos, this.props.startPos) ||
-        prevProps.waitToBeginPlayback !== this.props.waitToBeginPlayback ||
-        prevProps.beforePlaybackMs !== this.props.beforePlaybackMs ||
+        prevProps.simAgent !== this.props.simAgent ||
+        prevProps.waitToBeginSimulation !== this.props.waitToBeginSimulation ||
+        prevProps.beforeSimulationMs !== this.props.beforeSimulationMs ||
         prevProps.stepIntervalMs !== this.props.stepIntervalMs ||
         prevProps.disableInput !== this.props.disableInput
       ) {
@@ -90,12 +89,12 @@ class Player extends Component {
           onReward: this.props.onReward,
           onGoalReached: this.props.onGoalReached,
           onLevelComplete: this.props.onLevelComplete,
-          trajectoryString: this.props.trajectoryString,
           startPos: this.props.startPos,
-          waitToBeginPlayback: this.props.waitToBeginPlayback,
-          onPlaybackEnd: this.props.onPlaybackEnd,
-          beforePlaybackMs: this.props.beforePlaybackMs,
-          afterPlaybackMs: this.props.afterPlaybackMs,
+          simAgent: this.props.simAgent,
+          waitToBeginSimulation: this.props.waitToBeginSimulation,
+          onSimulationEnd: this.props.onSimulationEnd,
+          beforeSimulationMs: this.props.beforeSimulationMs,
+          afterSimulationMs: this.props.afterSimulationMs,
           stepIntervalMs: this.props.stepIntervalMs,
           disableInput: this.props.disableInput,
         });

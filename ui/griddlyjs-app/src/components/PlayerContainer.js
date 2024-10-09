@@ -26,8 +26,8 @@ const PlayerContainer = ({ griddlyjs }) => {
   const rendererState = useStore((state) => state.rendererState);
   const updateTrajectory = useStore((state) => state.updateTrajectory);
 
-  const onPlaybackEnd = () => {
-    setExpState({ ...expState, replayIdx: expState.replayIdx + 1 });
+  const onSimulationEnd = () => {
+    // setExpState({ ...expState, replayIdx: expState.replayIdx + 1 });
   };
 
   const onLevelComplete = () => {
@@ -62,9 +62,9 @@ const PlayerContainer = ({ griddlyjs }) => {
     opacity = 0.1;
   }
 
+  const simAgent = utils.currentSimAgent(expState);
   const startPos = utils.currentStartPos(expState);
   const nameBadgePos = utils.computeNameBadgePos(expState, gameState);
-  const replay = null;
 
   return (
     <motion.div className="game-container">
@@ -100,28 +100,26 @@ const PlayerContainer = ({ griddlyjs }) => {
               onReward={updateScore}
               onGoalReached={updateItemHistory}
               onLevelComplete={onLevelComplete}
-              trajectoryString={replay?.trajectory || ""}
               startPos={startPos}
+              simAgent={simAgent}
               levelIdx={expState.levelIdx}
-              replayIdx={expState.replayIdx}
-              waitToBeginPlayback={
+              waitToBeginSimulation={
                 uiState.showPhaseInstructions ||
                 uiState.showAgentPopup ||
                 uiState.showQuiz ||
                 uiState.showScorePopup ||
                 uiState.showTextResponseModal
               }
-              onPlaybackEnd={onPlaybackEnd}
-              beforePlaybackMs={INTER_SCENE_INTERVAL_MS}
-              afterPlaybackMs={LINGER_ON_GOAL_MS}
-              stepIntervalMs={replay?.stepInterval || INTER_STEP_INTERVAL_MS}
+              onSimulationEnd={onSimulationEnd}
+              beforeSimulationMs={INTER_SCENE_INTERVAL_MS}
+              afterSimulationMs={LINGER_ON_GOAL_MS}
+              stepIntervalMs={INTER_STEP_INTERVAL_MS}
               disableInput={
                 uiState.showPhaseInstructions ||
                 uiState.showAgentPopup ||
                 uiState.showQuiz ||
                 uiState.showScorePopup ||
-                uiState.showTextResponseModal ||
-                replay !== null
+                uiState.showTextResponseModal
               }
             />
           </div>

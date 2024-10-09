@@ -66,8 +66,7 @@ export const useStore = create((set) => ({
     phaseIdx: 0, // index of phase we're in
     levelIdx: 0, // index of level we're in (within the current phase)
     startPosIdx: 0, // index of start position we're in (within the current level)
-    agentIdx: 0, // index of simulated agent we're showing (within the current phase)
-    // replayIdx: 0, // index of replay we're in (for current agent)
+    agentIdx: 0, // index of simulated agent we're showing (within the current level)
   },
   setExpState: (est) =>
     set((state) => {

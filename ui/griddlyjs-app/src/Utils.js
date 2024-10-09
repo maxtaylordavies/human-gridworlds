@@ -22,6 +22,13 @@ export const writeToLocalStorage = (key, val) => {
   localStorage.setItem(`_gridworlds_${key}`, JSON.stringify(val));
 };
 
+export const shuffleArray = (arr) => {
+  return arr
+    .map((value) => ({ value, sort: Math.random() }))
+    .sort((a, b) => a.sort - b.sort)
+    .map(({ value }) => value);
+};
+
 export const removeFromLocalStorage = (key) => {
   localStorage.removeItem(`_gridworlds_${key}`);
 };

@@ -2,6 +2,8 @@ import Phaser from "phaser";
 
 import Block2DRenderer from "./Block2DRenderer";
 import Sprite2DRenderer from "./Sprite2DRenderer";
+import { OBJECT_KEY_TO_IDX } from "../constants";
+import { shuffleArray } from "../utils";
 
 export class LoadingScene extends Phaser.Scene {
   constructor() {
@@ -28,26 +30,26 @@ export class PlayerScene extends Phaser.Scene {
   init = (data) => {
     try {
       this.griddlyjs = data.griddlyjs;
-
       this.gridHeight = this.griddlyjs.getHeight();
       this.gridWidth = this.griddlyjs.getWidth();
-
       this.gdy = data.gdy;
       this.levelId = data.levelId;
       this.avatarPath = data.avatarPath;
-      this.trajectoryString = data.trajectoryString;
       this.playerPos = data.startPos;
-      this.waitToBeginPlayback = data.waitToBeginPlayback;
-      this.beforePlaybackMs = data.beforePlaybackMs;
-      this.afterPlaybackMs = data.afterPlaybackMs;
+
+      this.simAgent = data.simAgent;
+      this.waitToBeginSimulation = data.waitToBeginSimulation;
+      this.beforeSimulationMs = data.beforeSimulationMs;
+      this.afterSimulationMs = data.afterSimulationMs;
       this.stepIntervalMs = data.stepIntervalMs;
       this.disableInput = data.disableInput;
+
       this.onTrajectoryStep = data.onTrajectoryStep;
-      this.onPlayerPosChange = data.onPlayerPosChange;
+      this._onPlayerPosChange = data.onPlayerPosChange;
       this.onReward = data.onReward;
       this.onGoalReachedCallback = data.onGoalReached;
       this.onLevelComplete = data.onLevelComplete;
-      this.onPlaybackEnd = data.onPlaybackEnd;
+      this.onSimulationEnd = data.onSimulationEnd;
 
       this.setPlayerPosAndImage();
       this.avatarObject = this.gdy.Environment.Player.AvatarObject;
@@ -81,14 +83,14 @@ export class PlayerScene extends Phaser.Scene {
           this,
           this.rendererName,
           this.renderConfig,
-          this.avatarObject
+          this.avatarObject,
         );
       } else if (this.renderConfig.Type === "SPRITE_2D") {
         this.grenderer = new Sprite2DRenderer(
           this,
           this.rendererName,
           this.renderConfig,
-          this.avatarObject
+          this.avatarObject,
         );
       }
     } catch (e) {
@@ -99,10 +101,12 @@ export class PlayerScene extends Phaser.Scene {
       objects: {},
     };
 
-    if (this.trajectoryString && !this.waitToBeginPlayback) {
+    console.log("this.simAgent:", this.simAgent);
+
+    if (this.simAgent && !this.waitToBeginSimulation) {
       setTimeout(() => {
-        this.beginPlayback();
-      }, this.beforePlaybackMs);
+        this.beginSimulation();
+      }, this.beforeSimulationMs);
     }
   };
 
@@ -154,12 +158,17 @@ export class PlayerScene extends Phaser.Scene {
 
     // if this is the last time this function is being called
     // for this level, then set this.playerPos back to undefined
-    if (this.playerPos && !this.trajectoryString) {
+    if (this.playerPos && !this.simAgent) {
       this.playerPos = undefined;
     }
 
     // update the avatar image
     this.updateAvatar(this.avatarPath);
+  };
+
+  onPlayerPosChange = (pos) => {
+    this.playerPos = pos;
+    this._onPlayerPosChange(pos);
   };
 
   _addObject = (object) => {
@@ -171,7 +180,7 @@ export class PlayerScene extends Phaser.Scene {
       objectTemplateName,
       object.location.x,
       object.location.y,
-      object.orientation
+      object.orientation,
     );
 
     this.renderData.objects[object.id] = {
@@ -190,7 +199,7 @@ export class PlayerScene extends Phaser.Scene {
       objectTemplateName,
       object.location.x,
       object.location.y,
-      object.orientation
+      object.orientation,
     );
 
     this.renderData.objects[object.id] = {
@@ -235,7 +244,7 @@ export class PlayerScene extends Phaser.Scene {
 
     this.grenderer.recenter(
       this.griddlyjs.getWidth(),
-      this.griddlyjs.getHeight()
+      this.griddlyjs.getHeight(),
     );
 
     this.grenderer.beginUpdate(state.objects);
@@ -268,9 +277,8 @@ export class PlayerScene extends Phaser.Scene {
   revealGoalItems = () => {
     this.gdy.Objects.forEach((object, i) => {
       if (object.Name.includes("goal")) {
-        this.gdy.Objects[
-          i
-        ].Observers.Sprite2D[0].Image = `custom/items/${object.Name}.png`;
+        this.gdy.Objects[i].Observers.Sprite2D[0].Image =
+          `custom/items/${object.Name}.png`;
       }
     });
   };
@@ -357,38 +365,31 @@ export class PlayerScene extends Phaser.Scene {
     });
   };
 
-  stopRecordingOrPlayback = () => {
+  stopRecordingOrSimulation = () => {
     if (this.isRecordingTrajectory) {
       this.endRecording();
     }
 
-    if (this.isRunningTrajectory) {
-      this.endPlayback();
+    if (this.isRunningSimulation) {
+      this.endSimulation();
     }
   };
 
-  beginPlayback = () => {
+  beginSimulation = () => {
     this.keyActionBuffer.forEach((t, key) => {
       clearTimeout(t);
     });
     this.keyActionBuffer.clear();
-
-    this.isRunningTrajectory = true;
+    this.isRunningSimulation = true;
     this.cooldown = false;
-    this.currentTrajectoryBuffer = {
-      seed: 100,
-      steps: this.trajectoryString.split(",").map((char) => [0, +char]),
-    };
-
-    this.trajectoryActionIdx = 0;
     this.resetLevel();
   };
 
-  endPlayback = () => {
+  endSimulation = () => {
     this.trajectoryActionIdx = 0;
-    this.isRunningTrajectory = false;
+    this.isRunningSimulation = false;
     this.resetLevel();
-    this.onPlaybackEnd();
+    this.onSimulationEnd();
   };
 
   resetLevel = (seed = 100) => {
@@ -398,28 +399,79 @@ export class PlayerScene extends Phaser.Scene {
     this.keyActionBuffer.clear();
   };
 
-  processTrajectory = () => {
-    if (this.currentTrajectoryBuffer.steps.length === 0) {
-      this.endPlayback();
-      return;
+  getGoalUtil = (goalId, goalPos, playerPos, theta) => {
+    const itemUtil = 20 * theta[OBJECT_KEY_TO_IDX[goalId]];
+    const distance = this.manhattanDistance(playerPos, goalPos);
+    return itemUtil - distance;
+  };
+
+  sampleSimAction = () => {
+    const actionUtils = { L: [], U: [], R: [], D: [] };
+    Object.entries(this.goalLocations).forEach(([goalId, goalPos]) => {
+      const goalUtil = this.getGoalUtil(
+        goalId,
+        goalPos,
+        this.playerPos,
+        this.simAgent.theta,
+      );
+      if (this.playerPos.x < goalPos.x) {
+        actionUtils.R.push(goalUtil);
+      } else if (this.playerPos.x > goalPos.x) {
+        actionUtils.L.push(goalUtil);
+      }
+      if (this.playerPos.y < goalPos.y) {
+        actionUtils.D.push(goalUtil);
+      } else if (this.playerPos.y > goalPos.y) {
+        actionUtils.U.push(goalUtil);
+      }
+    });
+
+    // filter out actions that are not moving towards any goal
+    // and then get the exponential of the max utility for each action
+    const expUtils = Object.fromEntries(
+      Object.entries(actionUtils)
+        .filter(([action, utils]) => utils.length > 0)
+        .map(([action, utils]) => [
+          action,
+          Math.exp(Math.max(...utils) / 0.01),
+        ]),
+    );
+
+    // convert to probability values
+    const sumExpUtil = Object.values(expUtils).reduce((a, b) => a + b);
+    const actionProbs = Object.fromEntries(
+      Object.entries(expUtils).map(([action, expUtil]) => [
+        action,
+        expUtil / sumExpUtil,
+      ]),
+    );
+
+    // now we need to sample an action based on these probabilities
+    const r = Math.random();
+    let sum = 0;
+    for (const [a, p] of shuffleArray(Object.entries(actionProbs))) {
+      sum += p;
+      if (r <= sum) {
+        return [0, ["L", "U", "R", "D"].indexOf(a) + 1];
+      }
     }
 
+    return [0, 0];
+  };
+
+  doSimulationStep = () => {
     if (!this.cooldown) {
       this.cooldown = true;
 
-      const action =
-        this.currentTrajectoryBuffer.steps[this.trajectoryActionIdx++];
+      const action = this.sampleSimAction();
 
       const stepResult = this.griddlyjs.step(action);
       this.onReward(+stepResult.reward);
       this.currentState = this.griddlyjs.getState();
 
-      if (
-        stepResult.terminated ||
-        this.trajectoryActionIdx === this.currentTrajectoryBuffer.steps.length
-      ) {
+      if (stepResult.terminated) {
         this.cooldown = true;
-        setTimeout(() => this.endPlayback(), this.afterPlaybackMs);
+        setTimeout(() => this.endSimulation(), this.afterSimulationMs);
       } else {
         setTimeout(() => {
           this.cooldown = false;
@@ -444,6 +496,10 @@ export class PlayerScene extends Phaser.Scene {
     return Math.abs(pos2.x - pos1.x) + Math.abs(pos2.y - pos1.y);
   };
 
+  positionDelta = (startPos, endPos) => {
+    return { x: endPos.x - startPos.x, y: endPos.y - startPos.y };
+  };
+
   euclideanDistance = (pos1, pos2) => {
     return Math.sqrt((pos2.x - pos1.x) ** 2 + (pos2.y - pos1.y) ** 2);
   };
@@ -458,7 +514,7 @@ export class PlayerScene extends Phaser.Scene {
     state.objects = state.objects.filter((obj) => obj.name !== "fog");
 
     const filterFunc = (pos) => {
-      let windowCentre = this.isRunningTrajectory
+      let windowCentre = this.isRunningSimulation
         ? { x: (this.gridWidth - 1) / 2, y: (this.gridHeight - 1) / 2 }
         : players[0].location;
       return this.euclideanDistance(windowCentre, pos) >= this.occlusionWindow;
@@ -474,12 +530,11 @@ export class PlayerScene extends Phaser.Scene {
   };
 
   doUserAction = (action) => {
-    if (this.isRunningTrajectory || this.trajectoryString.length > 0) {
+    if (this.isRunningSimulation) {
       return;
     }
 
     this.onTrajectoryStep(action[1]);
-
     const stepResult = this.griddlyjs.step(action);
     this.onReward(+stepResult.reward);
     this.currentState = this.griddlyjs.getState();
@@ -493,23 +548,19 @@ export class PlayerScene extends Phaser.Scene {
   };
 
   dispatchAction = (action) => {
-    if (this.isRunningTrajectory || this.trajectoryString.length > 0) {
+    if (this.isRunningSimulation) {
       return;
     }
 
     clearTimeout(this.keyActionBuffer.get(action[1]));
     this.keyActionBuffer.set(
       action[1],
-      setTimeout(() => this.doUserAction(action))
+      setTimeout(() => this.doUserAction(action)),
     );
   };
 
   processUserKeydown = (event) => {
-    if (
-      this.disableInput ||
-      this.isRunningTrajectory ||
-      this.trajectoryString.length > 0
-    ) {
+    if (this.disableInput || this.isRunningSimulation) {
       return;
     }
 
@@ -519,11 +570,7 @@ export class PlayerScene extends Phaser.Scene {
   };
 
   processUserKeyup = (event) => {
-    if (
-      this.disableInput ||
-      this.isRunningTrajectory ||
-      this.trajectoryString.length > 0
-    ) {
+    if (this.disableInput || this.isRunningSimulation) {
       return;
     }
 
@@ -555,13 +602,13 @@ export class PlayerScene extends Phaser.Scene {
         if (
           this.currentLevelStringOrId !== this.griddlyjs.getLevelStringOrId()
         ) {
-          // this.stopRecordingOrPlayback();
+          // this.stopRecordingOrSimulation();
           this.currentLevelStringOrId = this.griddlyjs.getLevelStringOrId();
           this.currentState = this.griddlyjs.getState();
         }
 
-        if (this.isRunningTrajectory) {
-          this.processTrajectory();
+        if (this.isRunningSimulation) {
+          this.doSimulationStep();
         }
 
         if (this.currentState && this.stateHash !== this.currentState.hash) {
