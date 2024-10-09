@@ -93,7 +93,7 @@ const App = () => {
           condition,
           utils.getProlificMetadata(), // context
           onSession,
-          console.error
+          console.error,
         );
       }
     });
@@ -109,7 +109,7 @@ const App = () => {
       (gdy) => {
         loadGame(setRewards(gdy));
       },
-      console.error
+      console.error,
     );
   };
 
@@ -120,7 +120,7 @@ const App = () => {
         Commands: b.Src.Commands.map((cmd) => {
           const item = b.Dst.Object;
           return item.includes("goal") && cmd.reward !== undefined
-            ? { reward: utils.itemReward(item, expState.session.thetas) }
+            ? { reward: utils.itemReward(item, expState.session.theta) }
             : cmd;
         }),
       };
@@ -149,7 +149,7 @@ const App = () => {
   const loadRenderers = (gdy) => {
     const renderers = utils.findCompatibleRenderers(
       gdy.Environment.Observers || {},
-      gdy.Objects
+      gdy.Objects,
     );
 
     const [rendererName] = renderers.keys();

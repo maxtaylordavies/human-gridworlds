@@ -8,8 +8,8 @@ type Pos struct {
 }
 
 type Level struct {
-	ID       int `json:"id"`
-	StartPos Pos `json:"startPos"`
+	ID             int   `json:"id"`
+	StartPositions []Pos `json:"startPositions"`
 }
 
 type Phase struct {
@@ -23,17 +23,16 @@ type Phase struct {
 func CreatePhase(name string, levelIDs []int, interactive bool, objectsHidden bool, starts []string, agents []Agent) Phase {
 	levels := []Level{}
 	for _, levelID := range levelIDs {
-		if starts == nil {
-			levels = append(levels, Level{ID: levelID, StartPos: Pos{X: -1, Y: -1}})
-			continue
+		var startPositions []Pos
+		if starts != nil {
+			for _, start := range starts {
+				startPositions = append(startPositions, Coords[start])
+			}
 		}
-
-		rand.Shuffle(len(starts), func(i, j int) {
-			starts[i], starts[j] = starts[j], starts[i]
+		rand.Shuffle(len(startPositions), func(i, j int) {
+			startPositions[i], startPositions[j] = startPositions[j], startPositions[i]
 		})
-		for _, start := range starts {
-			levels = append(levels, Level{ID: levelID, StartPos: Coords[start]})
-		}
+		levels = append(levels, Level{ID: levelID, StartPositions: startPositions})
 	}
 
 	// shuffle the agents

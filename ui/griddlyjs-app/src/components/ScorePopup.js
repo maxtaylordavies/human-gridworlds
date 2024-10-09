@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { motion } from "framer-motion";
 
 import { useStore } from "../store";
@@ -14,6 +14,14 @@ const ScorePopup = () => {
     state.setUiState,
   ]);
 
+  const showPopup = () => {
+    setUiState({ ...uiState, showScorePopup: true });
+  };
+
+  const closePopup = () => {
+    setUiState({ ...uiState, showScorePopup: false });
+  };
+
   useEffect(() => {
     const phase = utils.currentPhase(expState);
     if (
@@ -22,7 +30,10 @@ const ScorePopup = () => {
       gameState.rewardHistory.length > 0 &&
       !phase.objectsHidden
     ) {
-      setUiState({ ...uiState, showScorePopup: true });
+      showPopup();
+
+      // dismiss the score popup after 2 seconds
+      setTimeout(closePopup, 1000);
     }
   }, [gameState.rewardHistory.length]);
 

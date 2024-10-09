@@ -15,6 +15,11 @@ export const useStore = create((set) => ({
   },
   setUiState: (uist) =>
     set((state) => {
+      // if showScorePopup is being set to false, don't do anything else!
+      if (!uist.showScorePopup && state.uiState.showScorePopup) {
+        return { uiState: { ...state.uiState, showScorePopup: false } };
+      }
+
       // if showInitialInstructions is being set to false, set showPhaseInstructions to true
       if (
         !uist.showInitialInstructions &&
@@ -26,7 +31,7 @@ export const useStore = create((set) => ({
       // if showPhaseInstructions is being set to false, set levelIdx to 0 and (maybe) showLevelPopup to true
       if (!uist.showPhaseInstructions && state.uiState.showPhaseInstructions) {
         const exp = { ...state.expState };
-        const playing = exp.session.phases[exp.phaseIdx].agentReplays === null;
+        const playing = exp.session.phases[exp.phaseIdx].agents.length === 0;
         return {
           uiState: {
             ...uist,
@@ -59,34 +64,55 @@ export const useStore = create((set) => ({
   expState: {
     session: null, // session object
     phaseIdx: 0, // index of phase we're in
-    agentIdx: 0, // index of agent we're showing replays for (within the current phase)
-    replayIdx: 0, // index of replay we're in (for current agent)
-    levelIdx: 0, // if playing, index of level we're in (within the current phase)
+    levelIdx: 0, // index of level we're in (within the current phase)
+    startPosIdx: 0, // index of start position we're in (within the current level)
+    agentIdx: 0, // index of simulated agent we're showing (within the current phase)
+    // replayIdx: 0, // index of replay we're in (for current agent)
   },
   setExpState: (est) =>
     set((state) => {
       let uist = { ...state.uiState };
 
-      // if replayIdx is being incremented, check if we're at the end of the
-      // replays for the current agent - if so, show the quiz
-      if (est.replayIdx > state.expState.replayIdx) {
+      // // if replayIdx is being incremented, check if we're at the end of the
+      // // replays for the current agent - if so, show the quiz
+      // if (est.replayIdx > state.expState.replayIdx) {
+      //   const phase = est.session.phases[est.phaseIdx];
+      //   if (est.replayIdx >= phase.agentReplays[est.agentIdx].replays.length) {
+      //     if (phase.objectsHidden) {
+      //       est.agentIdx += 1;
+      //     } else {
+      //       uist.showQuiz = true;
+      //     }
+      //   }
+      // }
+
+      if (est.startPosIdx > state.expState.startPosIdx) {
         const phase = est.session.phases[est.phaseIdx];
-        if (est.replayIdx >= phase.agentReplays[est.agentIdx].replays.length) {
-          if (phase.objectsHidden) {
-            est.agentIdx += 1;
+        const level = phase.levels[est.levelIdx];
+
+        if (est.startPosIdx >= level.startPositions.length) {
+          est.startPosIdx = 0;
+          if (state.gameState.playing) {
+            est.levelIdx += 1;
           } else {
-            uist.showQuiz = true;
+            est.agentIdx += 1;
+            // if (phase.objectsHidden) {
+            //   est.agentIdx += 1;
+            // } else {
+            //   uist.showQuiz = true;
+            // }
           }
         }
       }
 
       // if agentIdx is being incremented, check if we're at the end of the
-      // agents for the current phase. if we're not, set replayIdx to 0 and
+      // agents for the current level. if we're not, set startPosIdx to 0 and
       // continue. if we are, check if it's an interactive phase. if it is,
       // set playing to true; otherwise, increment phaseIdx
       if (est.agentIdx > state.expState.agentIdx) {
         const phase = est.session.phases[est.phaseIdx];
-        if (est.agentIdx >= phase.agentReplays.length) {
+        if (est.agentIdx >= phase.agents.length) {
+          est.agentIdx = 0;
           if (phase.interactive) {
             return {
               expState: est,
@@ -94,9 +120,8 @@ export const useStore = create((set) => ({
               uiState: uist,
             };
           }
-          est.phaseIdx += 1;
+          est.levelIdx += 1;
         } else {
-          est.replayIdx = 0;
           uist.showAgentPopup = true;
         }
       }
@@ -105,14 +130,15 @@ export const useStore = create((set) => ({
       // current phase. if we are, and it's the first phase, then show the
       // quiz; otherwise, increment phaseIdx. also set showLevelPopup to true
       if (est.levelIdx > state.expState.levelIdx) {
-        est.replayIdx = 0;
+        est.startPosIdx = 0;
         const phase = est.session.phases[est.phaseIdx];
         if (est.levelIdx >= phase.levels.length) {
-          if (est.phaseIdx === 0) {
-            return {
-              uiState: { ...uist, showQuiz: true },
-            };
-          }
+          est.levelIdx = 0;
+          // if (est.phaseIdx === 0) {
+          //   return {
+          //     uiState: { ...uist, showQuiz: true },
+          //   };
+          // }
           est.phaseIdx += 1;
         }
       }
@@ -121,7 +147,7 @@ export const useStore = create((set) => ({
       // reached the end of the experiment - otherwise reset
       // levelIdx to 0 and set showPhaseInstructions to true
       if (est.phaseIdx > state.expState.phaseIdx) {
-        est = { ...est, levelIdx: 0, agentIdx: 0, replayIdx: 0 };
+        est = { ...est, levelIdx: 0, agentIdx: 0, startPosIdx: 0 };
         if (est.phaseIdx >= est.session.phases.length) {
           return {
             uiState: { ...state.uiState, showTextResponseModal: true },
@@ -171,7 +197,8 @@ export const useStore = create((set) => ({
         rh.push(delta);
         ah.push({
           name,
-          color: utils.currentAgentColor(state.expState),
+          // color: utils.currentAgentColor(state.expState),
+          color: "red",
         });
       }
       return {

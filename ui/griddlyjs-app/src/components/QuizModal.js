@@ -35,11 +35,11 @@ const QuizModal = () => {
   useEffect(() => {
     if (expState.session) {
       const expctd = [];
-      const thetas = utils.currentThetas(expState);
+      const theta = utils.currentTheta(expState);
       for (let i = 0; i < 2; i++) {
-        if (thetas[i][0] > thetas[i][1]) {
+        if (theta[i][0] > theta[i][1]) {
           expctd.push(0);
-        } else if (thetas[i][0] < thetas[i][1]) {
+        } else if (theta[i][0] < theta[i][1]) {
           expctd.push(1);
         } else {
           expctd.push(2);
@@ -87,7 +87,7 @@ const QuizModal = () => {
     setExpState(
       name === "you"
         ? { ...expState, levelIdx: 0 }
-        : { ...expState, replayIdx: 0 }
+        : { ...expState, replayIdx: 0 },
     );
 
     // clear last 8 items from history arrays, maybe reset score to 0
@@ -236,8 +236,8 @@ const QuizModal = () => {
         {result === "correct"
           ? "Correct! 🎉"
           : result === "incorrect"
-          ? "Incorrect 😥"
-          : `Quiz: ${name}`}
+            ? "Incorrect 😥"
+            : `Quiz: ${name}`}
       </div>
       {result === "waiting" ? quizContent() : resultsContent()}
       <div className="quiz-modal-button-row">

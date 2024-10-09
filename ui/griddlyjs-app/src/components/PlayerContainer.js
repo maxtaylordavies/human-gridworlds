@@ -42,8 +42,8 @@ const PlayerContainer = ({ griddlyjs }) => {
       return;
     }
 
-    let levelId = utils.currentLevelId(expState);
-    if (levelId === null) {
+    let level = utils.currentLevel(expState);
+    if (level === null) {
       return;
     }
 
@@ -64,7 +64,7 @@ const PlayerContainer = ({ griddlyjs }) => {
 
   const startPos = utils.currentStartPos(expState);
   const nameBadgePos = utils.computeNameBadgePos(expState, gameState);
-  const replay = utils.currentReplay(expState);
+  const replay = null;
 
   return (
     <motion.div className="game-container">

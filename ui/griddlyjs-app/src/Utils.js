@@ -1,4 +1,4 @@
-import { OBJECT_FEATURE_MAP } from "./constants";
+import { BASE_ITEM_REWARD, OBJECT_KEY_TO_IDX } from "./constants";
 
 export const getValueFromUrlOrLocalstorage = (key) => {
   const params = new URLSearchParams(window.location.search);
@@ -122,64 +122,67 @@ export const currentLevel = (expState) => {
 };
 
 export const currentLevelId = (expState) => {
-  if (isPlaying(expState)) {
-    const level = currentLevel(expState);
-    return level ? level.id : null;
-  }
-
-  const ar = currentAgentReplay(expState);
-  if (!ar) {
-    return null;
-  }
-
-  return ar.replays[expState.replayIdx].levelId;
+  const level = currentLevel(expState);
+  return level ? level.id : null;
 };
+
+// export const currentLevelId = (expState) => {
+//   if (isPlaying(expState)) {
+//     const level = currentLevel(expState);
+//     return level ? level.id : null;
+//   }
+
+//   const ar = currentAgentReplay(expState);
+//   if (!ar) {
+//     return null;
+//   }
+
+//   return ar.replays[expState.replayIdx].levelId;
+// };
 
 export const isPlaying = (expState) => {
-  const ar = currentAgentReplay(expState);
-  if (!ar || expState.replayIdx >= ar.replays.length) {
-    return true;
-  }
-  return false;
+  const sa = currentSimAgent(expState);
+  return sa === null;
 };
 
-export const currentAgentReplay = (expState) => {
+export const currentSimAgent = (expState) => {
   const phase = currentPhase(expState);
   if (
     !phase ||
-    !phase.agentReplays ||
-    phase.agentReplays.length === 0 ||
-    expState.agentIdx >= phase.agentReplays.length
+    !phase.agents ||
+    phase.agents.length === 0 ||
+    expState.agentIdx >= phase.agents.length
   ) {
     return null;
   }
-  return phase.agentReplays[expState.agentIdx];
+  return phase.agents[expState.agentIdx];
 };
 
-export const currentThetas = (expState) => {
-  const ar = currentAgentReplay(expState);
-  return ar ? ar.agentThetas : expState.session.thetas;
+export const currentTheta = (expState) => {
+  const sa = currentSimAgent(expState);
+  return sa ? sa.theta : expState.session.theta;
 };
 
 export const currentPhi = (expState) => {
-  const ar = currentAgentReplay(expState);
-  return ar ? ar.agentPhi : expState.session.phi;
+  const sa = currentSimAgent(expState);
+  return sa ? sa.phi : expState.session.phi;
 };
 
-export const currentAgentColor = (expState) => {
-  const phi = currentPhi(expState);
+// export const currentAgentColor = (expState) => {
+//   const phi = currentPhi(expState);
 
-  if (phi === 0) {
-    return "red";
-  } else if (phi === 1) {
-    return "blue";
-  }
+//   if (phi === 0) {
+//     return "red";
+//   } else if (phi === 1) {
+//     return "blue";
+//   }
 
-  return "grey";
-};
+//   return "grey";
+// };
 
 export const currentAvatarImg = (expState) => {
-  const color = currentAgentColor(expState);
+  // const color = currentAgentColor(expState);
+  const color = "red";
   const filename = isPlaying(expState)
     ? `avi-${color}-smile.png`
     : `avi-${color}.png`;
@@ -187,19 +190,19 @@ export const currentAvatarImg = (expState) => {
   return `custom/avatars/${filename}`;
 };
 
-export const currentReplay = (expState) => {
-  const ar = currentAgentReplay(expState);
-  if (!ar) {
-    return null;
-  }
-  return ar.replays[expState.replayIdx];
-};
+// export const currentReplay = (expState) => {
+//   const ar = currentAgentReplay(expState);
+//   if (!ar) {
+//     return null;
+//   }
+//   return ar.replays[expState.replayIdx];
+// };
 
 export const currentStartPos = (expState) => {
-  const replay = currentReplay(expState);
-  if (replay) {
-    return replay.startPos;
-  }
+  // const replay = currentReplay(expState);
+  // if (replay) {
+  //   return replay.startPos;
+  // }
   const level = currentLevel(expState);
   if (
     level &&
@@ -221,35 +224,30 @@ export const shouldHideGoals = (expState) => {
 };
 
 export const currentAgentName = (expState) => {
-  const ar = currentAgentReplay(expState);
-  if (!ar) {
+  const sa = currentSimAgent(expState);
+  if (!sa) {
     return "you";
   }
-  return ar.agentName;
+  return "agent";
 };
 
 export const getLevelImage = (expState) => {
   const phase = currentPhase(expState);
-  const levelId = currentLevelId(expState);
-  if (phase === null || levelId === null) {
+  const level = currentLevel(expState);
+  if (level === null) {
     return "";
   }
-  const fn = phase.objectsHidden ? "mystery" : levelId;
+  const fn = phase.objectsHidden ? "mystery" : level.id;
   return `resources/images/custom/levels/${fn}.png`;
 };
 
-export const itemReward = (itemName, thetas) => {
-  const x = OBJECT_FEATURE_MAP[itemName];
-  let r = 0;
-  for (let i = 0; i < x.length; i++) {
-    r += thetas[i][x[i]];
-  }
-  return r;
+export const itemReward = (itemName, theta) => {
+  const idx = OBJECT_KEY_TO_IDX[itemName];
+  return Math.round(theta[idx] * BASE_ITEM_REWARD);
 };
 
 export const computeNameBadgePos = (expState, gameState) => {
   const pos = { left: 0, top: 0 };
-
   if (!gameState.gdy) {
     return pos;
   }
@@ -267,7 +265,6 @@ export const computeNameBadgePos = (expState, gameState) => {
 
   pos.left = 0.5 * (800 - gridWidth) - 5; // set to top left corner of grid
   pos.left += 60 * gameState.agentPos.x; // add offset for current x position
-
   pos.top = 0.5 * (600 - gridHeight) + 30; // set to top left corner of grid
   pos.top += 60 * gameState.agentPos.y; // add offset for current y position
 

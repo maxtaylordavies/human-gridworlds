@@ -122,7 +122,7 @@
       border: none;
       background: #C4C4C4;
     }
-  
+
     .instruction-modal-button.start {
       width: 200px;
       background: #00916E;
@@ -456,7 +456,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  z-index: 100;
+  z-index: 200;
 
   .score-popup-score {
     display: flex;
@@ -496,7 +496,7 @@
 // }
 
 // .score-popup.medium {
-//  background: #FF9900; 
+//  background: #FF9900;
 // }
 
 // .score-popup.low {
@@ -564,7 +564,7 @@
     font-size: 18px;
     font-weight: bold;
     margin-right: -7px;
-  
+
     span {
       margin-top: -8px;
     }
