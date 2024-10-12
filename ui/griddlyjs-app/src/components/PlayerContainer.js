@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { motion } from "framer-motion";
 
 import { useStore } from "../store";
@@ -9,6 +9,7 @@ import {
   LINGER_ON_GOAL_MS,
 } from "../constants";
 import Player from "../renderer/Player";
+import Avatar from "./Avatar";
 import InfoBar from "./InfoBar";
 import RewardHistory from "./RewardHistory";
 import ScorePopup from "./ScorePopup";
@@ -26,15 +27,8 @@ const PlayerContainer = ({ griddlyjs }) => {
   const rendererState = useStore((state) => state.rendererState);
   const updateTrajectory = useStore((state) => state.updateTrajectory);
 
-  const onSimulationEnd = () => {
-    // setExpState({ ...expState, replayIdx: expState.replayIdx + 1 });
-  };
-
-  const onLevelComplete = () => {
-    setExpState({
-      ...expState,
-      levelIdx: expState.levelIdx + 1,
-    });
+  const onTermination = () => {
+    setExpState({ ...expState, startPosIdx: expState.startPosIdx + 1 });
   };
 
   const onTrajectoryStep = (step) => {
@@ -64,7 +58,6 @@ const PlayerContainer = ({ griddlyjs }) => {
 
   const simAgent = utils.currentSimAgent(expState);
   const startPos = utils.currentStartPos(expState);
-  const nameBadgePos = utils.computeNameBadgePos(expState, gameState);
 
   return (
     <motion.div className="game-container">
@@ -78,15 +71,7 @@ const PlayerContainer = ({ griddlyjs }) => {
         <div>
           <InfoBar />
           <div>
-            <div
-              className="name-badge"
-              style={{
-                left: nameBadgePos.left,
-                top: nameBadgePos.top,
-              }}
-            >
-              {utils.currentAgentName(expState)}
-            </div>
+            <Avatar />
             <Player
               gdyHash={gameState.gdyHash}
               gdy={gameState.gdy}
@@ -99,10 +84,11 @@ const PlayerContainer = ({ griddlyjs }) => {
               onPlayerPosChange={updateAgentPos}
               onReward={updateScore}
               onGoalReached={updateItemHistory}
-              onLevelComplete={onLevelComplete}
+              onTermination={onTermination}
               startPos={startPos}
               simAgent={simAgent}
               levelIdx={expState.levelIdx}
+              startPosIdx={expState.startPosIdx}
               waitToBeginSimulation={
                 uiState.showPhaseInstructions ||
                 uiState.showAgentPopup ||
@@ -110,7 +96,6 @@ const PlayerContainer = ({ griddlyjs }) => {
                 uiState.showScorePopup ||
                 uiState.showTextResponseModal
               }
-              onSimulationEnd={onSimulationEnd}
               beforeSimulationMs={INTER_SCENE_INTERVAL_MS}
               afterSimulationMs={LINGER_ON_GOAL_MS}
               stepIntervalMs={INTER_STEP_INTERVAL_MS}

@@ -72,17 +72,18 @@ func CreateSession(experimentID string, isTest bool, condition Condition, contex
 		MuTheta:     []float64{0.5, 0.5},
 		SigmaTheta:  []float64{0.1, 0.1},
 		MuPhiPos:    0.5,
-		SigmaPhiPos: 0.1,
+		SigmaPhiPos: 0.01,
 	}
 
 	var knownAgentParams []GroupParams
-	for i := 0; i < 2; i++ {
+	for k := 0; k < 2; k++ {
 		tmp := baselineParams
 		if participantDim == "color" {
-			tmp.MuTheta = MU_THETA_COLORS[i]
+			tmp.MuTheta = MU_THETA_COLORS[k]
 		} else {
-			tmp.MuTheta = MU_THETA_SHAPES[i]
+			tmp.MuTheta = MU_THETA_SHAPES[k]
 		}
+		tmp.MuPhiPos = MU_PHI_POS[k]
 		knownAgentParams = append(knownAgentParams, tmp)
 	}
 	knownAgents := SampleAgents([]int{0, 1}, knownAgentParams)

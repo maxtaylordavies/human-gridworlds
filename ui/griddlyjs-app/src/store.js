@@ -89,7 +89,11 @@ export const useStore = create((set) => ({
         const phase = est.session.phases[est.phaseIdx];
         const level = phase.levels[est.levelIdx];
 
-        if (est.startPosIdx >= level.startPositions.length) {
+        const allStartsDone =
+          level.startPositions === null ||
+          est.startPosIdx >= level.startPositions.length;
+
+        if (allStartsDone) {
           est.startPosIdx = 0;
           if (state.gameState.playing) {
             est.levelIdx += 1;
@@ -111,7 +115,6 @@ export const useStore = create((set) => ({
       if (est.agentIdx > state.expState.agentIdx) {
         const phase = est.session.phases[est.phaseIdx];
         if (est.agentIdx >= phase.agents.length) {
-          est.agentIdx = 0;
           if (phase.interactive) {
             return {
               expState: est,
@@ -130,6 +133,7 @@ export const useStore = create((set) => ({
       // quiz; otherwise, increment phaseIdx. also set showLevelPopup to true
       if (est.levelIdx > state.expState.levelIdx) {
         est.startPosIdx = 0;
+        est.agentIdx = 0;
         const phase = est.session.phases[est.phaseIdx];
         if (est.levelIdx >= phase.levels.length) {
           est.levelIdx = 0;

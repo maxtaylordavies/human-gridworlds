@@ -308,16 +308,63 @@
   border-radius: 20px;
   z-index: 5;
 
-  .name-badge {
+  .avatar-container {
     width: 70px;
-    height: 30px;
+    height: 90px;
     position: absolute;
-    background-color: #007458;
-    color: white;
-    border-radius: 5px;
     z-index: 100;
-    font-size: 20px;
-    line-height: 25px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    .avatar {
+      width: 60px;
+      height: 60px;
+      padding: 10px;
+
+      .avatar-eyes {
+        width: 40px;
+        height: 20px;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        margin-top: 5px;
+
+        .avatar-eye {
+          width: 17px;
+          height: 17px;
+          border-radius: 50%;
+          background-color: white;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+
+          .avatar-pupil {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: black;
+          }
+        }
+      }
+
+      .avatar-mouth {
+        width: 40px;
+        height: 6px;
+        background-color: white;
+        margin-top: 3px;
+        border-radius: 20px;
+      }
+    }
+
+    .name-badge {
+        width: 70px;
+        height: 30px;
+        border-radius: 5px;
+        font-size: 20px;
+        line-height: 25px;
+    }
   }
 
   .emoji-bubble {

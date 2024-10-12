@@ -48,8 +48,7 @@ export class PlayerScene extends Phaser.Scene {
       this._onPlayerPosChange = data.onPlayerPosChange;
       this.onReward = data.onReward;
       this.onGoalReachedCallback = data.onGoalReached;
-      this.onLevelComplete = data.onLevelComplete;
-      this.onSimulationEnd = data.onSimulationEnd;
+      this.onTermination = data.onTermination;
 
       this.setPlayerPosAndImage();
       this.avatarObject = this.gdy.Environment.Player.AvatarObject;
@@ -100,8 +99,6 @@ export class PlayerScene extends Phaser.Scene {
     this.renderData = {
       objects: {},
     };
-
-    console.log("this.simAgent:", this.simAgent);
 
     if (this.simAgent && !this.waitToBeginSimulation) {
       setTimeout(() => {
@@ -386,10 +383,9 @@ export class PlayerScene extends Phaser.Scene {
   };
 
   endSimulation = () => {
-    this.trajectoryActionIdx = 0;
     this.isRunningSimulation = false;
     this.resetLevel();
-    this.onSimulationEnd();
+    this.onTermination();
   };
 
   resetLevel = (seed = 100) => {
@@ -541,7 +537,7 @@ export class PlayerScene extends Phaser.Scene {
 
     if (stepResult.terminated) {
       setTimeout(() => {
-        this.onLevelComplete();
+        this.onTermination();
         this.resetLevel();
       }, 500);
     }

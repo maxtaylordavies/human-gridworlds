@@ -48,11 +48,10 @@ class Player extends Component {
         onPlayerPosChange: this.props.onPlayerPosChange,
         onReward: this.props.onReward,
         onGoalReached: this.props.onGoalReached,
-        onLevelComplete: this.props.onLevelComplete,
+        onTermination: this.props.onTermination,
         startPos: this.props.startPos,
         simAgent: this.props.simAgent,
         waitToBeginSimulation: this.props.waitToBeginSimulation,
-        onSimulationEnd: this.props.onSimulationEnd,
         beforeSimulationMs: this.props.beforeSimulationMs,
         afterSimulationMs: this.props.afterSimulationMs,
         stepIntervalMs: this.props.stepIntervalMs,
@@ -70,6 +69,7 @@ class Player extends Component {
         prevProps.avatarPath !== this.props.avatarPath ||
         prevProps.hideGoals !== this.props.hideGoals ||
         prevProps.levelIdx !== this.props.levelIdx ||
+        prevProps.startPosIdx !== this.props.startPosIdx ||
         !this.posEqual(prevProps.startPos, this.props.startPos) ||
         prevProps.simAgent !== this.props.simAgent ||
         prevProps.waitToBeginSimulation !== this.props.waitToBeginSimulation ||
@@ -88,11 +88,10 @@ class Player extends Component {
           onPlayerPosChange: this.props.onPlayerPosChange,
           onReward: this.props.onReward,
           onGoalReached: this.props.onGoalReached,
-          onLevelComplete: this.props.onLevelComplete,
+          onTermination: this.props.onTermination,
           startPos: this.props.startPos,
           simAgent: this.props.simAgent,
           waitToBeginSimulation: this.props.waitToBeginSimulation,
-          onSimulationEnd: this.props.onSimulationEnd,
           beforeSimulationMs: this.props.beforeSimulationMs,
           afterSimulationMs: this.props.afterSimulationMs,
           stepIntervalMs: this.props.stepIntervalMs,

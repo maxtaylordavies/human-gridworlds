@@ -133,20 +133,6 @@ export const currentLevelId = (expState) => {
   return level ? level.id : null;
 };
 
-// export const currentLevelId = (expState) => {
-//   if (isPlaying(expState)) {
-//     const level = currentLevel(expState);
-//     return level ? level.id : null;
-//   }
-
-//   const ar = currentAgentReplay(expState);
-//   if (!ar) {
-//     return null;
-//   }
-
-//   return ar.replays[expState.replayIdx].levelId;
-// };
-
 export const isPlaying = (expState) => {
   const sa = currentSimAgent(expState);
   return sa === null;
@@ -175,21 +161,10 @@ export const currentPhi = (expState) => {
   return sa ? sa.phi : expState.session.phi;
 };
 
-// export const currentAgentColor = (expState) => {
-//   const phi = currentPhi(expState);
-
-//   if (phi === 0) {
-//     return "red";
-//   } else if (phi === 1) {
-//     return "blue";
-//   }
-
-//   return "grey";
-// };
-
 export const currentAvatarImg = (expState) => {
+  const phi = currentPhi(expState);
+  const color = phi[0] > phi[2] ? "red" : "blue";
   // const color = currentAgentColor(expState);
-  const color = "red";
   const filename = isPlaying(expState)
     ? `avi-${color}-smile.png`
     : `avi-${color}.png`;
@@ -197,29 +172,15 @@ export const currentAvatarImg = (expState) => {
   return `custom/avatars/${filename}`;
 };
 
-// export const currentReplay = (expState) => {
-//   const ar = currentAgentReplay(expState);
-//   if (!ar) {
-//     return null;
-//   }
-//   return ar.replays[expState.replayIdx];
-// };
-
 export const currentStartPos = (expState) => {
-  // const replay = currentReplay(expState);
-  // if (replay) {
-  //   return replay.startPos;
-  // }
   const level = currentLevel(expState);
-  if (
-    level &&
-    level.startPos &&
-    level.startPos.x !== -1 &&
-    level.startPos.y !== -1
-  ) {
-    return level.startPos;
+  if (!level?.startPositions) {
+    return null;
   }
-  return null;
+  if (expState.startPosIdx > level.startPositions.length) {
+    return null;
+  }
+  return level.startPositions[expState.startPosIdx];
 };
 
 export const shouldHideGoals = (expState) => {
@@ -272,7 +233,7 @@ export const computeNameBadgePos = (expState, gameState) => {
 
   pos.left = 0.5 * (800 - gridWidth) - 5; // set to top left corner of grid
   pos.left += 60 * gameState.agentPos.x; // add offset for current x position
-  pos.top = 0.5 * (600 - gridHeight) + 30; // set to top left corner of grid
+  pos.top = 0.5 * (600 - gridHeight) + 25; // set to top left corner of grid
   pos.top += 60 * gameState.agentPos.y; // add offset for current y position
 
   return pos;
