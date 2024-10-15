@@ -111,11 +111,11 @@ func CreateSession(experimentID string, isTest bool, condition Condition, contex
 
 	// finally, create the phases
 	sess.Phases = []Phase{
-		CreatePhase("exploration", []int{6, 7}, true, false, nil, []Agent{}),
-		CreatePhase("evidence 1", []int{8}, false, false, nil, knownAgents),
+		CreatePhase("exploration", []int{0, 1, 2, 3, 4, 5, 6, 7}, true, false, nil, []Agent{}),
+		CreatePhase("evidence 1", []int{8}, false, false, []string{"NW", "NE", "SW", "SE"}, knownAgents),
 		CreatePhase("test 1", []int{9}, true, true, []string{"centre_horizontal", "centre_horizontal", "W", "E"}, knownAgents),
-		CreatePhase("evidence 2", []int{10}, false, false, nil, groupAgents[0:4]),
-		CreatePhase("test 2", []int{11}, true, true, []string{"centre_horizontal", "centre_horizontal", "W", "E"}, groupAgents[4:6]),
+		CreatePhase("evidence 2", []int{8}, false, false, []string{"NW", "NE", "SW", "SE"}, groupAgents[0:4]),
+		CreatePhase("test 2", []int{10}, true, true, []string{"centre_vertical", "centre_vertical", "N", "S"}, groupAgents[4:6]),
 	}
 
 	return sess, nil

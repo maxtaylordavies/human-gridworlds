@@ -221,7 +221,7 @@ export const itemReward = (itemName, theta) => {
   return Math.round(theta[idx] * BASE_ITEM_REWARD);
 };
 
-export const computeNameBadgePos = (expState, gameState) => {
+export const computeAvatarPosition = (expState, gameState) => {
   const pos = { left: 0, top: 0 };
   if (!gameState.gdy) {
     return pos;

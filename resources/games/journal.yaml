@@ -101,14 +101,14 @@ Environment:
       A   
       .   
       .   
-      .    
-      p     
+      .   
+      p   
       .   
       .   
       .   
       B
     - |
-      C   .   .   .   .   p   .   .   .   .   D
+      C   .   .   .   .   p   .   .   .   .   D   
     - |
       C   
       .   
@@ -122,7 +122,7 @@ Environment:
       .   
       D
     - |
-      A   .   .   .   .   p   .   .   .   .   C
+      A   .   .   .   .   p   .   .   .   .   C   
     - |
       A   
       .   
@@ -136,7 +136,7 @@ Environment:
       .   
       C
     - |
-      B   .   .   .   .   p   .   .   .   .   D
+      B   .   .   .   .   p   .   .   .   .   D   
     - |
       B   
       .   

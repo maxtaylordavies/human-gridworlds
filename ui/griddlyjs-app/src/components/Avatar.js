@@ -28,7 +28,7 @@ export const Avatar = () => {
   ]);
   const gameState = useStore((state) => state.gameState);
 
-  const avatarPos = utils.computeNameBadgePos(expState, gameState);
+  const avatarPos = utils.computeAvatarPosition(expState, gameState);
   const phi = utils.currentPhi(expState);
 
   return (

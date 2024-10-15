@@ -26,3 +26,16 @@ var AGENT_NAMES = []string{
 	"Ian",
 	"John",
 }
+
+var COORDS = map[string]Pos{
+	"centre_horizontal": {X: 5, Y: 0},
+	"centre_vertical":   {X: 0, Y: 4},
+	"N":                 {X: 0, Y: 3},
+	"S":                 {X: 0, Y: 5},
+	"W":                 {X: 3, Y: 0},
+	"E":                 {X: 7, Y: 0},
+	"NW":                {X: 1, Y: 1},
+	"NE":                {X: 5, Y: 1},
+	"SW":                {X: 1, Y: 5},
+	"SE":                {X: 5, Y: 5},
+}
