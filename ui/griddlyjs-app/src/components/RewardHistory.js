@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 
 import { useStore } from "../store";
+import * as utils from "../utils";
 
 const RewardHistory = () => {
   const gameState = useStore((state) => state.gameState);
@@ -44,9 +45,13 @@ const RewardHistory = () => {
       <div className="reward-history-title">History</div>
       <div className="reward-history-list">
         {history.map((h, i) => {
+          const rgbString = utils.phiToRGBString(h.agent.phi);
           return (
             <div key={i} className="reward-history-item">
-              <div className={`reward-history-item-agent ${h.agent.color}`}>
+              <div
+                className={`reward-history-item-agent`}
+                style={{ backgroundColor: rgbString }}
+              >
                 {h.agent.name}
               </div>
               <div className="reward-history-item-reward">

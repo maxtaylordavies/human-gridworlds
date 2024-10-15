@@ -144,7 +144,7 @@
   .agent-popup-title {
     font-size: 26px;
     font-weight: bold;
-    color: #FF0000;
+    color: black;
   }
 
   span {
@@ -300,6 +300,74 @@
   }
 }
 
+.avatar {
+    width: 60px;
+    height: 60px;
+    padding: 10px;
+
+    .avatar-eyes {
+        width: 40px;
+        height: 20px;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        margin-top: 5px;
+
+        .avatar-eye {
+            width: 17px;
+            height: 17px;
+            border-radius: 50%;
+            background-color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            .avatar-pupil {
+                width: 8px;
+                height: 8px;
+                border-radius: 50%;
+                background-color: black;
+            }
+
+            .avatar-pupil.large {
+                width: 20px;
+                height: 20px;
+            }
+        }
+
+        .avatar-eye.large {
+            width: 42.5px;
+            height: 42.5px;
+        }
+    }
+
+    .avatar-eyes.large {
+        width: 100px;
+        height: 40px;
+        margin-top: 10px;
+    }
+
+    .avatar-mouth {
+        width: 40px;
+        height: 6px;
+        background-color: white;
+        margin-top: 3px;
+        border-radius: 20px;
+    }
+
+    .avatar-mouth.large {
+        width: 100px;
+        height: 15px;
+        margin-top: 15px;
+    }
+}
+
+.avatar.large {
+    width: 150px;
+    height: 150px;
+    padding: 25px;
+}
+
 .game-container {
   position: absolute;
   display: flex;
@@ -317,46 +385,6 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-
-    .avatar {
-      width: 60px;
-      height: 60px;
-      padding: 10px;
-
-      .avatar-eyes {
-        width: 40px;
-        height: 20px;
-        display: flex;
-        flex-direction: row;
-        justify-content: space-between;
-        margin-top: 5px;
-
-        .avatar-eye {
-          width: 17px;
-          height: 17px;
-          border-radius: 50%;
-          background-color: white;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-
-          .avatar-pupil {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background-color: black;
-          }
-        }
-      }
-
-      .avatar-mouth {
-        width: 40px;
-        height: 6px;
-        background-color: white;
-        margin-top: 3px;
-        border-radius: 20px;
-      }
-    }
 
     .name-badge {
         width: 70px;
@@ -424,18 +452,6 @@
           color: white;
           font-size: 16px;
           font-weight: bold;
-        }
-
-        .reward-history-item-agent.grey {
-          background-color: #AEAEAE;
-        }
-
-        .reward-history-item-agent.red {
-          background-color: #FF0000;
-        }
-
-        .reward-history-item-agent.blue {
-          background-color: #0000FF;
         }
 
         .reward-history-item-reward {

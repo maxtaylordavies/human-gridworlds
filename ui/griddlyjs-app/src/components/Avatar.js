@@ -3,7 +3,25 @@ import React from "react";
 import { useStore } from "../store";
 import * as utils from "../utils";
 
-const Avatar = () => {
+export const AgentIcon = ({ phi, size }) => {
+  const rgbString = utils.phiToRGBString(phi);
+
+  return (
+    <div className={`avatar ${size}`} style={{ backgroundColor: rgbString }}>
+      <div className={`avatar-eyes ${size}`}>
+        <div className={`avatar-eye ${size}`}>
+          <div className={`avatar-pupil ${size}`} />
+        </div>
+        <div className={`avatar-eye ${size}`}>
+          <div className={`avatar-pupil ${size}`} />
+        </div>
+      </div>
+      <div className={`avatar-mouth ${size}`} />
+    </div>
+  );
+};
+
+export const Avatar = () => {
   const [expState, setExpState] = useStore((state) => [
     state.expState,
     state.setExpState,
@@ -12,7 +30,6 @@ const Avatar = () => {
 
   const avatarPos = utils.computeNameBadgePos(expState, gameState);
   const phi = utils.currentPhi(expState);
-  const phiRGBString = `rgb(${phi.map((x) => Math.floor(x * 255)).join(", ")})`;
 
   return (
     <div
@@ -23,19 +40,7 @@ const Avatar = () => {
       }}
     >
       <div className="name-badge">{utils.currentAgentName(expState)}</div>
-      <div className="avatar" style={{ backgroundColor: phiRGBString }}>
-        <div className="avatar-eyes">
-          <div className="avatar-eye">
-            <div className="avatar-pupil" />
-          </div>
-          <div className="avatar-eye">
-            <div className="avatar-pupil" />
-          </div>
-        </div>
-        <div className="avatar-mouth" />
-      </div>
+      <AgentIcon phi={phi} size="small" />
     </div>
   );
 };
-
-export default Avatar;

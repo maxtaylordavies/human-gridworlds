@@ -161,6 +161,13 @@ export const currentPhi = (expState) => {
   return sa ? sa.phi : expState.session.phi;
 };
 
+export const phiToRGBString = (phi) => {
+  if (!phi) {
+    return "rgb(0, 0, 0)";
+  }
+  return `rgb(${phi.map((x) => Math.floor(x * 255)).join(", ")})`;
+};
+
 export const currentAvatarImg = (expState) => {
   const phi = currentPhi(expState);
   const color = phi[0] > phi[2] ? "red" : "blue";

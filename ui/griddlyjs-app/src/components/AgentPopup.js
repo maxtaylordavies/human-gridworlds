@@ -4,6 +4,7 @@ import { faPlay } from "@fortawesome/free-solid-svg-icons";
 import { useStore } from "../store";
 import { Modal } from "./core/Modal";
 import { DelayButton } from "./core/DelayButton";
+import { AgentIcon } from "./Avatar";
 import * as utils from "../utils";
 
 const AgentPopup = ({ delay }) => {
@@ -16,15 +17,15 @@ const AgentPopup = ({ delay }) => {
   const [show, setShow] = useState(uiState.showAgentPopup);
   const [ready, setReady] = useState(false);
   const [name, setName] = useState("");
-  const [avatar, setAvatar] = useState("");
+  const [phi, setPhi] = useState(null);
   const [agentsShown, setAgentsShown] = useState([]);
 
   useEffect(() => {
     if (uiState.showAgentPopup) {
       const _name = utils.currentAgentName(expState);
-      const _avatar = utils.currentAvatarImg(expState);
+      const _phi = utils.currentPhi(expState);
       setName(_name);
-      setAvatar(_avatar);
+      setPhi(_phi);
       setReady(false);
       setTimeout(() => {
         setShow(true);
@@ -45,11 +46,12 @@ const AgentPopup = ({ delay }) => {
         <div className="agent-popup-title">New character</div>
       )}
       <div className="agent-popup-agent">
-        <img
+        <AgentIcon phi={phi} size="large" />
+        {/* <img
           src={`resources/images/${avatar}`}
           className="agent-popup-image"
           width={150}
-        />
+        /> */}
         <div className="agent-popup-name">{name}</div>
       </div>
       <div className="agent-popup-button-row">

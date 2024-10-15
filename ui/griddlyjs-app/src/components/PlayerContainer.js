@@ -9,7 +9,7 @@ import {
   LINGER_ON_GOAL_MS,
 } from "../constants";
 import Player from "../renderer/Player";
-import Avatar from "./Avatar";
+import { Avatar } from "./Avatar";
 import InfoBar from "./InfoBar";
 import RewardHistory from "./RewardHistory";
 import ScorePopup from "./ScorePopup";

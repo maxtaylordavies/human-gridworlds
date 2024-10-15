@@ -200,8 +200,7 @@ export const useStore = create((set) => ({
         rh.push(delta);
         ah.push({
           name,
-          // color: utils.currentAgentColor(state.expState),
-          color: "red",
+          phi: utils.currentPhi(state.expState),
         });
       }
       return {
