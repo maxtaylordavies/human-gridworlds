@@ -203,7 +203,7 @@ export const currentAgentName = (expState) => {
   if (!sa) {
     return "you";
   }
-  return "agent";
+  return sa.name || "agent";
 };
 
 export const getLevelImage = (expState) => {

@@ -15,6 +15,7 @@ type Agent struct {
 	Z     int       `json:"z"`
 	Phi   PhiType   `json:"phi"`
 	Theta ThetaType `json:"theta"`
+	Name  string    `json:"name"`
 }
 
 func SampleTheta(muColor float64, muShape float64, sigmaColor float64, sigmaShape float64) ThetaType {
@@ -29,13 +30,13 @@ func SampleTheta(muColor float64, muShape float64, sigmaColor float64, sigmaShap
 	return Normalise(theta)
 }
 
-func SampleAgents(zs []int, groups []GroupParams) []Agent {
+func SampleAgents(zs []int, groups []GroupParams, names []string) []Agent {
 	agents := []Agent{}
-	for _, z := range zs {
+	for i, z := range zs {
 		theta := SampleTheta(groups[z].MuTheta[0], groups[z].MuTheta[1], groups[z].SigmaTheta[0], groups[z].SigmaTheta[1])
 		phiPos := Gaussian(groups[z].MuPhiPos, groups[z].SigmaPhiPos)
 		phi := []float64{1.0 - phiPos, 0.0, phiPos}
-		agents = append(agents, Agent{Z: z, Phi: phi, Theta: theta})
+		agents = append(agents, Agent{Z: z, Phi: phi, Theta: theta, Name: names[i]})
 	}
 	return agents
 }

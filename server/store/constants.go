@@ -13,3 +13,16 @@ var MU_THETA_SHAPES = [][]float64{MU_THETA_CIRCLE, MU_THETA_TRIANGLE}
 var NEUTRAL_PHI = []float64{0.5, 0.0, 0.5}
 var RED_PHI = []float64{1 - MU_PHI_POS[0], 0.0, MU_PHI_POS[0]}
 var BLUE_PHI = []float64{1 - MU_PHI_POS[1], 0.0, MU_PHI_POS[1]}
+
+var AGENT_NAMES = []string{
+	"Alex",
+	"Bob",
+	"Charlie",
+	"David",
+	"Edward",
+	"Frank",
+	"George",
+	"Harry",
+	"Ian",
+	"John",
+}

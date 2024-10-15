@@ -86,7 +86,7 @@ func CreateSession(experimentID string, isTest bool, condition Condition, contex
 		tmp.MuPhiPos = MU_PHI_POS[k]
 		knownAgentParams = append(knownAgentParams, tmp)
 	}
-	knownAgents := SampleAgents([]int{0, 1}, knownAgentParams)
+	knownAgents := SampleAgents([]int{0, 1}, knownAgentParams, AGENT_NAMES[:2])
 
 	var groupDim string
 	if condition.PhisRelevant {
@@ -107,7 +107,7 @@ func CreateSession(experimentID string, isTest bool, condition Condition, contex
 		}
 		groupParams = append(groupParams, tmp)
 	}
-	groupAgents := SampleAgents([]int{0, 1, 0, 1, 0, 1}, groupParams)
+	groupAgents := SampleAgents([]int{0, 1, 0, 1, 0, 1}, groupParams, AGENT_NAMES[2:8])
 
 	// finally, create the phases
 	sess.Phases = []Phase{
