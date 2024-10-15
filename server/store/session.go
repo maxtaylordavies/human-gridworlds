@@ -6,8 +6,8 @@ import (
 )
 
 type Condition struct {
-	PhisRelevant       bool   `json:"phisRelevant"`
-	ParticipantPhiType string `json:"participantPhiType"` // "neutral", "arbitrary", "matched", "mismatched"
+	ParticipantPrefStrength string `json:"participantPrefStrength"` // "strong", "weak"
+	GroupPrefStrength       string `json:"groupPrefStrength"`       // "strong", "weak"
 }
 
 type QuizResponse []int
@@ -44,69 +44,53 @@ func CreateSession(experimentID string, isTest bool, condition Condition, contex
 
 	// first, sample the participant's utility function
 	participantDim := SampleFromSliceString([]string{"color", "shape"}, 1)[0]
-	if participantDim == "color" {
-		sess.Theta = SampleTheta(0.9, 0.5, 0.01, 0.01)
-	} else {
-		sess.Theta = SampleTheta(0.5, 0.9, 0.01, 0.01)
-	}
+	var muTheta []float64
 
-	// then, sample the participant's phi based on the condition
-	if condition.ParticipantPhiType == "neutral" {
-		sess.Phi = NEUTRAL_PHI
-	} else if condition.PhisRelevant && condition.ParticipantPhiType == "matched" {
-		sess.Phi = RED_PHI
-	} else if condition.PhisRelevant && condition.ParticipantPhiType == "mismatched" {
-		sess.Phi = BLUE_PHI
-	} else if !condition.PhisRelevant && condition.ParticipantPhiType == "arbitrary" {
-		if RNG().Float64() < 0.5 {
-			sess.Phi = RED_PHI
-		} else {
-			sess.Phi = BLUE_PHI
-		}
+	if participantDim == "color" && condition.ParticipantPrefStrength == "strong" {
+		muTheta = MU_THETA_YELLOW_STRONG
+	} else if participantDim == "color" && condition.ParticipantPrefStrength == "weak" {
+		muTheta = MU_THETA_YELLOW_WEAK
+	} else if participantDim == "shape" && condition.ParticipantPrefStrength == "strong" {
+		muTheta = MU_THETA_CIRCLE_STRONG
+	} else if participantDim == "shape" && condition.ParticipantPrefStrength == "weak" {
+		muTheta = MU_THETA_CIRCLE_WEAK
 	} else {
 		return Session{}, errors.New("condition invalid or not allowed")
 	}
 
+	sess.Theta = SampleTheta(muTheta[0], muTheta[1], 0.01, 0.01)
+	sess.Phi = RED_PHI
+
 	// create the agents
+	var groupThetaMus [][]float64
+	if participantDim == "color" && condition.GroupPrefStrength == "strong" {
+		groupThetaMus = MU_THETA_COLORS_STRONG
+	} else if participantDim == "color" && condition.GroupPrefStrength == "weak" {
+		groupThetaMus = MU_THETA_COLORS_WEAK
+	} else if participantDim == "shape" && condition.GroupPrefStrength == "strong" {
+		groupThetaMus = MU_THETA_SHAPES_STRONG
+	} else if participantDim == "shape" && condition.GroupPrefStrength == "weak" {
+		groupThetaMus = MU_THETA_SHAPES_WEAK
+	} else {
+		return Session{}, errors.New("condition invalid or not allowed")
+	}
+
 	baselineParams := GroupParams{
 		MuTheta:     []float64{0.5, 0.5},
-		SigmaTheta:  []float64{0.1, 0.1},
+		SigmaTheta:  []float64{0.01, 0.01},
 		MuPhiPos:    0.5,
 		SigmaPhiPos: 0.01,
 	}
 
-	var knownAgentParams []GroupParams
+	var groupParams []GroupParams
 	for k := 0; k < 2; k++ {
 		tmp := baselineParams
-		if participantDim == "color" {
-			tmp.MuTheta = MU_THETA_COLORS[k]
-		} else {
-			tmp.MuTheta = MU_THETA_SHAPES[k]
-		}
+		tmp.MuTheta = groupThetaMus[k]
 		tmp.MuPhiPos = MU_PHI_POS[k]
-		knownAgentParams = append(knownAgentParams, tmp)
-	}
-	knownAgents := SampleAgents([]int{0, 1}, knownAgentParams, AGENT_NAMES[:2])
-
-	var groupDim string
-	if condition.PhisRelevant {
-		groupDim = participantDim
-	} else if participantDim == "color" {
-		groupDim = "shape"
-	} else {
-		groupDim = "color"
-	}
-	var groupParams []GroupParams
-	for i := 0; i < 2; i++ {
-		tmp := baselineParams
-		tmp.MuPhiPos = MU_PHI_POS[i]
-		if groupDim == "color" {
-			tmp.MuTheta = MU_THETA_COLORS[i]
-		} else {
-			tmp.MuTheta = MU_THETA_SHAPES[i]
-		}
 		groupParams = append(groupParams, tmp)
 	}
+
+	knownAgents := SampleAgents([]int{0, 1}, groupParams, AGENT_NAMES[:2])
 	groupAgents := SampleAgents([]int{0, 1, 0, 1, 0, 1}, groupParams, AGENT_NAMES[2:8])
 
 	// finally, create the phases

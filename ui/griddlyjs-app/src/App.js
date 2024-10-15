@@ -79,9 +79,9 @@ const App = () => {
         // otherwise, we need to create a new session
         // first, get the condition from the url (or localstorage)
         const condition = {
-          phisRelevant:
-            utils.getValueFromUrlOrLocalstorage("factor1") === "true",
-          participantPhiType: utils.getValueFromUrlOrLocalstorage("factor2"),
+          participantPrefStrength:
+            utils.getValueFromUrlOrLocalstorage("factor1"),
+          groupPrefStrength: utils.getValueFromUrlOrLocalstorage("factor2"),
         };
 
         console.log("condition: ", condition);
