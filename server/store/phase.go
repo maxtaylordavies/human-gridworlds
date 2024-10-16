@@ -26,7 +26,7 @@ func CreatePhase(name string, levelIDs []int, interactive bool, objectsHidden bo
 		var startPositions []Pos
 		if starts != nil {
 			for _, start := range starts {
-				startPositions = append(startPositions, COORDS[start])
+				startPositions = append(startPositions, COORDS[levelID][start])
 			}
 		}
 		rand.Shuffle(len(startPositions), func(i, j int) {
