@@ -94,12 +94,19 @@ func CreateSession(experimentID string, isTest bool, condition Condition, contex
 	groupAgents := SampleAgents([]int{0, 1, 0, 1, 0, 1}, groupParams, AGENT_NAMES[2:8])
 
 	// finally, create the phases
+	evidenceStartLocs := []string{"NW", "NE", "SW", "SE"}
+	if participantDim == "color" {
+		evidenceStartLocs = append(evidenceStartLocs, "N", "S")
+	} else {
+		evidenceStartLocs = append(evidenceStartLocs, "W", "E")
+	}
+
 	sess.Phases = []Phase{
 		CreatePhase("exploration", []int{0, 1, 2, 3, 4, 5, 6, 7}, true, false, nil, []Agent{}),
-		CreatePhase("evidence 1", []int{8}, false, false, []string{"NW", "NE", "SW", "SE"}, knownAgents),
-		CreatePhase("test 1", []int{9}, true, true, []string{"centre_horizontal", "centre_horizontal", "W", "E"}, knownAgents),
-		CreatePhase("evidence 2", []int{8}, false, false, []string{"NW", "NE", "SW", "SE"}, groupAgents[0:4]),
-		CreatePhase("test 2", []int{10}, true, true, []string{"centre_vertical", "centre_vertical", "N", "S"}, groupAgents[4:6]),
+		CreatePhase("evidence 1", []int{8}, false, false, evidenceStartLocs, knownAgents),
+		CreatePhase("test 1", []int{9}, true, true, []string{"C", "C", "W", "E"}, knownAgents),
+		CreatePhase("evidence 2", []int{8}, false, false, evidenceStartLocs, groupAgents[0:4]),
+		CreatePhase("test 2", []int{10}, true, true, []string{"C", "C", "N", "S"}, groupAgents[4:6]),
 	}
 
 	return sess, nil

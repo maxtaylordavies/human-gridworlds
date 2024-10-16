@@ -36,15 +36,25 @@ var AGENT_NAMES = []string{
 	"John",
 }
 
-var COORDS = map[string]Pos{
-	"centre_horizontal": {X: 5, Y: 0},
-	"centre_vertical":   {X: 0, Y: 4},
-	"N":                 {X: 0, Y: 3},
-	"S":                 {X: 0, Y: 5},
-	"W":                 {X: 3, Y: 0},
-	"E":                 {X: 7, Y: 0},
-	"NW":                {X: 1, Y: 1},
-	"NE":                {X: 5, Y: 1},
-	"SW":                {X: 1, Y: 5},
-	"SE":                {X: 5, Y: 5},
+var COORDS = map[int]map[string]Pos{
+	8: {
+		"N":  {X: 3, Y: 0},
+		"S":  {X: 3, Y: 6},
+		"W":  {X: 0, Y: 3},
+		"E":  {X: 6, Y: 3},
+		"NW": {X: 1, Y: 1},
+		"NE": {X: 5, Y: 1},
+		"SW": {X: 1, Y: 5},
+		"SE": {X: 5, Y: 5},
+	},
+	9: {
+		"C": {X: 5, Y: 0},
+		"W": {X: 3, Y: 0},
+		"E": {X: 7, Y: 0},
+	},
+	10: {
+		"C": {X: 0, Y: 4},
+		"N": {X: 0, Y: 3},
+		"S": {X: 0, Y: 5},
+	},
 }
