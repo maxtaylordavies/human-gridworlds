@@ -5,6 +5,8 @@ import * as utils from "../utils";
 
 const InfoBar = () => {
   const expState = useStore((state) => state.expState);
+  const phase = utils.currentPhase(expState);
+  const score = useStore((state) => state.gameState.score);
   const playing = useStore((state) => state.gameState.playing);
 
   return (
@@ -13,9 +15,11 @@ const InfoBar = () => {
         {playing ? "Playing" : `Observing: ${utils.currentAgentName(expState)}`}
       </div>
       <div className="info-bar-stats">
+        {!phase.objectsHidden &&
+          InfoBarItem("score", score, { fontWeight: "bold" })}
         {InfoBarItem(
           "phase",
-          `${expState.phaseIdx + 1}/${expState.session.phases.length}`
+          `${expState.phaseIdx + 1}/${expState.session.phases.length}`,
         )}
       </div>
     </div>
