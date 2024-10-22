@@ -2,7 +2,7 @@ import Phaser from "phaser";
 
 import Block2DRenderer from "./Block2DRenderer";
 import Sprite2DRenderer from "./Sprite2DRenderer";
-import { OBJECT_KEY_TO_IDX } from "../constants";
+import { BASE_ITEM_REWARD, MOVE_COST, OBJECT_KEY_TO_IDX } from "../constants";
 import { shuffleArray } from "../utils";
 
 export class LoadingScene extends Phaser.Scene {
@@ -396,9 +396,9 @@ export class PlayerScene extends Phaser.Scene {
   };
 
   getGoalUtil = (goalId, goalPos, playerPos, theta) => {
-    const itemUtil = 20 * theta[OBJECT_KEY_TO_IDX[goalId]];
+    const itemUtil = BASE_ITEM_REWARD * theta[OBJECT_KEY_TO_IDX[goalId]];
     const distance = this.manhattanDistance(playerPos, goalPos);
-    return itemUtil - distance;
+    return itemUtil - MOVE_COST * distance;
   };
 
   sampleSimAction = () => {

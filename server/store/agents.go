@@ -35,6 +35,19 @@ func SampleAgents(zs []int, groups []GroupParams, names []string) []Agent {
 	for i, z := range zs {
 		theta := SampleTheta(groups[z].MuTheta[0], groups[z].MuTheta[1], groups[z].SigmaTheta[0], groups[z].SigmaTheta[1])
 		phiPos := Gaussian(groups[z].MuPhiPos, groups[z].SigmaPhiPos)
+
+		if phiPos < 0.0 {
+			phiPos = 0.0
+		} else if phiPos > 1.0 {
+			phiPos = 1.0
+		}
+
+		if z == 0 && phiPos > 0.45 {
+			phiPos = 0.45
+		} else if z == 1 && phiPos < 0.55 {
+			phiPos = 0.55
+		}
+
 		phi := []float64{1.0 - phiPos, 0.0, phiPos}
 		agents = append(agents, Agent{Z: z, Phi: phi, Theta: theta, Name: names[i]})
 	}

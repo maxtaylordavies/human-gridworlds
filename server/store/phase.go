@@ -20,7 +20,15 @@ type Phase struct {
 	ObjectsHidden bool    `json:"objectsHidden"`
 }
 
-func CreatePhase(name string, levelIDs []int, interactive bool, objectsHidden bool, starts []string, agents []Agent) Phase {
+func CreatePhase(
+	name string,
+	levelIDs []int,
+	interactive bool,
+	objectsHidden bool,
+	starts []string,
+	agents []Agent,
+	shuffleStarts bool,
+) Phase {
 	levels := []Level{}
 	for _, levelID := range levelIDs {
 		var startPositions []Pos
@@ -29,9 +37,14 @@ func CreatePhase(name string, levelIDs []int, interactive bool, objectsHidden bo
 				startPositions = append(startPositions, COORDS[levelID][start])
 			}
 		}
-		rand.Shuffle(len(startPositions), func(i, j int) {
-			startPositions[i], startPositions[j] = startPositions[j], startPositions[i]
-		})
+
+		// maybe shuffle the start positions
+		if shuffleStarts {
+			rand.Shuffle(len(startPositions), func(i, j int) {
+				startPositions[i], startPositions[j] = startPositions[j], startPositions[i]
+			})
+		}
+
 		levels = append(levels, Level{ID: levelID, StartPositions: startPositions})
 	}
 

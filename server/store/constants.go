@@ -1,6 +1,6 @@
 package store
 
-var MU_PHI_POS = []float64{0.2, 0.8}
+var MU_PHI_POS = []float64{0.25, 0.75}
 
 var strong = 0.9
 var weak = 0.6
@@ -54,7 +54,17 @@ var COORDS = map[int]map[string]Pos{
 	},
 	10: {
 		"C": {X: 0, Y: 4},
-		"N": {X: 0, Y: 3},
-		"S": {X: 0, Y: 5},
+		"N": {X: 0, Y: 2},
+		"S": {X: 0, Y: 6},
+	},
+	11: {
+		"C": {X: 5, Y: 0},
+		"W": {X: 3, Y: 0},
+		"E": {X: 7, Y: 0},
+	},
+	12: {
+		"C": {X: 0, Y: 4},
+		"N": {X: 0, Y: 2},
+		"S": {X: 0, Y: 6},
 	},
 }
