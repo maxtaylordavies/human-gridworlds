@@ -46,7 +46,25 @@ func SampleFromSliceInt(s []int, n int) []int {
 }
 
 func Gaussian(mu float64, sigma float64) float64 {
-	return RNG().NormFloat64()*sigma + mu
+	x := RNG().NormFloat64()
+	return ConvertStandardNormal(x, mu, sigma)
+}
+
+func ConvertStandardNormal(x float64, mu float64, sigma float64) float64 {
+	return x*sigma + mu
+}
+
+func GetValuesBetweenQuantiles(mu float64, sigma float64, startProb float64, endProb float64, n int) []float64 {
+	start := ConvertStandardNormal(STANDARD_NORMAL_QUANTILES[startProb], mu, sigma)
+	end := ConvertStandardNormal(STANDARD_NORMAL_QUANTILES[endProb], mu, sigma)
+
+	step := (end - start) / float64(n-1)
+	values := []float64{}
+	for i := 0; i < n; i++ {
+		values = append(values, start+float64(i)*step)
+	}
+
+	return values
 }
 
 func Clip(x float64, low float64, high float64) float64 {

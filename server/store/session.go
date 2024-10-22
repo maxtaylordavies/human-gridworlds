@@ -90,7 +90,7 @@ func CreateSession(experimentID string, isTest bool, condition Condition, contex
 		groupParams = append(groupParams, tmp)
 	}
 
-	agents := SampleAgents([]int{0, 1, 0, 1, 0, 1}, groupParams, AGENT_NAMES[:6])
+	agents := SampleAgents(3, groupParams, AGENT_NAMES[:6])
 
 	// finally, create the phases
 	evidenceStartLocs := []string{"NW", "NE", "SW", "SE"}
@@ -103,10 +103,18 @@ func CreateSession(experimentID string, isTest bool, condition Condition, contex
 		testLevelID = 9
 	}
 
+	evidenceAgents := []Agent{
+		agents[0],
+		agents[1],
+		agents[3],
+		agents[4],
+	}
+	testAgents := []Agent{agents[2], agents[5]}
+
 	sess.Phases = []Phase{
 		CreatePhase("exploration", []int{0, 1, 2, 3, 4, 5, 6, 7}, true, false, nil, []Agent{}, false),
-		CreatePhase("evidence", []int{8}, false, false, evidenceStartLocs, agents[0:4], true),
-		CreatePhase("test", []int{testLevelID}, true, true, []string{"C", "C", "W", "E"}, agents[4:6], false),
+		CreatePhase("evidence", []int{8}, false, false, evidenceStartLocs, evidenceAgents, true),
+		CreatePhase("test", []int{testLevelID}, true, true, []string{"C", "C", "W", "E"}, testAgents, false),
 	}
 
 	return sess, nil

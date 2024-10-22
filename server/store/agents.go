@@ -30,26 +30,28 @@ func SampleTheta(muColor float64, muShape float64, sigmaColor float64, sigmaShap
 	return Normalise(theta)
 }
 
-func SampleAgents(zs []int, groups []GroupParams, names []string) []Agent {
+func PhiPosToPhi(phiPos float64) PhiType {
+	return PhiType{1.0 - phiPos, 0.0, phiPos}
+}
+
+func SampleAgents(numPerGroup int, groups []GroupParams, names []string) []Agent {
 	agents := []Agent{}
-	for i, z := range zs {
-		theta := SampleTheta(groups[z].MuTheta[0], groups[z].MuTheta[1], groups[z].SigmaTheta[0], groups[z].SigmaTheta[1])
-		phiPos := Gaussian(groups[z].MuPhiPos, groups[z].SigmaPhiPos)
 
-		if phiPos < 0.0 {
-			phiPos = 0.0
-		} else if phiPos > 1.0 {
-			phiPos = 1.0
+	for k, group := range groups {
+		phiVals := GetValuesBetweenQuantiles(
+			group.MuPhiPos,
+			group.SigmaPhiPos,
+			0.25,
+			0.75,
+			numPerGroup,
+		)
+
+		for i := 0; i < numPerGroup; i++ {
+			theta := SampleTheta(group.MuTheta[0], group.MuTheta[1], group.SigmaTheta[0], group.SigmaTheta[1])
+			phi := PhiPosToPhi(phiVals[i])
+			agents = append(agents, Agent{Z: k, Phi: phi, Theta: theta, Name: names[k*numPerGroup+i]})
 		}
-
-		if z == 0 && phiPos > 0.45 {
-			phiPos = 0.45
-		} else if z == 1 && phiPos < 0.55 {
-			phiPos = 0.55
-		}
-
-		phi := []float64{1.0 - phiPos, 0.0, phiPos}
-		agents = append(agents, Agent{Z: z, Phi: phi, Theta: theta, Name: names[i]})
 	}
+
 	return agents
 }
