@@ -10,11 +10,7 @@ const phaseInstructionsContent = [
       content: (
         <>
           <p>
-            This is an{" "}
-            <u>
-              <b>interactive phase</b>
-            </u>
-            . In this phase, you will <b>use your arrow keys</b> to control a{" "}
+            In this phase, you will <b>use your arrow keys</b> to control a{" "}
             <b>character</b> in a 2D game.
           </p>
           <p>
@@ -45,8 +41,8 @@ const phaseInstructionsContent = [
       content: (
         <>
           <p>
-            In the first few levels, the game will show you how many points you
-            earn for each item.
+            In this phase, the game will show you how many points you earn for
+            each item.
           </p>
           <p>
             You can use this to{" "}
@@ -67,11 +63,14 @@ const phaseInstructionsContent = [
         <>
           <p>
             All points you earn during the experiment will contribute to your
-            final score. Your final score will determine the bonus payment you
-            receive, so you should try to get as many points as possible!
+            final score. Your final score will determine the{" "}
+            <b>bonus payment</b> you receive, so you should try to get as many
+            points as possible!
           </p>
           <p>
-            <b>Note: every time your character moves, you will lose 1 point.</b>
+            <b>
+              Note: for every step your character takes, you will lose 1 point!
+            </b>
           </p>
         </>
       ),
@@ -84,13 +83,7 @@ const phaseInstructionsContent = [
     {
       content: (
         <>
-          <p>
-            This is an{" "}
-            <u>
-              <b>observation phase</b>
-            </u>
-            .
-          </p>
+          <p>This phase combines observation and interaction.</p>
           <p>
             So far, you have only seen your own character. In this phase you
             will be introduced to <b>four new characters</b> that you have not
@@ -106,10 +99,14 @@ const phaseInstructionsContent = [
       content: (
         <>
           <p>
-            You will <b>not</b> be able to control these characters - instead
-            you will
-            <b>watch</b> them as they navigate the grid to collect items for
-            themselves.
+            You will <b>not</b> be able to control these characters.
+          </p>
+          <p>
+            At each level, you will first watch them navigate the grid to
+            collect items for themselves
+          </p>
+          <p>
+            <b>You will then play the same level yourself.</b>
           </p>
           {/* <p>
             After watching each character, you will complete a quiz, similar to
@@ -133,37 +130,38 @@ const phaseInstructionsContent = [
               disagree on which items are best!
             </b>
           </p>
-          <p>(Like you, the other characters also lose points for moving.)</p>
+          <p>
+            (And like you, the other characters also lose points for moving.)
+          </p>
         </>
-      ),
-      buttonLabel: "Next",
-      buttonIcon: faHandPointRight,
-      buttonDelay: 3,
-    },
-    {
-      content: (
-        <p>
-          By watching what each character does, you should try to figure out
-          which types of item they prefer.
-        </p>
       ),
       buttonLabel: "Start phase",
       buttonIcon: faHandPointRight,
       buttonDelay: 3,
     },
+    // {
+    //   content: (
+    //     <p>
+    //       By watching what each character does, you should try to figure out
+    //       which types of item they prefer.
+    //     </p>
+    //   ),
+    //   buttonLabel: "Start phase",
+    //   buttonIcon: faHandPointRight,
+    //   buttonDelay: 3,
+    // },
   ],
   [
     {
       content: (
         <>
           <p>
-            The final phase combines{" "}
-            <u>
-              <b>both observation and interaction</b>
-            </u>
-            . You will first watch <b>two new characters</b> choose between two
-            items - you will then have to choose between the same two items
-            yourself.
+            In the final phase, you will be introduced to two <b>new</b>{" "}
+            characters.
+          </p>
+          <p>
+            Just like in the previous phase, you will watch what they do, and
+            then complete each level yourself.
           </p>
         </>
       ),
@@ -182,6 +180,7 @@ const phaseInstructionsContent = [
             src="resources/images/custom/items/mystery-box.png"
             width={75}
             style={{ marginBottom: "1rem" }}
+            alt="mystery box"
           />
         </>
       ),
@@ -192,7 +191,7 @@ const phaseInstructionsContent = [
     {
       content: (
         <p>
-          While you will not be able to see inside the boxes,{" "}
+          You will not be able to see inside the boxes, but{" "}
           <b>the other characters already know what each box contains</b>, so
           you should pay attention to which box they each choose!
         </p>
@@ -208,6 +207,24 @@ const phaseInstructionsContent = [
           many points you earned. But these points <u>will</u> still contribute
           to your final score (and your bonus payment!)
         </p>
+      ),
+      buttonLabel: "Next",
+      buttonIcon: faHandPointRight,
+      buttonDelay: 3,
+    },
+    {
+      content: (
+        <>
+          <p>There are two levels in this final phase.</p>
+          <p>
+            In the first level, the hidden items are the <b>same colour</b> but{" "}
+            <b>different shapes</b>.
+          </p>
+          <p>
+            In the second level, the hidden items are the <b>same shape</b> but{" "}
+            <b>different colours</b>.
+          </p>
+        </>
       ),
       buttonLabel: "Start phase",
       buttonIcon: faHandPointRight,

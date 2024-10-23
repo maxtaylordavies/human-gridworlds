@@ -13,6 +13,7 @@ import ExperimentCompleteModal from "./components/ExperimentCompleteModal";
 import AgentPopup from "./components/AgentPopup";
 import QuizModal from "./components/QuizModal";
 import TextResponseModal from "./components/TextResponseModal";
+import TestLevelInfoBanner from "./components/TestLevelInfoBanner";
 import "./App.scss";
 
 const App = () => {
@@ -79,9 +80,7 @@ const App = () => {
         // otherwise, we need to create a new session
         // first, get the condition from the url (or localstorage)
         const condition = {
-          participantPrefStrength:
-            utils.getValueFromUrlOrLocalstorage("factor1"),
-          groupPrefStrength: utils.getValueFromUrlOrLocalstorage("factor2"),
+          participantPhiType: utils.getValueFromUrlOrLocalstorage("factor1"),
         };
 
         console.log("condition: ", condition);
@@ -188,6 +187,7 @@ const App = () => {
     <div>loading...</div>
   ) : (
     <div className="main-container">
+      <TestLevelInfoBanner />
       {!uiState.showInitialInstructions && (
         <PlayerContainer griddlyjs={griddlyjs} />
       )}

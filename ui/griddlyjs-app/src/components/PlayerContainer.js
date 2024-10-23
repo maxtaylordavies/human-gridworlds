@@ -13,6 +13,7 @@ import { Avatar } from "./Avatar";
 import InfoBar from "./InfoBar";
 import RewardHistory from "./RewardHistory";
 import ScorePopup from "./ScorePopup";
+import TestLevelInfoBanner from "./TestLevelInfoBanner";
 
 const PlayerContainer = ({ griddlyjs }) => {
   const uiState = useStore((state) => state.uiState);

@@ -6,8 +6,7 @@ import (
 )
 
 type Condition struct {
-	ParticipantPrefStrength string `json:"participantPrefStrength"` // "strong", "weak"
-	GroupPrefStrength       string `json:"groupPrefStrength"`       // "strong", "weak"
+	ParticipantPhiType string `json:"participantPhiType"` // "neutral", "group"
 }
 
 type QuizResponse []int
@@ -42,67 +41,42 @@ func CreateSession(experimentID string, isTest bool, condition Condition, contex
 		Context:         context,
 	}
 
-	// first, sample the participant's utility function
-	participantDim := SampleFromSliceString([]string{"color", "shape"}, 1)[0]
-	var muTheta []float64
+	// first, set up group parameters
+	var groupParams []GroupParams
+	groupThetaMus := [][]float64{
+		MU_THETA_YELLOW_CIRCLE,
+		MU_THETA_GREEN_TRIANGLE,
+	}
+	for k := 0; k < 2; k++ {
+		groupParams = append(groupParams, GroupParams{
+			MuTheta:     groupThetaMus[k],
+			SigmaTheta:  []float64{0.01, 0.01},
+			MuPhiPos:    MU_PHI_POS[k],
+			SigmaPhiPos: 0.1,
+		})
+	}
 
-	if participantDim == "color" && condition.ParticipantPrefStrength == "strong" {
-		muTheta = MU_THETA_YELLOW_STRONG
-	} else if participantDim == "color" && condition.ParticipantPrefStrength == "weak" {
-		muTheta = MU_THETA_YELLOW_WEAK
-	} else if participantDim == "shape" && condition.ParticipantPrefStrength == "strong" {
-		muTheta = MU_THETA_CIRCLE_STRONG
-	} else if participantDim == "shape" && condition.ParticipantPrefStrength == "weak" {
-		muTheta = MU_THETA_CIRCLE_WEAK
+	// next, sample the participant's utility function
+	var muTheta []float64
+	tmp := BinaryChoice(0, 1)
+	if tmp == 0 {
+		muTheta = MU_THETA_YELLOW_TRIANGLE
+	} else {
+		muTheta = MU_THETA_GREEN_CIRCLE
+	}
+	sess.Theta = SampleTheta(muTheta[0], muTheta[1], 0.01, 0.01)
+
+	// assign participant phi
+	if condition.ParticipantPhiType == "neutral" {
+		sess.Phi = NEUTRAL_PHI
+	} else if condition.ParticipantPhiType == "group" {
+		sess.Phi = RED_PHI
 	} else {
 		return Session{}, errors.New("condition invalid or not allowed")
 	}
-
-	sess.Theta = SampleTheta(muTheta[0], muTheta[1], 0.01, 0.01)
-	sess.Phi = RED_PHI
 
 	// create the agents
-	var groupThetaMus [][]float64
-	if participantDim == "color" && condition.GroupPrefStrength == "strong" {
-		groupThetaMus = MU_THETA_COLORS_STRONG
-	} else if participantDim == "color" && condition.GroupPrefStrength == "weak" {
-		groupThetaMus = MU_THETA_COLORS_WEAK
-	} else if participantDim == "shape" && condition.GroupPrefStrength == "strong" {
-		groupThetaMus = MU_THETA_SHAPES_STRONG
-	} else if participantDim == "shape" && condition.GroupPrefStrength == "weak" {
-		groupThetaMus = MU_THETA_SHAPES_WEAK
-	} else {
-		return Session{}, errors.New("condition invalid or not allowed")
-	}
-
-	baselineParams := GroupParams{
-		MuTheta:     []float64{0.5, 0.5},
-		SigmaTheta:  []float64{0.01, 0.01},
-		MuPhiPos:    0.5,
-		SigmaPhiPos: 0.2,
-	}
-
-	var groupParams []GroupParams
-	for k := 0; k < 2; k++ {
-		tmp := baselineParams
-		tmp.MuTheta = groupThetaMus[k]
-		tmp.MuPhiPos = MU_PHI_POS[k]
-		groupParams = append(groupParams, tmp)
-	}
-
 	agents := SampleAgents(3, groupParams, AGENT_NAMES[:6])
-
-	// finally, create the phases
-	evidenceStartLocs := []string{"NW", "NE", "SW", "SE"}
-	var testLevelID int
-	if participantDim == "color" {
-		evidenceStartLocs = append(evidenceStartLocs, "N", "S")
-		testLevelID = 11
-	} else {
-		evidenceStartLocs = append(evidenceStartLocs, "W", "E")
-		testLevelID = 9
-	}
-
 	evidenceAgents := []Agent{
 		agents[0],
 		agents[1],
@@ -111,10 +85,11 @@ func CreateSession(experimentID string, isTest bool, condition Condition, contex
 	}
 	testAgents := []Agent{agents[2], agents[5]}
 
+	// finally, create the phases
 	sess.Phases = []Phase{
-		CreatePhase("exploration", []int{0, 1, 2, 3, 4, 5, 6, 7}, true, false, nil, []Agent{}, false),
-		CreatePhase("evidence", []int{8}, false, false, evidenceStartLocs, evidenceAgents, true),
-		CreatePhase("test", []int{testLevelID}, true, true, []string{"C", "C", "W", "E"}, testAgents, false),
+		CreatePhase("exploration", []int{0, 1, 2, 3}, true, false, nil, []Agent{}, false),
+		CreatePhase("evidence", []int{4, 5, 6, 7}, true, false, []string{"CNW", "CSE"}, evidenceAgents, true),
+		CreatePhase("test", []int{9, 13}, true, true, []string{"C", "W", "E"}, testAgents, false),
 	}
 
 	return sess, nil
