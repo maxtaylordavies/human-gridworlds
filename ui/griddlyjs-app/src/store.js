@@ -71,6 +71,7 @@ export const useStore = create((set) => ({
   setExpState: (est) =>
     set((state) => {
       let uist = { ...state.uiState };
+      let gst = { ...state.gameState };
 
       // // if replayIdx is being incremented, check if we're at the end of the
       // // replays for the current agent - if so, show the quiz
@@ -118,7 +119,7 @@ export const useStore = create((set) => ({
           if (phase.interactive) {
             return {
               expState: est,
-              gameState: { ...state.gameState, playing: true },
+              gameState: { ...gst, playing: true },
               uiState: uist,
             };
           }
@@ -130,10 +131,11 @@ export const useStore = create((set) => ({
 
       // if levelIdx is being incremented, check if we're at the end of the
       // current phase. if we are, and it's the first phase, then show the
-      // quiz; otherwise, increment phaseIdx. also set showLevelPopup to true
+      // quiz; otherwise, increment phaseIdx
       if (est.levelIdx > state.expState.levelIdx) {
         est.startPosIdx = 0;
         est.agentIdx = 0;
+
         const phase = est.session.phases[est.phaseIdx];
         if (est.levelIdx >= phase.levels.length) {
           est.levelIdx = 0;
@@ -143,6 +145,8 @@ export const useStore = create((set) => ({
           //   };
           // }
           est.phaseIdx += 1;
+        } else if (phase.agents.length > 0) {
+          gst.playing = false;
         }
       }
 
@@ -168,7 +172,7 @@ export const useStore = create((set) => ({
         }
       }
 
-      return { expState: est, uiState: uist };
+      return { expState: est, uiState: uist, gameState: gst };
     }),
 
   // game state

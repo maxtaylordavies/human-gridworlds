@@ -26,10 +26,9 @@ const ScorePopup = () => {
     const phase = utils.currentPhase(expState);
     if (
       phase &&
+      expState.phaseIdx === 0 &&
       gameState.playing &&
-      gameState.rewardHistory.length > 0 &&
-      !phase.objectsHidden &&
-      expState.levelIdx < 4
+      gameState.rewardHistory.length > 0
     ) {
       showPopup();
 

@@ -15,7 +15,6 @@ const AgentPopup = ({ delay }) => {
   const expState = useStore((state) => state.expState);
 
   const [show, setShow] = useState(uiState.showAgentPopup);
-  const [ready, setReady] = useState(false);
   const [name, setName] = useState("");
   const [phi, setPhi] = useState(null);
   const [agentsShown, setAgentsShown] = useState([]);
@@ -23,16 +22,21 @@ const AgentPopup = ({ delay }) => {
   useEffect(() => {
     if (uiState.showAgentPopup) {
       const _name = utils.currentAgentName(expState);
-      const _phi = utils.currentPhi(expState);
-      setName(_name);
-      setPhi(_phi);
-      setReady(false);
-      setTimeout(() => {
-        setShow(true);
-      }, delay);
-    } else {
+      if (!agentsShown.includes(_name)) {
+        const _phi = utils.currentPhi(expState);
+        setName(_name);
+        setPhi(_phi);
+        setTimeout(() => {
+          setShow(true);
+        }, delay);
+      } else {
+        setUiState({ ...uiState, showAgentPopup: false });
+      }
+    } else if (show) {
       setShow(false);
-      setAgentsShown([...agentsShown, name]);
+      if (name !== "") {
+        setAgentsShown([...agentsShown, name]);
+      }
     }
   }, [uiState, expState]);
 
