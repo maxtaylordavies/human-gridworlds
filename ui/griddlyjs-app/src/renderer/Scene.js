@@ -427,10 +427,7 @@ export class PlayerScene extends Phaser.Scene {
     const expUtils = Object.fromEntries(
       Object.entries(actionUtils)
         .filter(([action, utils]) => utils.length > 0)
-        .map(([action, utils]) => [
-          action,
-          Math.exp(Math.max(...utils) / 0.01),
-        ]),
+        .map(([action, utils]) => [action, Math.exp(Math.max(...utils) / 0.1)]),
     );
 
     // convert to probability values
@@ -526,7 +523,7 @@ export class PlayerScene extends Phaser.Scene {
   };
 
   doUserAction = (action) => {
-    if (this.isRunningSimulation) {
+    if (this.simAgent) {
       return;
     }
 
