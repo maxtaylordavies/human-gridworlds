@@ -31,10 +31,11 @@ func CreatePhase(
 ) Phase {
 	levels := []Level{}
 	for _, levelID := range levelIDs {
+		levelType := LEVEL_TYPES[levelID]
 		var startPositions []Pos
 		if starts != nil {
 			for _, start := range starts {
-				startPositions = append(startPositions, COORDS[levelID][start])
+				startPositions = append(startPositions, COORDS[levelType][start])
 			}
 		}
 
