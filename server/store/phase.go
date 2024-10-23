@@ -23,10 +23,11 @@ type Phase struct {
 func CreatePhase(name string, levelIDs []int, interactive bool, objectsHidden bool, starts []string, agents []Agent) Phase {
 	levels := []Level{}
 	for _, levelID := range levelIDs {
+		levelType := LEVEL_TYPES[levelID]
 		var startPositions []Pos
 		if starts != nil {
 			for _, start := range starts {
-				startPositions = append(startPositions, COORDS[levelID][start])
+				startPositions = append(startPositions, COORDS[levelType][start])
 			}
 		}
 		rand.Shuffle(len(startPositions), func(i, j int) {

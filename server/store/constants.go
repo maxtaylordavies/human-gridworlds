@@ -49,25 +49,39 @@ var AGENT_NAMES = []string{
 	"John",
 }
 
-var COORDS = map[int]map[string]Pos{
-	8: {
-		"N":  {X: 3, Y: 0},
-		"S":  {X: 3, Y: 6},
-		"W":  {X: 0, Y: 3},
-		"E":  {X: 6, Y: 3},
-		"NW": {X: 1, Y: 1},
-		"NE": {X: 5, Y: 1},
-		"SW": {X: 1, Y: 5},
-		"SE": {X: 5, Y: 5},
+var COORDS = map[string]map[string]Pos{
+	"square": {
+		"C":   {X: 3, Y: 3},
+		"N":   {X: 3, Y: 0},
+		"S":   {X: 3, Y: 6},
+		"W":   {X: 0, Y: 3},
+		"E":   {X: 6, Y: 3},
+		"NW":  {X: 1, Y: 1},
+		"NE":  {X: 5, Y: 1},
+		"SW":  {X: 1, Y: 5},
+		"SE":  {X: 5, Y: 5},
+		"CNW": {X: 2, Y: 2},
+		"CSE": {X: 4, Y: 4},
 	},
-	9: {
+	"horizontal": {
 		"C": {X: 5, Y: 0},
 		"W": {X: 3, Y: 0},
 		"E": {X: 7, Y: 0},
 	},
-	10: {
+	"vertical": {
 		"C": {X: 0, Y: 4},
-		"N": {X: 0, Y: 3},
-		"S": {X: 0, Y: 5},
+		"N": {X: 0, Y: 2},
+		"S": {X: 0, Y: 6},
 	},
+}
+var LEVEL_TYPES = map[int]string{
+	4:  "square",
+	5:  "square",
+	6:  "square",
+	7:  "square",
+	8:  "square",
+	9:  "horizontal",
+	10: "vertical",
+	11: "horizontal",
+	12: "vertical",
 }
