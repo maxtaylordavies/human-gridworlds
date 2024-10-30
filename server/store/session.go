@@ -1,7 +1,10 @@
 package store
 
 import (
+	"encoding/json"
 	"errors"
+	"log"
+	"os"
 	"time"
 )
 
@@ -41,6 +44,17 @@ func CreateSession(experimentID string, isTest bool, condition Condition, contex
 		Context:         context,
 	}
 
+	// load agent colours from json
+	f, _ := os.ReadFile("agent_colours.json")
+	var colourData struct {
+		Colours [][]float64 `json:"colours"`
+	}
+	err := json.Unmarshal(f, &colourData)
+	if err != nil {
+		log.Fatal(err)
+		return sess, err
+	}
+
 	// first, set up group parameters
 	var groupParams []GroupParams
 	groupThetaMus := [][]float64{
@@ -52,7 +66,7 @@ func CreateSession(experimentID string, isTest bool, condition Condition, contex
 			MuTheta:     groupThetaMus[k],
 			SigmaTheta:  []float64{0.01, 0.01},
 			MuPhiPos:    MU_PHI_POS[k],
-			SigmaPhiPos: 0.1,
+			SigmaPhiPos: 0.05,
 		})
 	}
 
@@ -68,15 +82,15 @@ func CreateSession(experimentID string, isTest bool, condition Condition, contex
 
 	// assign participant phi
 	if condition.ParticipantPhiType == "neutral" {
-		sess.Phi = NEUTRAL_PHI
+		sess.Phi = colourData.Colours[len(colourData.Colours)/2]
 	} else if condition.ParticipantPhiType == "group" {
-		sess.Phi = RED_PHI
+		sess.Phi = colourData.Colours[0]
 	} else {
 		return Session{}, errors.New("condition invalid or not allowed")
 	}
 
 	// create the agents
-	agents := SampleAgents(3, groupParams, AGENT_NAMES[:6])
+	agents := SampleAgents(3, groupParams, AGENT_NAMES[:6], colourData.Colours)
 	evidenceAgents := []Agent{
 		agents[0],
 		agents[1],

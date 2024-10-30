@@ -30,11 +30,13 @@ func SampleTheta(muColor float64, muShape float64, sigmaColor float64, sigmaShap
 	return Normalise(theta)
 }
 
-func PhiPosToPhi(phiPos float64) PhiType {
-	return PhiType{1.0 - phiPos, 0.0, phiPos}
+func PhiPosToPhi(phiPos float64, colourSpectrum [][]float64) PhiType {
+	idx := int(phiPos * float64(len(colourSpectrum)))
+	idx = ClipInt(idx, 0, len(colourSpectrum)-1)
+	return colourSpectrum[idx]
 }
 
-func SampleAgents(numPerGroup int, groups []GroupParams, names []string) []Agent {
+func SampleAgents(numPerGroup int, groups []GroupParams, names []string, colourSpectrum [][]float64) []Agent {
 	agents := []Agent{}
 
 	for k, group := range groups {
@@ -48,7 +50,7 @@ func SampleAgents(numPerGroup int, groups []GroupParams, names []string) []Agent
 
 		for i := 0; i < numPerGroup; i++ {
 			theta := SampleTheta(group.MuTheta[0], group.MuTheta[1], group.SigmaTheta[0], group.SigmaTheta[1])
-			phi := PhiPosToPhi(phiVals[i])
+			phi := PhiPosToPhi(phiVals[i], colourSpectrum)
 			agents = append(agents, Agent{Z: k, Phi: phi, Theta: theta, Name: names[k*numPerGroup+i]})
 		}
 	}

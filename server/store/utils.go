@@ -76,6 +76,15 @@ func Clip(x float64, low float64, high float64) float64 {
 	return x
 }
 
+func ClipInt(x int, low int, high int) int {
+	if x < low {
+		return low
+	} else if x > high {
+		return high
+	}
+	return x
+}
+
 func SampleFromSliceString(s []string, n int) []string {
 	perm, res := RNG().Perm(len(s)), []string{}
 
