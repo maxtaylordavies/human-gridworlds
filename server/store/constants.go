@@ -1,6 +1,6 @@
 package store
 
-var MU_PHI_POS = []float64{0.2, 0.8}
+var MU_PHI_POS = []float64{0.05, 0.95}
 
 var MU_THETA_YELLOW = []float64{0.8, 0.5}
 var MU_THETA_GREEN = []float64{0.2, 0.5}

@@ -1,7 +1,10 @@
 package store
 
 import (
+	"encoding/json"
 	"errors"
+	"log"
+	"os"
 	"time"
 )
 
@@ -42,6 +45,19 @@ func CreateSession(experimentID string, isTest bool, condition Condition, contex
 		Context:         context,
 	}
 
+	// load agent colour spectrum from json
+	var colourSpectrum [][]float64
+	f, _ := os.ReadFile("agent_colours.json")
+	var colourData struct {
+		Colours [][]float64 `json:"colours"`
+	}
+	err := json.Unmarshal(f, &colourData)
+	if err != nil {
+		log.Fatal(err)
+		return sess, err
+	}
+	colourSpectrum = colourData.Colours
+
 	// first, sample the participant's utility function
 	participantDim := SampleFromSliceString([]string{"color", "shape"}, 1)[0]
 	if participantDim == "color" {
@@ -52,19 +68,19 @@ func CreateSession(experimentID string, isTest bool, condition Condition, contex
 
 	// then, sample the participant's phi based on the condition
 	if condition.ParticipantPhiType == "neutral" {
-		sess.Phi = NEUTRAL_PHI
+		sess.Phi = PhiPosToPhi(0.5, colourSpectrum)
 	} else if condition.PhisRelevant && condition.ParticipantPhiType == "matched" {
-		sess.Phi = RED_PHI
+		sess.Phi = PhiPosToPhi(MU_PHI_POS[0], colourSpectrum)
 	} else if condition.PhisRelevant && condition.ParticipantPhiType == "mismatched" {
-		sess.Phi = BLUE_PHI
+		sess.Phi = PhiPosToPhi(MU_PHI_POS[1], colourSpectrum)
 	} else if !condition.PhisRelevant && condition.ParticipantPhiType == "arbitrary" {
 		if RNG().Float64() < 0.5 {
-			sess.Phi = RED_PHI
+			sess.Phi = PhiPosToPhi(MU_PHI_POS[0], colourSpectrum)
 		} else {
-			sess.Phi = BLUE_PHI
+			sess.Phi = PhiPosToPhi(MU_PHI_POS[1], colourSpectrum)
 		}
 	} else {
-		return Session{}, errors.New("condition invalid or not allowed")
+		return Session{}, errors.New("condition invalid")
 	}
 
 	// create the agents
@@ -86,7 +102,7 @@ func CreateSession(experimentID string, isTest bool, condition Condition, contex
 		tmp.MuPhiPos = MU_PHI_POS[k]
 		knownAgentParams = append(knownAgentParams, tmp)
 	}
-	knownAgents := SampleAgents(1, knownAgentParams, AGENT_NAMES[:2])
+	knownAgents := SampleAgents(1, knownAgentParams, AGENT_NAMES[:2], colourSpectrum)
 
 	var groupDim string
 	if condition.PhisRelevant {
@@ -107,7 +123,7 @@ func CreateSession(experimentID string, isTest bool, condition Condition, contex
 		}
 		groupParams = append(groupParams, tmp)
 	}
-	groupAgents := SampleAgents(3, groupParams, AGENT_NAMES[2:8])
+	groupAgents := SampleAgents(3, groupParams, AGENT_NAMES[2:8], colourSpectrum)
 
 	// finally, create the phases
 	evidenceStartLocs := []string{"NW", "NE", "SW", "SE"}
