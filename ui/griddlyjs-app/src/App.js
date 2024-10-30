@@ -15,6 +15,7 @@ import QuizModal from "./components/QuizModal";
 import TextResponseModal from "./components/TextResponseModal";
 import TestLevelInfoBanner from "./components/TestLevelInfoBanner";
 import "./App.scss";
+import LevelItemsPopup from "./components/LevelItemsPopup";
 
 const App = () => {
   // get state from zustand store
@@ -194,6 +195,7 @@ const App = () => {
       <InitialInstructions />
       <PhaseInstructions />
       <AgentPopup delay={250} />
+      <LevelItemsPopup delay={250} />
       <QuizModal />
       <TextResponseModal />
       <ExperimentCompleteModal />

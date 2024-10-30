@@ -200,6 +200,53 @@
   }
 }
 
+.level-items-popup {
+  min-width: 300px;
+  z-index: 30;
+  background: white;
+  padding: 10px 15px;
+  border-radius: 10px;
+  border: 2px solid black;
+
+  .level-items-popup-header {
+    font-size: 26px;
+    font-weight: bold;
+    color: black;
+  }
+
+  .level-items-popup-items {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+
+    .level-items-popup-item {
+      height: 100px;
+      width: 100px;
+      margin: 5px;
+    }
+  }
+
+  .level-items-popup-button-row {
+    display: flex;
+    justify-content: flex-end;
+    padding: 10px 0;
+    margin-top: 15px;
+
+    .level-items-popup-button {
+      width: 120px;
+      height: 35px;
+      border-radius: 20px;
+      font-size: 18px;
+      font-weight: 600;
+      background: #00916E;
+      color: white;
+      border: none;
+    }
+  }
+}
+
 .delay-button {
   display: flex;
   align-items: center;

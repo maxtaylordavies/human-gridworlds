@@ -179,7 +179,17 @@ export const currentAvatarImg = (expState) => {
   return `custom/avatars/${filename}`;
 };
 
-export const currentStartPos = (expState) => {
+export const currentItems = (expState, gameState) => {
+  try {
+    const levelId = currentLevelId(expState);
+    const levelStr = gameState.gdy.Environment.Levels[levelId];
+    return levelStr.match(/[A-Z]/g) || [];
+  } catch (e) {
+    return [];
+  }
+};
+
+export const currentStartPos = (expState, gameState) => {
   const level = currentLevel(expState);
   if (!level?.startPositions) {
     return null;

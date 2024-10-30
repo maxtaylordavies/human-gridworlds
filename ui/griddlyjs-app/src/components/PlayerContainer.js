@@ -1,4 +1,3 @@
-import React, { useEffect } from "react";
 import { motion } from "framer-motion";
 
 import { useStore } from "../store";
@@ -13,7 +12,6 @@ import { Avatar } from "./Avatar";
 import InfoBar from "./InfoBar";
 import RewardHistory from "./RewardHistory";
 import ScorePopup from "./ScorePopup";
-import TestLevelInfoBanner from "./TestLevelInfoBanner";
 
 const PlayerContainer = ({ griddlyjs }) => {
   const uiState = useStore((state) => state.uiState);
@@ -50,6 +48,7 @@ const PlayerContainer = ({ griddlyjs }) => {
     opacity = 0;
   } else if (
     uiState.showQuiz ||
+    uiState.showLevelItemsPopup ||
     uiState.showAgentPopup ||
     uiState.showScorePopup ||
     uiState.showTextResponseModal
@@ -92,6 +91,7 @@ const PlayerContainer = ({ griddlyjs }) => {
               startPosIdx={expState.startPosIdx}
               waitToBeginSimulation={
                 uiState.showPhaseInstructions ||
+                uiState.showLevelItemsPopup ||
                 uiState.showAgentPopup ||
                 uiState.showQuiz ||
                 uiState.showScorePopup ||
@@ -102,6 +102,7 @@ const PlayerContainer = ({ griddlyjs }) => {
               stepIntervalMs={INTER_STEP_INTERVAL_MS}
               disableInput={
                 uiState.showPhaseInstructions ||
+                uiState.showLevelItemsPopup ||
                 uiState.showAgentPopup ||
                 uiState.showQuiz ||
                 uiState.showScorePopup ||

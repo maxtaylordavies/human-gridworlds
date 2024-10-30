@@ -10,6 +10,7 @@ export const useStore = create((set) => ({
     showQuiz: false,
     showAgentPopup: false,
     showScorePopup: false,
+    showLevelItemsPopup: false,
     showTextResponseModal: false,
     showFinishedScreen: false,
   },
@@ -18,6 +19,17 @@ export const useStore = create((set) => ({
       // if showScorePopup is being set to false, don't do anything else!
       if (!uist.showScorePopup && state.uiState.showScorePopup) {
         return { uiState: { ...state.uiState, showScorePopup: false } };
+      }
+
+      // if showLevelItemsPopup is being set to false, set showAgentPopup to true
+      if (!uist.showLevelItemsPopup && state.uiState.showLevelItemsPopup) {
+        return {
+          uiState: {
+            ...state.uiState,
+            showLevelItemsPopup: false,
+            showAgentPopup: true,
+          },
+        };
       }
 
       // if showInitialInstructions is being set to false, set showPhaseInstructions to true
@@ -35,7 +47,8 @@ export const useStore = create((set) => ({
         return {
           uiState: {
             ...uist,
-            showAgentPopup: !playing,
+            showAgentPopup: !playing & (exp.phaseIdx !== 2),
+            showLevelItemsPopup: exp.phaseIdx === 2,
           },
           expState: exp,
           gameState: { ...state.gameState, playing: playing },
@@ -135,6 +148,10 @@ export const useStore = create((set) => ({
       if (est.levelIdx > state.expState.levelIdx) {
         est.startPosIdx = 0;
         est.agentIdx = 0;
+
+        if (est.phaseIdx === 2) {
+          uist.showLevelItemsPopup = true;
+        }
 
         const phase = est.session.phases[est.phaseIdx];
         if (est.levelIdx >= phase.levels.length) {
