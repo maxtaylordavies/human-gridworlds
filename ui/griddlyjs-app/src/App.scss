@@ -387,11 +387,13 @@
     align-items: center;
 
     .name-badge {
-        width: 70px;
+        width: 75px;
         height: 30px;
         border-radius: 5px;
         font-size: 20px;
         line-height: 25px;
+        background-color: black;
+        color: white;
     }
   }
 
