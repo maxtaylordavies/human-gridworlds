@@ -422,8 +422,6 @@ export class PlayerScene extends Phaser.Scene {
       }
     });
 
-    console.log("actionUtils", actionUtils);
-
     // filter out actions that are not moving towards any goal
     // and then get the exponential of the max utility for each action
     const expUtils = Object.fromEntries(
@@ -440,8 +438,6 @@ export class PlayerScene extends Phaser.Scene {
         expUtil / sumExpUtil,
       ]),
     );
-
-    console.log("actionProbs", actionProbs);
 
     // now we need to sample an action based on these probabilities
     const r = Math.random();
