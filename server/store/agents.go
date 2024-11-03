@@ -36,7 +36,7 @@ func PhiPosToPhi(phiPos float64, colourSpectrum [][]float64) PhiType {
 	return colourSpectrum[idx]
 }
 
-func SampleAgents(numPerGroup int, groups []GroupParams, names []string, colourSpectrum [][]float64) []Agent {
+func SampleAgents(numPerGroup int, groups []GroupParams, names []string, haveCue bool, colourSpectrum [][]float64) []Agent {
 	agents := []Agent{}
 	for k, group := range groups {
 		phiVals := GetValuesBetweenQuantiles(
@@ -48,7 +48,12 @@ func SampleAgents(numPerGroup int, groups []GroupParams, names []string, colourS
 		)
 		for i := 0; i < numPerGroup; i++ {
 			theta := SampleTheta(group.MuTheta[0], group.MuTheta[1], group.SigmaTheta[0], group.SigmaTheta[1])
-			phi := PhiPosToPhi(phiVals[i], colourSpectrum)
+			var phi PhiType
+			if haveCue {
+				phi = PhiPosToPhi(phiVals[i], colourSpectrum)
+			} else {
+				phi = GREY_PHI
+			}
 			agents = append(agents, Agent{Z: k, Phi: phi, Theta: theta, Name: names[k*numPerGroup+i]})
 		}
 	}
