@@ -65,14 +65,14 @@ const ScorePopup = () => {
         <img src={`resources/images/custom/items/${_item}.png`} width={50} />={" "}
         {_reward} points
       </div>
-      <motion.button
+      {/* <motion.button
         onClick={() => setUiState({ ...uiState, showScorePopup: false })}
         whileHover={{ scale: 1.04 }}
         whileTap={{ scale: 0.96 }}
         transition={{ duration: 0.2 }}
       >
         Okay
-      </motion.button>
+      </motion.button> */}
     </Modal>
   );
 };
