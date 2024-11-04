@@ -82,4 +82,6 @@ var LEVEL_TYPES = map[int]string{
 	10: "vertical",
 	11: "horizontal",
 	12: "vertical",
+	13: "horizontal",
+	14: "vertical",
 }
