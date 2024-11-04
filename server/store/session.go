@@ -102,7 +102,7 @@ func CreateSession(experimentID string, isTest bool, condition Condition, contex
 	// finally, create the phases
 	sess.Phases = []Phase{
 		CreatePhase("exploration", []int{0, 1, 2, 3}, true, false, nil, []Agent{}, false),
-		CreatePhase("evidence", []int{4, 5, 6, 7}, true, false, []string{"CNW", "CSE"}, evidenceAgents, true),
+		CreatePhase("evidence", []int{6, 4, 7, 5, 6}, true, false, []string{"CNW", "CSE"}, evidenceAgents, true),
 		CreatePhase("test", []int{9, 13}, true, true, []string{"C", "W", "E"}, testAgents, false),
 	}
 
