@@ -467,7 +467,7 @@
 
   .reward-history {
     width: 225px;
-    height: 270px;
+    height: 100%;
     margin-left: 15px;
     padding-bottom: 10px;
     background-color: white;
@@ -475,7 +475,7 @@
     border: 3px solid black;
     display: flex;
     flex-direction: column;
-    overflow: hidden;
+    // overflow-y: scroll;
     // padding: 5px;
 
     .reward-history-title {
@@ -488,8 +488,8 @@
     }
 
     .reward-history-list {
-      padding: 5px;
-      overflow: scroll;
+      padding: 2px;
+      overflow-y: scroll;
 
       .reward-history-item {
         display: flex;
