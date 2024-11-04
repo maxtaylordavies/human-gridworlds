@@ -26,8 +26,20 @@ const phaseInstructionsContent = [
     {
       content: (
         <>
+          <p>There are four different types of item in the game:</p>
+          <div style={{ marginBottom: "1rem" }}>
+            {["A", "B", "C", "D"].map((item) => {
+              return (
+                <img
+                  src={`resources/images/custom/items/goal${item}.png`}
+                  height={60}
+                  width={60}
+                  alt={`item ${item}`}
+                />
+              );
+            })}
+          </div>
           <p>
-            There are four different types of item in the game.{" "}
             <b>Your character likes some types of item more than others.</b>{" "}
           </p>
           <p>Items that your character likes more will give you more points.</p>
