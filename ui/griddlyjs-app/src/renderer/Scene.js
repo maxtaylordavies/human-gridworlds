@@ -457,7 +457,7 @@ export class PlayerScene extends Phaser.Scene {
       this.cooldown = true;
 
       const action = this.sampleSimAction();
-
+      this.onTrajectoryStep(action[1]);
       const stepResult = this.griddlyjs.step(action);
       this.onReward(+stepResult.reward);
       this.currentState = this.griddlyjs.getState();

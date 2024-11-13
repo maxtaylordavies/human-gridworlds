@@ -274,16 +274,22 @@ export const useStore = create((set) => ({
     quizResponses: {},
     textResponses: [],
   },
-  updateTrajectory: (phaseIdx, levelIdx, step) =>
+  updateTrajectory: (agentName, phaseIdx, levelIdx, startPosIdx, step) =>
     set((state) => {
       const trajectories = { ...state.resultsState.trajectories };
-      if (!(phaseIdx in trajectories)) {
-        trajectories[phaseIdx] = {};
+      if (!(agentName in trajectories)) {
+        trajectories[agentName] = {};
       }
-      if (!(levelIdx in trajectories[phaseIdx])) {
-        trajectories[phaseIdx][levelIdx] = [];
+      if (!(phaseIdx in trajectories[agentName])) {
+        trajectories[agentName][phaseIdx] = {};
       }
-      trajectories[phaseIdx][levelIdx].push(step);
+      if (!(levelIdx in trajectories[agentName][phaseIdx])) {
+        trajectories[agentName][phaseIdx][levelIdx] = {};
+      }
+      if (!(startPosIdx in trajectories[agentName][phaseIdx][levelIdx])) {
+        trajectories[agentName][phaseIdx][levelIdx][startPosIdx] = [];
+      }
+      trajectories[agentName][phaseIdx][levelIdx][startPosIdx].push(step);
       return {
         resultsState: { ...state.resultsState, trajectories: trajectories },
       };
