@@ -41,7 +41,16 @@ const PlayerContainer = ({ griddlyjs }) => {
       return;
     }
 
-    updateTrajectory(expState.phaseIdx, expState.levelIdx, step);
+    let agentName = utils.currentAgentName(expState);
+    agentName = agentName === "you" ? "participant" : agentName;
+
+    updateTrajectory(
+      agentName,
+      expState.phaseIdx,
+      expState.levelIdx,
+      expState.startPosIdx,
+      step,
+    );
   };
 
   let opacity = 1;

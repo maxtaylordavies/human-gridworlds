@@ -56,11 +56,36 @@ const App = () => {
     if (expState.session && resultsState) {
       uploadResults();
     }
-  }, [resultsState]);
+  }, [
+    expState.phaseIdx,
+    expState.levelIdx,
+    expState.agentIdx,
+    uiState.showFinishedScreen,
+    resultsState.textResponses,
+  ]);
 
   // initialise griddly, create a session on the server, and
   // then store the session in local state
   const performSetUp = async () => {
+    const createSession = () => {
+      const condition = {
+        phisRelevant: utils.getValueFromUrlOrLocalstorage("factor1") === "true",
+        participantPhiType: utils.getValueFromUrlOrLocalstorage("factor2"),
+      };
+
+      console.log("condition: ", condition);
+
+      // then, create the session on the server
+      api.createSession(
+        utils.getValueFromUrlOrLocalstorage("eid"), // experiment id
+        true, // isTest
+        condition,
+        utils.getProlificMetadata(), // context
+        onSession,
+        console.error,
+      );
+    };
+
     const onSession = (sess) => {
       console.log("sess: ", sess);
       setExpState({ ...expState, session: sess });
@@ -74,27 +99,15 @@ const App = () => {
       // the server (rather than creating a new session)
       const sid = utils.getValueFromUrlOrLocalstorage("sid");
       if (sid) {
-        api.getSession(sid, onSession, console.Error);
+        try {
+          api.getSession(sid, onSession, console.Error);
+        } catch (e) {
+          console.error(e);
+          createSession();
+        }
       } else {
         // otherwise, we need to create a new session
-        // first, get the condition from the url (or localstorage)
-        const condition = {
-          phisRelevant:
-            utils.getValueFromUrlOrLocalstorage("factor1") === "true",
-          participantPhiType: utils.getValueFromUrlOrLocalstorage("factor2"),
-        };
-
-        console.log("condition: ", condition);
-
-        // then, create the session on the server
-        api.createSession(
-          utils.getValueFromUrlOrLocalstorage("eid"), // experiment id
-          true, // isTest
-          condition,
-          utils.getProlificMetadata(), // context
-          onSession,
-          console.error,
-        );
+        createSession();
       }
     });
   };
@@ -167,7 +180,14 @@ const App = () => {
     for (let k1 in resultsState.trajectories) {
       trajectories[k1] = {};
       for (let k2 in resultsState.trajectories[k1]) {
-        trajectories[k1][k2] = resultsState.trajectories[k1][k2].join(",");
+        trajectories[k1][k2] = {};
+        for (let k3 in resultsState.trajectories[k1][k2]) {
+          trajectories[k1][k2][k3] = {};
+          for (let k4 in resultsState.trajectories[k1][k2][k3]) {
+            trajectories[k1][k2][k3][k4] =
+              resultsState.trajectories[k1][k2][k3][k4].join(",");
+          }
+        }
       }
     }
     const sess = {

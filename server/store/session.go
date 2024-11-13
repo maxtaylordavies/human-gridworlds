@@ -15,7 +15,7 @@ type Condition struct {
 
 type QuizResponse []int
 
-type Trajectories map[int]map[int]string // maps phase index and level index to trajectory
+type Trajectories map[int]map[int]map[int]string // maps phase index, level index, start pos index to trajectory
 
 type Session struct {
 	ID              string                    `json:"id"`
@@ -28,7 +28,7 @@ type Session struct {
 	Theta           ThetaType                 `json:"theta"`
 	Phi             PhiType                   `json:"phi"`
 	Context         interface{}               `json:"context"`
-	Trajectories    Trajectories              `json:"trajectories"`
+	Trajectories    map[string]Trajectories   `json:"trajectories"` // maps agent name (or 'participant') to trajectories
 	QuizResponses   map[string][]QuizResponse `json:"quizResponses"`
 	FinalScore      int                       `json:"finalScore"`
 	TextResponses   []string                  `json:"textResponses"`
