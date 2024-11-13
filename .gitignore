@@ -7,6 +7,8 @@
 data/
 remote_data/
 sessions_old/
+conference_data/
+journal_data_old/
 results/
 gdy-schema.json
 tmp/
