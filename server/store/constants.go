@@ -1,6 +1,6 @@
 package store
 
-var MU_PHI_POS = []float64{0.05, 0.95}
+var MU_PHI_POS = []float64{0.1, 0.9}
 
 var strong = 0.9
 var weak = 0.6
