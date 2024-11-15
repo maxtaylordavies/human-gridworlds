@@ -19,7 +19,7 @@ const TextResponseModal = () => {
     setResponse("");
   };
 
-  const disabled = response.length < 100;
+  const disabled = response.length < 80;
 
   return (
     <Modal
@@ -32,7 +32,7 @@ const TextResponseModal = () => {
         <div className="experiment-complete-modal-text">
           <p>
             <b>
-              Please write a brief response (minimum 100 characters) to the
+              Please write a brief response (minimum 80 characters) to the
               following question: how did you choose which of the mystery boxes
               to collect in the phase you just played through?
             </b>{" "}
