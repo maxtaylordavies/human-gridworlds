@@ -68,7 +68,7 @@ func CreateSession(experimentID string, isTest bool, condition Condition, contex
 
 	// then, sample the participant's phi based on the condition
 	if condition.ParticipantPhiType == "neutral" {
-		sess.Phi = PhiPosToPhi(0.5, colourSpectrum)
+		sess.Phi = GREY_PHI
 	} else if condition.PhisRelevant && condition.ParticipantPhiType == "matched" {
 		sess.Phi = PhiPosToPhi(MU_PHI_POS[0], colourSpectrum)
 	} else if condition.PhisRelevant && condition.ParticipantPhiType == "mismatched" {
