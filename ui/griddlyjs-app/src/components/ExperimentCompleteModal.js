@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { useStore } from "../store";
 import { Modal } from "./core/Modal";
 
-const PROLIFIC_CODE = "CFUMOENE";
+const PROLIFIC_CODE = "CY4W2IAN";
 
 const ExperimentCompleteModal = () => {
   const show = useStore((state) => state.uiState.showFinishedScreen);
