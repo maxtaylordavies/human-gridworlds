@@ -54,6 +54,7 @@ func CreateSession(experimentID string, isTest bool, condition Condition, contex
 		log.Fatal(err)
 		return sess, err
 	}
+	colourSpectrum := colourData.Colours
 
 	// first, set up group parameters
 	var groupParams []GroupParams
@@ -82,9 +83,13 @@ func CreateSession(experimentID string, isTest bool, condition Condition, contex
 
 	// assign participant phi
 	if condition.ParticipantPhiType == "neutral" {
-		sess.Phi = colourData.Colours[len(colourData.Colours)/2]
+		sess.Phi = GREY_PHI
 	} else if condition.ParticipantPhiType == "group" {
-		sess.Phi = colourData.Colours[0]
+		if RNG().Float64() < 0.5 {
+			sess.Phi = PhiPosToPhi(MU_PHI_POS[0], colourSpectrum)
+		} else {
+			sess.Phi = PhiPosToPhi(MU_PHI_POS[1], colourSpectrum)
+		}
 	} else {
 		return Session{}, errors.New("condition invalid or not allowed")
 	}
