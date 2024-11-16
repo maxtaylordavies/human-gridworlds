@@ -11,7 +11,8 @@ const TestLevelInfoBanner = () => {
     expState.phaseIdx < 2 ||
     uiState.showPhaseInstructions ||
     uiState.showLevelItemsPopup ||
-    uiState.showTextResponseModal
+    uiState.showTextResponseModal ||
+    uiState.showFinishedScreen
   ) {
     return <> </>;
   }
